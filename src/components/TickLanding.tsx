@@ -502,7 +502,7 @@ function GetStarted() {
             That&apos;s it. You now have a TICK.md file, a .tick/ config directory, and a CLI ready to go. Add tasks, point your agents at it, and watch them coordinate.
           </p>
           <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="https://github.com/nicobailon/tick" style={{ padding: "12px 28px", background: C.accent, color: C.bg, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 15,
+            <a href="https://github.com/Purple-Horizons/tick-md" style={{ padding: "12px 28px", background: C.accent, color: C.bg, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 15,
               borderRadius: 8, textDecoration: "none" }}>
               ★ Star on GitHub
             </a>
@@ -569,7 +569,7 @@ export default function TickLanding() {
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
             <a className="nav-link-desktop" href="/docs/protocol" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>Protocol</a>
             <a className="nav-link-desktop" href="#pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>Pricing</a>
-            <a className="nav-link-desktop" href="https://github.com/nicobailon/tick" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>GitHub</a>
+            <a className="nav-link-desktop" href="https://github.com/Purple-Horizons/tick-md" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>GitHub</a>
             <a href="#get-started" style={{ padding: "8px 18px", background: C.accent, color: C.bg, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 13,
               borderRadius: 6, textDecoration: "none", whiteSpace: "nowrap" }}>Get Started</a>
           </div>
