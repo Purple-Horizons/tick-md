@@ -514,25 +514,28 @@ export default function TickLanding() {
         pre::-webkit-scrollbar { height: 6px; }
         pre::-webkit-scrollbar-track { background: transparent; }
         pre::-webkit-scrollbar-thumb { background: ${C.border}; border-radius: 3px; }
+        @media (max-width: 640px) {
+          .nav-link-desktop { display: none !important; }
+        }
       `}</style>
 
       {/* Nav */}
-      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "16px 24px",
+      <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 100, padding: "12px 16px",
         background: `${C.bg}ee`, backdropFilter: "blur(12px)", borderBottom: `1px solid ${C.border}40` }}>
         <div style={{ maxWidth: 1000, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <a href="/" style={{ display: "flex", alignItems: "center", gap: 8, textDecoration: "none" }}>
             <div style={{ width: 28, height: 28, borderRadius: 7, background: `linear-gradient(135deg, ${C.accent}, ${C.accentDim})`,
-              display: "flex", alignItems: "center", justifyContent: "center" }}>
+              display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#0a0a0f" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </div>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, color: C.white }}>tick.md</span>
-          </div>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, color: C.white, whiteSpace: "nowrap" }}>tick.md</span>
+          </a>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            <a href="#protocol" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>Protocol</a>
-            <a href="#pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>Pricing</a>
-            <a href="https://github.com/nicobailon/tick" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>GitHub</a>
+            <a className="nav-link-desktop" href="#protocol" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>Protocol</a>
+            <a className="nav-link-desktop" href="#pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>Pricing</a>
+            <a className="nav-link-desktop" href="https://github.com/nicobailon/tick" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>GitHub</a>
             <a href="#get-started" style={{ padding: "8px 18px", background: C.accent, color: C.bg, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 13,
-              borderRadius: 6, textDecoration: "none" }}>Get Started</a>
+              borderRadius: 6, textDecoration: "none", whiteSpace: "nowrap" }}>Get Started</a>
           </div>
         </div>
       </nav>
