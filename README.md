@@ -5,6 +5,7 @@
 [![npm version](https://img.shields.io/npm/v/tick-md.svg?style=flat-square&color=a78bfa)](https://www.npmjs.com/package/tick-md)
 [![npm downloads](https://img.shields.io/npm/dm/tick-md.svg?style=flat-square&color=a78bfa)](https://www.npmjs.com/package/tick-md)
 [![MCP Server](https://img.shields.io/npm/v/tick-mcp-server.svg?style=flat-square&label=mcp-server&color=7c3aed)](https://www.npmjs.com/package/tick-mcp-server)
+[![ClawHub](https://img.shields.io/badge/ClawHub-tick--md-6366f1?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTUgMTNsNCA0TDE5IDciIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+)](https://clawhub.ai/skills/tick-md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![GitHub stars](https://img.shields.io/github/stars/Purple-Horizons/tick-md?style=flat-square&color=a78bfa)](https://github.com/Purple-Horizons/tick-md)
 
@@ -65,12 +66,12 @@ Add to your MCP config:
 }
 ```
 
-### Install via ClawHub
+### Install via ClawHub (for OpenClaw Bots)
 ```bash
-clawhub install tick-coordination
+clawhub install tick-md
 ```
 
-Bots can now coordinate tasks through natural conversation!
+OpenClaw bots can now coordinate tasks through natural conversation!
 
 ## 📖 Documentation
 
@@ -228,9 +229,9 @@ tick init
 
 ## 📦 Packages
 
-- **[tick-md](https://www.npmjs.com/package/tick-md)** - CLI tool
-- **[tick-mcp-server](https://www.npmjs.com/package/tick-mcp-server)** - MCP server
-- **[tick-coordination](https://clawhub.ai/skills/tick-coordination)** - ClawHub skill
+- **[tick-md](https://www.npmjs.com/package/tick-md)** - CLI tool (v1.1.0)
+- **[tick-mcp-server](https://www.npmjs.com/package/tick-mcp-server)** - MCP server for AI agents
+- **[tick-md](https://clawhub.ai/skills/tick-md)** - ClawHub skill for OpenClaw bots
 
 ## 🤝 Contributing
 
@@ -258,6 +259,7 @@ Built with:
 
 - **Website**: [tick.md](https://tick.md)
 - **npm**: [tick-md](https://www.npmjs.com/package/tick-md) · [tick-mcp-server](https://www.npmjs.com/package/tick-mcp-server)
+- **ClawHub**: [tick-md skill](https://clawhub.ai/skills/tick-md)
 - **Documentation**: [Full Docs](cli/README.md)
 - **Issues**: [GitHub Issues](https://github.com/Purple-Horizons/tick-md/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/Purple-Horizons/tick-md/discussions)
