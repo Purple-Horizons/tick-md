@@ -12,7 +12,7 @@ export function Nav() {
         </div>
         <div className="flex items-center gap-6">
           <a
-            href="#protocol"
+            href="/docs/protocol"
             className="hidden sm:block text-sm text-[var(--color-text-dim)] hover:text-white transition-colors"
           >
             Protocol

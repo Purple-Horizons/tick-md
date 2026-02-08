@@ -73,6 +73,9 @@ node dist/cli.js init
 - **claim.ts** - Claim and release tasks with locking
 - **done.ts** - Complete tasks and add comments
 - **status.ts** - Terminal UI with colored output
+- **list.ts** - List tasks with filtering and JSON output
+- **graph.ts** - Visualize task dependencies (ASCII/Mermaid)
+- **watch.ts** - Real-time task monitoring
 - **sync.ts** - Git integration with smart commit messages
 - **validate.ts** - Comprehensive TICK.md validation
 - **agent.ts** - Agent registration and listing
@@ -121,6 +124,15 @@ tick init [--name <name>] [--force]
 # View project status
 tick status
 
+# List and filter tasks
+tick list [--status <status>] [--priority <priority>] [--tag <tag>] [--json]
+
+# Visualize dependencies
+tick graph [--format ascii|mermaid] [--show-done]
+
+# Watch for changes
+tick watch [--interval <seconds>] [--filter <status>]
+
 # Add tasks
 tick add <title> [--priority <level>] [--tags <list>] [--assigned-to <agent>]
 
@@ -147,6 +159,9 @@ tick sync [--push] [--pull] [--message <text>] [--init]
 |---------|--------|-------------|
 | `tick init` | ✅ | Initialize new Tick project |
 | `tick status` | ✅ | Show project summary with progress |
+| `tick list` | ✅ | List tasks with filters and JSON output |
+| `tick graph` | ✅ | Visualize dependencies (ASCII/Mermaid) |
+| `tick watch` | ✅ | Real-time task monitoring |
 | `tick add` | ✅ | Create new tasks with metadata |
 | `tick claim` | ✅ | Claim task for agent (sets in_progress) |
 | `tick release` | ✅ | Release claimed task (back to todo) |
@@ -178,30 +193,35 @@ tick sync [--push] [--pull] [--message <text>] [--init]
 
 ## Next Steps (Roadmap)
 
-### Planned Features
+### ✅ Completed
 
-1. **MCP Server** - Model Context Protocol integration
+1. **MCP Server** - Model Context Protocol integration ✅
    - Enable AI agents to use tick commands
    - Real-time collaboration between human and AI agents
    
-2. **Watch Mode** - Real-time file monitoring
+2. **Watch Mode** - Real-time file monitoring ✅
    - `tick watch` for live updates
    - Auto-validation on changes
    
-3. **Advanced Filtering** - Task discovery
+3. **Advanced Filtering** - Task discovery ✅
    - `tick list --status todo --priority high`
-   - `tick search <query>`
    - JSON output for scripting
 
-4. **Dependency Visualization**
+4. **Dependency Visualization** ✅
    - `tick graph` - ASCII dependency graph
-   - Critical path analysis
-   - Blocked task detection
+   - Mermaid flowchart output
 
-5. **Cloud Sync** - Optional hosted dashboard
+### Planned Features
+
+1. **Cloud Sync** - Optional hosted dashboard
    - Push local TICK.md to cloud
    - Web-based visualization
    - Team collaboration
+   
+2. **Plugins & Extensions**
+   - Custom validators
+   - Task templates
+   - Webhook integrations
 
 ## License
 

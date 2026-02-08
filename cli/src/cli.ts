@@ -10,7 +10,10 @@ import { statusCommand } from "./commands/status.js";
 import { syncCommand } from "./commands/sync.js";
 import { validateCommand } from "./commands/validate.js";
 import { registerAgentCommand, listAgentsCommand } from "./commands/agent.js";
-import type { Priority, AgentStatus, AgentType } from "./types.js";
+import { listCommand } from "./commands/list.js";
+import { graphCommand } from "./commands/graph.js";
+import { watchCommand } from "./commands/watch.js";
+import type { Priority, AgentStatus, AgentType, TaskStatus } from "./types.js";
 
 const program = new Command();
 
@@ -209,6 +212,70 @@ agent
         status: options.status as AgentStatus | undefined,
         type: options.type as AgentType | undefined,
         verbose: options.verbose,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// List command
+program
+  .command("list")
+  .description("List tasks with filtering")
+  .option("-s, --status <status>", "Filter by status (todo|in_progress|blocked|done)")
+  .option("-p, --priority <priority>", "Filter by priority (urgent|high|medium|low)")
+  .option("-a, --assigned-to <agent>", "Filter by assigned agent")
+  .option("-c, --claimed-by <agent>", "Filter by claiming agent")
+  .option("-t, --tag <tag>", "Filter by tag")
+  .option("-b, --blocked", "Show only blocked tasks")
+  .option("--json", "Output as JSON")
+  .action(async (options) => {
+    try {
+      await listCommand({
+        status: options.status as TaskStatus | undefined,
+        priority: options.priority as Priority | undefined,
+        assignedTo: options.assignedTo,
+        claimedBy: options.claimedBy,
+        tag: options.tag,
+        blocked: options.blocked,
+        json: options.json,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Graph command
+program
+  .command("graph")
+  .description("Visualize task dependencies")
+  .option("-f, --format <format>", "Output format (ascii|mermaid)", "ascii")
+  .option("--show-done", "Include completed tasks")
+  .action(async (options) => {
+    try {
+      await graphCommand({
+        format: options.format as "ascii" | "mermaid",
+        showDone: options.showDone,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Watch command
+program
+  .command("watch")
+  .description("Watch TICK.md for changes in real-time")
+  .option("-i, --interval <seconds>", "Polling interval in seconds", "5")
+  .option("-f, --filter <status>", "Filter by status (todo|in_progress|blocked|done)")
+  .action(async (options) => {
+    try {
+      await watchCommand({
+        interval: parseInt(options.interval),
+        filter: options.filter as TaskStatus | undefined,
       });
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);

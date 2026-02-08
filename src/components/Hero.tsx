@@ -98,7 +98,7 @@ export function Hero() {
             Get Started — Free
           </a>
           <a
-            href="#protocol"
+            href="/docs/protocol"
             className="px-8 py-3.5 border border-[var(--color-border)] text-[var(--color-text)] font-semibold text-base rounded-lg hover:border-[var(--color-accent)]/40 transition-colors"
           >
             Read the Protocol ↓

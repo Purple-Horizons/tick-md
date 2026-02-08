@@ -1,0 +1,48 @@
+{
+  "name": "tick-coordination",
+  "version": "1.0.0",
+  "summary": "Multi-agent task coordination using Git-backed Markdown files",
+  "description": "Coordinate work across human and AI agents using the Tick protocol. Maintain structured task tracking in TICK.md files while enabling natural conversation. Supports CLI and MCP server for programmatic access.",
+  "author": "Purple Horizons",
+  "tags": [
+    "coordination",
+    "tasks",
+    "agents",
+    "git",
+    "markdown",
+    "project-management",
+    "multi-agent",
+    "mcp",
+    "workflow"
+  ],
+  "homepage": "https://tick-md.dev",
+  "repository": "https://github.com/your-org/tick-md",
+  "license": "MIT",
+  "requirements": {
+    "runtime": "node >=18",
+    "packages": ["tick-md", "tick-mcp-server"]
+  },
+  "capabilities": [
+    "Task creation and management",
+    "Agent registration and coordination",
+    "Dependency tracking and visualization",
+    "Real-time task monitoring",
+    "Git-based version control",
+    "MCP server integration",
+    "Natural language task coordination"
+  ],
+  "examples": [
+    {
+      "title": "Create and claim a task",
+      "code": "tick add \"Build user login\" --priority high --tags auth,frontend\ntick agent register @bot --type bot --roles engineer\ntick claim TASK-001 @bot"
+    },
+    {
+      "title": "Monitor project in real-time",
+      "code": "tick watch --interval 5"
+    },
+    {
+      "title": "Visualize dependencies",
+      "code": "tick graph --format mermaid"
+    }
+  ]
+}

@@ -31,7 +31,7 @@ export function GetStarted() {
               ★ Star on GitHub
             </a>
             <a
-              href="#protocol"
+              href="/docs"
               className="px-7 py-3 border border-[var(--color-border)] text-[var(--color-text)] font-semibold text-sm rounded-lg hover:border-[var(--color-accent)]/40 transition-colors"
             >
               Read the Docs
