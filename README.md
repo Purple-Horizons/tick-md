@@ -2,10 +2,15 @@
 
 **Multi-agent task coordination via Git-backed Markdown**
 
-[![npm version](https://badge.fury.io/js/tick-md.svg)](https://www.npmjs.com/package/tick-md)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![npm version](https://img.shields.io/npm/v/tick-md.svg?style=flat-square&color=a78bfa)](https://www.npmjs.com/package/tick-md)
+[![npm downloads](https://img.shields.io/npm/dm/tick-md.svg?style=flat-square&color=a78bfa)](https://www.npmjs.com/package/tick-md)
+[![MCP Server](https://img.shields.io/npm/v/tick-mcp-server.svg?style=flat-square&label=mcp-server&color=7c3aed)](https://www.npmjs.com/package/tick-mcp-server)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://opensource.org/licenses/MIT)
+[![GitHub stars](https://img.shields.io/github/stars/Purple-Horizons/tick-md?style=flat-square&color=a78bfa)](https://github.com/Purple-Horizons/tick-md)
 
 Coordinate work across human and AI agents using structured TICK.md files. Built on Git, designed for natural language interaction, optimized for multi-agent workflows.
+
+> **100% open source.** Protocol, CLI, dashboard, MCP server — all free forever.
 
 ## ✨ Features
 
@@ -251,7 +256,8 @@ Built with:
 
 ## 🔗 Links
 
-- **Website**: https://tick-md.dev (coming soon)
+- **Website**: [tick-md.vercel.app](https://tick-md.vercel.app)
+- **npm**: [tick-md](https://www.npmjs.com/package/tick-md) · [tick-mcp-server](https://www.npmjs.com/package/tick-mcp-server)
 - **Documentation**: [Full Docs](cli/README.md)
 - **Issues**: [GitHub Issues](https://github.com/Purple-Horizons/tick-md/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/Purple-Horizons/tick-md/discussions)
@@ -261,6 +267,13 @@ Built with:
 - Share your workflows and integrations
 - Ask questions in Discussions
 - Join the coordination revolution!
+
+## ❤️ Support
+
+TICK.md is 100% free and open source. If it helps you, consider supporting development:
+
+- [Sponsor on GitHub](https://github.com/sponsors/Purple-Horizons)
+- ⭐ Star this repo
 
 ---
 

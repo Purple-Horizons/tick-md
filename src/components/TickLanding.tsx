@@ -378,33 +378,22 @@ function Pricing() {
   const plans = [
     {
       name: "Open Source", price: "Free", period: "forever",
-      desc: "The full protocol and CLI. Build your own tools.",
-      features: ["TICK protocol spec", "CLI tool (tick)", "JSON Schema validation", "Git integration", "Claude / MCP skill", "DIY dashboard", "Community support"],
+      desc: "Everything. Protocol, CLI, dashboard, MCP server. No limits.",
+      features: ["TICK protocol spec", "CLI tool (tick)", "Self-hosted dashboard", "MCP server for AI agents", "JSON Schema validation", "Git integration", "Real-time file watching", "Community support"],
       cta: "Get Started",
-      ctaStyle: { background: "transparent", color: C.text, border: `1px solid ${C.border}` },
+      ctaStyle: { background: C.accent, color: C.bg, border: "none" },
       ctaLink: "/#get-started",
-      highlight: false,
+      highlight: true,
       disabled: false,
     },
     {
-      name: "Solo", price: "$79", period: "lifetime",
-      desc: "Self-hosted dashboard license. Pay once, own forever.",
-      features: ["Full dashboard source code", "License key authentication", "Lifetime updates", "Priority support (1 year)", "Custom branding & theming", "Deploy to your infrastructure", "No recurring fees"],
+      name: "TICK Cloud", price: "$15", period: "/month",
+      desc: "Hosted dashboard for teams. Zero setup, always on.",
+      features: ["Everything in Open Source", "Hosted infrastructure", "Real-time sync across agents", "Team collaboration (5 seats)", "Webhook notifications", "Priority support", "No setup required"],
       cta: "Coming Soon",
       ctaStyle: { background: "transparent", color: C.textMuted, border: `1px solid ${C.border}` },
       ctaLink: "#",
       highlight: false,
-      disabled: true,
-      badge: "SOON",
-    },
-    {
-      name: "Cloud", price: "$15", period: "/month",
-      desc: "Hosted dashboard with real-time sync for teams.",
-      features: ["Everything in Solo", "Hosted infrastructure", "Real-time sync", "Team collaboration (5 seats)", "Webhook notifications", "Priority support", "No setup required"],
-      cta: "Coming Soon",
-      ctaStyle: { background: "transparent", color: C.textMuted, border: `1px solid ${C.border}` },
-      ctaLink: "#",
-      highlight: true,
       disabled: true,
       badge: "SOON",
     },
@@ -417,10 +406,10 @@ function Pricing() {
           Pricing
         </div>
         <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 42, color: C.white, textAlign: "center", marginBottom: 12 }}>
-          Protocol is free. Forever.
+          100% open source. Free forever.
         </h2>
         <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 17, color: C.textDim, textAlign: "center", maxWidth: 500, margin: "0 auto 56px" }}>
-          Pay only if you want the hosted dashboard or a licensed copy to self-host.
+          Everything you need to coordinate agents and humans. Cloud hosting coming soon for teams who want zero setup.
         </p>
       </FadeIn>
 
@@ -481,6 +470,25 @@ function Pricing() {
           </FadeIn>
         ))}
       </div>
+
+      {/* Sponsor CTA */}
+      <FadeIn delay={0.3}>
+        <div style={{ textAlign: "center", marginTop: 48, padding: "32px 24px", background: C.bgSurface, border: `1px solid ${C.border}`, borderRadius: 16 }}>
+          <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: C.textDim, margin: "0 0 16px" }}>
+            Love TICK? Help us keep building.
+          </p>
+          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
+            <a href="https://github.com/sponsors/Purple-Horizons" style={{ padding: "10px 24px", background: "transparent", color: C.accent, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 14,
+              borderRadius: 8, textDecoration: "none", border: `1px solid ${C.accent}40`, transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: 8 }}>
+              ♥ Sponsor on GitHub
+            </a>
+            <a href="https://buymeacoffee.com/purplehorizons" style={{ padding: "10px 24px", background: "transparent", color: C.text, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 14,
+              borderRadius: 8, textDecoration: "none", border: `1px solid ${C.border}`, transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: 8 }}>
+              ☕ Buy us a coffee
+            </a>
+          </div>
+        </div>
+      </FadeIn>
     </section>
   );
 }
