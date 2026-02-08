@@ -32,7 +32,7 @@ function Sidebar({ pathname, onNav }: { pathname: string; onNav?: () => void }) 
           display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
           <svg width="14" height="14" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#0a0a0f" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </div>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: C.white }}>tick.md</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: C.white }}>TICK.md</span>
       </Link>
 
       <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: C.textMuted, letterSpacing: 1.5, textTransform: "uppercase", marginBottom: 8 }}>
@@ -130,7 +130,7 @@ export default function DocsLayout({ children }: { children: ReactNode }) {
             display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
             <svg width="14" height="14" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#0a0a0f" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
           </div>
-          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: C.white }}>tick.md</span>
+          <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, fontWeight: 700, color: C.white }}>TICK.md</span>
           <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 10, color: C.textMuted, letterSpacing: 1, textTransform: "uppercase" }}>docs</span>
         </Link>
         <button
