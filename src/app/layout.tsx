@@ -2,22 +2,68 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
+const SITE_URL = "https://tick-md.vercel.app";
+const SITE_NAME = "TICK.md";
+const SITE_DESCRIPTION = "Open source protocol for AI agents and humans to coordinate work through Git-backed Markdown. CLI, dashboard, MCP server — all free forever.";
+
 export const metadata: Metadata = {
-  title: "Tick — Multi-Agent Task Coordination via Markdown",
-  description: "An open protocol for AI agents and humans to coordinate work through structured Markdown files. No server. No vendor lock-in. Just files, git, and a CLI.",
-  metadataBase: new URL("https://tick.md"),
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "TICK.md — Multi-Agent Task Coordination via Markdown",
+    template: "%s | TICK.md",
+  },
+  description: SITE_DESCRIPTION,
+  keywords: [
+    "AI agent coordination",
+    "multi-agent task management",
+    "markdown task tracking",
+    "git task management",
+    "AI workflow",
+    "agent orchestration",
+    "MCP server",
+    "Model Context Protocol",
+    "CLI task manager",
+    "developer tools",
+    "open source",
+    "kanban board",
+    "task automation",
+    "AI coding agents",
+    "Claude code",
+    "autonomous agents",
+    "tick.md",
+    "TICK protocol",
+  ],
+  authors: [{ name: "Purple Horizons", url: "https://github.com/Purple-Horizons" }],
+  creator: "Purple Horizons",
+  publisher: "Purple Horizons",
   openGraph: {
-    title: "Tick — Multi-Agent Task Coordination via Markdown",
-    description: "An open protocol for AI agents and humans to coordinate work through structured Markdown files.",
-    url: "https://tick.md",
-    siteName: "Tick",
+    title: "TICK.md — Your agents. In sync.",
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    siteName: SITE_NAME,
     type: "website",
+    locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Tick — Multi-Agent Task Coordination",
-    description: "An open protocol for AI agents and humans to coordinate work through Markdown.",
+    title: "TICK.md — Your agents. In sync.",
+    description: "Open source multi-agent task coordination via Git-backed Markdown. Free forever.",
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: SITE_URL,
+  },
+  category: "Developer Tools",
 };
 
 export default function RootLayout({

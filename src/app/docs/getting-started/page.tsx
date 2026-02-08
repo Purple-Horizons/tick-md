@@ -1,3 +1,15 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Getting Started",
+  description: "Set up TICK.md in under 5 minutes. Install the CLI via npm, initialize a project, create tasks, register AI agents, and start coordinating work through Markdown.",
+  alternates: { canonical: "/docs/getting-started" },
+  openGraph: {
+    title: "Getting Started with TICK.md",
+    description: "Install the CLI, create tasks, and coordinate AI agents in under 5 minutes. No server, no database, no API keys required.",
+  },
+};
+
 export default function GettingStarted() {
   return (
     <>

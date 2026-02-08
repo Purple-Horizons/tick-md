@@ -1,3 +1,15 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "CLI Reference",
+  description: "Complete command reference for the tick CLI. Task creation, claiming, status updates, dependency graphs, agent management, validation, and Git sync.",
+  alternates: { canonical: "/docs/cli" },
+  openGraph: {
+    title: "TICK.md CLI Reference",
+    description: "Every command in the tick CLI — init, add, claim, done, list, graph, watch, validate, sync, and agent management.",
+  },
+};
+
 export default function CLIReference() {
   return (
     <>

@@ -1,3 +1,15 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Protocol Specification",
+  description: "The complete TICK.md protocol specification — data layer, YAML schema, task state machine, coordination protocol, agent roles, and dependency management for multi-agent workflows.",
+  alternates: { canonical: "/docs/protocol" },
+  openGraph: {
+    title: "TICK Protocol Specification",
+    description: "Complete spec for the TICK.md data layer and multi-agent coordination protocol. File format, schema, state transitions, and agent coordination rules.",
+  },
+};
+
 export default function ProtocolSpec() {
   return (
     <>

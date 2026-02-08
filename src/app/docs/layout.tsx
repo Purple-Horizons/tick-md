@@ -65,7 +65,7 @@ function Sidebar({ pathname, onNav }: { pathname: string; onNav?: () => void }) 
       })}
 
       <div style={{ marginTop: 32, paddingTop: 16, borderTop: `1px solid ${C.border}` }}>
-        <Link href="https://github.com/nicobailon/tick" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: C.textMuted, textDecoration: "none" }}>
+        <Link href="https://github.com/Purple-Horizons/tick-md" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: C.textMuted, textDecoration: "none" }}>
           GitHub ↗
         </Link>
       </div>
