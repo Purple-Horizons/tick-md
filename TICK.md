@@ -3,10 +3,10 @@ project: tick-md
 title: Tick.md - Multi-Agent Coordination Protocol
 schema_version: "1.0"
 created: Sun Feb 01 2026 09:00:00 GMT-0500 (Eastern Standard Time)
-updated: 2026-02-08T01:14:38.477Z
+updated: 2026-02-08T04:10:00.000Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 23
+next_id: 24
 ---
 
 ## Agents
@@ -98,3 +98,28 @@ history:
     from: backlog
     to: done
 ```
+
+### TASK-023 · Build native ClawHub plugin (kind: plugin)
+
+```yaml
+id: TASK-023
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@gianni"
+created_at: 2026-02-08T04:10:00.000Z
+updated_at: 2026-02-08T04:10:00.000Z
+tags:
+  - clawhub
+  - plugin
+  - enhancement
+depends_on: []
+blocks: []
+history:
+  - ts: 2026-02-08T04:10:00.000Z
+    who: "@gianni"
+    action: created
+```
+
+> Create a native ClawHub plugin that registers tick tools directly instead of requiring separate npm install of tick-mcp-server. This would make it cleaner for OpenClaw bots - they'd get the tools built-in rather than needing external dependencies. Currently we're `kind: skill` (bot follows instructions to install), but a `kind: plugin` would provide the tools natively.
