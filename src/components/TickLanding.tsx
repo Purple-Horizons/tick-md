@@ -66,7 +66,7 @@ function FadeIn({ children, delay = 0, direction = "up" }: { children: ReactNode
 function Hero() {
   const [agentStates, setAgentStates] = useState([
     { name: "@claude-code", status: "working", task: "TASK-007" },
-    { name: "@content-bot", status: "working", task: "TASK-012" },
+    { name: "@openclaw", status: "working", task: "TASK-012" },
     { name: "@qa-bot", status: "idle", task: null as string | null },
     { name: "@gianni", status: "working", task: "TASK-003" },
   ]);
