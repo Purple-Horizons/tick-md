@@ -38,8 +38,34 @@ const STATUS_COLORS: Record<string, string> = {
   reopened: "var(--color-info)",
 };
 
-function KanbanColumn({ status, tasks }: { status: string; tasks: Task[] }) {
+function KanbanColumn({ status, tasks, collapsed, onToggle }: { status: string; tasks: Task[]; collapsed: boolean; onToggle: () => void }) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
+
+  if (collapsed) {
+    return (
+      <div
+        ref={setNodeRef}
+        className="flex-shrink-0 w-16 flex flex-col md:h-full border border-[var(--color-border)] rounded-xl bg-[var(--color-bg-surface)]/30"
+      >
+        <button
+          onClick={onToggle}
+          className="flex flex-col items-center gap-2 px-2 py-3 hover:bg-[var(--color-bg-surface)] transition-colors rounded-xl group w-full"
+        >
+          <div className="flex items-center gap-2">
+            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: STATUS_COLORS[status] }} />
+            <span className="font-mono text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-surface)] px-1.5 py-0.5 rounded">
+              {tasks.length}
+            </span>
+          </div>
+          <span className="font-sans text-xs font-semibold text-[var(--color-text-muted)] writing-mode-vertical rotate-180 group-hover:text-[var(--color-text)] transition-colors"
+            style={{ writingMode: "vertical-rl" }}>
+            {STATUS_LABELS[status] || status}
+          </span>
+          <span className="text-[var(--color-text-muted)] text-xs group-hover:text-[var(--color-accent)] transition-colors">→</span>
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div
@@ -57,9 +83,18 @@ function KanbanColumn({ status, tasks }: { status: string; tasks: Task[] }) {
             {STATUS_LABELS[status] || status}
           </span>
         </div>
-        <span className="font-mono text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-surface)] px-1.5 py-0.5 rounded">
-          {tasks.length}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="font-mono text-xs text-[var(--color-text-muted)] bg-[var(--color-bg-surface)] px-1.5 py-0.5 rounded">
+            {tasks.length}
+          </span>
+          <button
+            onClick={onToggle}
+            className="text-[var(--color-text-muted)] hover:text-[var(--color-text)] text-sm transition-colors"
+            title="Collapse column"
+          >
+            ←
+          </button>
+        </div>
       </div>
 
       {/* Cards */}
@@ -91,10 +126,23 @@ export default function KanbanBoard() {
   const { tasks, workflow, moveTask, selectedTaskId, setSelectedTask } = store;
   const [activeId, setActiveId] = useState<string | null>(null);
   const [mobileStatus, setMobileStatus] = useState<string>("all");
+  const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set(["done"])); // Default collapse "done"
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
   );
+
+  const toggleColumn = (status: string) => {
+    setCollapsedColumns((prev) => {
+      const next = new Set(prev);
+      if (next.has(status)) {
+        next.delete(status);
+      } else {
+        next.add(status);
+      }
+      return next;
+    });
+  };
 
   const tasksByStatus = useMemo(() => {
     const grouped: Record<string, Task[]> = {};
@@ -209,7 +257,13 @@ export default function KanbanBoard() {
       >
         <div className="hidden md:flex flex-1 gap-3 lg:gap-4 p-4 lg:p-6 overflow-x-auto">
           {visibleStatuses.map((status) => (
-            <KanbanColumn key={status} status={status} tasks={tasksByStatus[status] || []} />
+            <KanbanColumn 
+              key={status} 
+              status={status} 
+              tasks={tasksByStatus[status] || []} 
+              collapsed={collapsedColumns.has(status)}
+              onToggle={() => toggleColumn(status)}
+            />
           ))}
         </div>
 
