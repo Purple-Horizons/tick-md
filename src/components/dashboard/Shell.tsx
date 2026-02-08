@@ -192,10 +192,10 @@ export default function Shell({ children, isDemo = false }: { children: React.Re
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
             {isDemo && (
               <Link
-                href="/#get-started"
+                href="/#pricing"
                 className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-md bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 text-[var(--color-accent)] text-xs font-sans no-underline hover:bg-[var(--color-accent)]/20 transition-colors"
               >
-                <span>Install TICK.md</span>
+                <span>Buy Solo — Lifetime</span>
                 <span>→</span>
               </Link>
             )}
@@ -215,7 +215,7 @@ export default function Shell({ children, isDemo = false }: { children: React.Re
         {isDemo && showDemoBanner && (
           <div className="flex items-center justify-between px-4 py-2 bg-[var(--color-accent)]/5 border-b border-[var(--color-accent)]/20">
             <p className="font-sans text-xs text-[var(--color-text-muted)] m-0">
-              This is a demo with simulated data. <Link href="/" className="text-[var(--color-accent)] underline">Install TICK</Link> to use with your own projects.
+              This is a simulated demo. <Link href="/#pricing" className="text-[var(--color-accent)] underline">Get Solo lifetime license</Link> for your own projects.
             </p>
             <button
               onClick={() => setShowDemoBanner(false)}
