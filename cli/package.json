@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "node --test",
+    "test": "node --test test/parser.test.js test/validator.test.js test/e2e-workflow.test.js test/mcp-tools.test.js",
     "prepublishOnly": "npm run build"
   },
   "keywords": [
