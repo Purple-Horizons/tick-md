@@ -495,11 +495,31 @@ function GetStarted() {
           <h2 style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 36, color: C.white, marginBottom: 16 }}>
             Start ticking in 30 seconds
           </h2>
-          <div style={{ background: C.bgCode, border: `1px solid ${C.border}`, borderRadius: 8, padding: "16px 24px", margin: "24px 0", textAlign: "left" }}>
-            <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: C.accent }}>
-              npx tick-md init
-            </code>
+          
+          <div style={{ display: "flex", flexDirection: "column", gap: 16, margin: "24px 0" }}>
+            <div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: C.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: 1.5 }}>
+                Via npm
+              </div>
+              <div style={{ background: C.bgCode, border: `1px solid ${C.border}`, borderRadius: 8, padding: "16px 24px", textAlign: "left" }}>
+                <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: C.accent }}>
+                  npx tick-md init
+                </code>
+              </div>
+            </div>
+            
+            <div>
+              <div style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 11, color: C.textMuted, marginBottom: 8, textTransform: "uppercase", letterSpacing: 1.5 }}>
+                Via ClawHub (for OpenClaw bots)
+              </div>
+              <div style={{ background: C.bgCode, border: `1px solid ${C.border}`, borderRadius: 8, padding: "16px 24px", textAlign: "left" }}>
+                <code style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: C.accent }}>
+                  clawhub install tick-md
+                </code>
+              </div>
+            </div>
           </div>
+          
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 15, color: C.textDim, lineHeight: 1.6, marginBottom: 24 }}>
             That&apos;s it. You now have a TICK.md file, a .tick/ config directory, and a CLI ready to go. Add tasks, point your agents at it, and watch them coordinate.
           </p>
