@@ -477,16 +477,10 @@ function Pricing() {
           <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 16, color: C.textDim, margin: "0 0 16px" }}>
             Love TICK? Help us keep building.
           </p>
-          <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="https://github.com/sponsors/Purple-Horizons" style={{ padding: "10px 24px", background: "transparent", color: C.accent, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 14,
-              borderRadius: 8, textDecoration: "none", border: `1px solid ${C.accent}40`, transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: 8 }}>
-              ♥ Sponsor on GitHub
-            </a>
-            <a href="https://buymeacoffee.com/purplehorizons" style={{ padding: "10px 24px", background: "transparent", color: C.text, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 14,
-              borderRadius: 8, textDecoration: "none", border: `1px solid ${C.border}`, transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: 8 }}>
-              ☕ Buy us a coffee
-            </a>
-          </div>
+          <a href="https://github.com/sponsors/Purple-Horizons" style={{ padding: "10px 24px", background: "transparent", color: C.accent, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 14,
+            borderRadius: 8, textDecoration: "none", border: `1px solid ${C.accent}40`, transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: 8 }}>
+            ♥ Sponsor on GitHub
+          </a>
         </div>
       </FadeIn>
     </section>
