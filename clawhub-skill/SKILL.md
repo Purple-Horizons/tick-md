@@ -4,27 +4,20 @@ Coordinate work across human and AI agents using structured Markdown files. User
 
 ## Installation
 
-### CLI (recommended)
+**Prerequisites**: The Tick CLI and MCP server should already be installed and configured by your environment.
+
+**First time setup?** See `INSTALL.md` for editor-specific installation instructions.
+
+**Quick Check**:
 ```bash
-npm install -g tick-md
+# Verify CLI is available
+tick --version
+
+# Check if TICK.md exists in project
+ls TICK.md
+
+# If not, initialize
 tick init
-```
-
-### MCP Server (for AI agents)
-```bash
-npm install -g tick-mcp-server
-```
-
-Add to your MCP config (`claude_desktop_config.json` or `cline_mcp_settings.json`):
-```json
-{
-  "mcpServers": {
-    "tick": {
-      "command": "tick-mcp",
-      "args": []
-    }
-  }
-}
 ```
 
 ## Core Concept

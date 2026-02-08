@@ -118,7 +118,7 @@ function Hero() {
             borderRadius: 8, textDecoration: "none", transition: "all 0.2s", border: "none" }}>
             Get Started — Free
           </a>
-          <a href="#protocol" style={{ padding: "14px 32px", background: "transparent", color: C.text, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 16,
+          <a href="/docs/protocol" style={{ padding: "14px 32px", background: "transparent", color: C.text, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 16,
             borderRadius: 8, textDecoration: "none", border: `1px solid ${C.border}`, transition: "all 0.2s" }}>
             Read the Protocol ↓
           </a>
@@ -470,7 +470,7 @@ function GetStarted() {
               borderRadius: 8, textDecoration: "none" }}>
               ★ Star on GitHub
             </a>
-            <a href="#protocol" style={{ padding: "12px 28px", background: "transparent", color: C.text, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 15,
+            <a href="/docs" style={{ padding: "12px 28px", background: "transparent", color: C.text, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 15,
               borderRadius: 8, textDecoration: "none", border: `1px solid ${C.border}` }}>
               Read the Docs
             </a>
@@ -531,7 +531,7 @@ export default function TickLanding() {
             <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, color: C.white, whiteSpace: "nowrap" }}>tick.md</span>
           </a>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
-            <a className="nav-link-desktop" href="#protocol" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>Protocol</a>
+            <a className="nav-link-desktop" href="/docs/protocol" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>Protocol</a>
             <a className="nav-link-desktop" href="#pricing" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>Pricing</a>
             <a className="nav-link-desktop" href="https://github.com/nicobailon/tick" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>GitHub</a>
             <a href="#get-started" style={{ padding: "8px 18px", background: C.accent, color: C.bg, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 13,

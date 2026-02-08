@@ -8,7 +8,7 @@ ClawHub-ready skill package for multi-agent task coordination.
 clawhub-skill/
 ├── SKILL.md              # Main skill documentation (ClawHub displays this)
 ├── skill.json            # Metadata for ClawHub registry
-├── quick-setup.md        # Installation and first-time setup
+├── INSTALL.md            # Installation and editor setup
 ├── mcp-reference.md      # Complete MCP tools reference
 ├── CHANGELOG.md          # Version history
 └── README.md             # This file
@@ -84,9 +84,9 @@ clawhub install tick-coordination
 ## What Gets Published
 
 When you run `clawhub publish`, these files are included:
-- ✅ `SKILL.md` - Main documentation (required)
+- ✅ `SKILL.md` - Main documentation (required, editor-agnostic)
 - ✅ `skill.json` - Metadata (required)
-- ✅ `quick-setup.md` - Setup guide
+- ✅ `INSTALL.md` - Installation guide (editor-specific setup)
 - ✅ `mcp-reference.md` - API reference
 - ✅ `CHANGELOG.md` - Version history
 - ✅ `README.md` - Package info

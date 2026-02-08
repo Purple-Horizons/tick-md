@@ -1,6 +1,8 @@
 # Quick Setup Guide
 
-## For OpenClaw/Cursor Users
+## For End Users (Installation)
+
+**Note**: This is an installation guide. Once installed, the skill teaches your AI agent how to coordinate tasks - no editor-specific code needed.
 
 ### Step 1: Install CLI
 ```bash
@@ -12,9 +14,10 @@ npm install -g tick-md
 npm install -g tick-mcp-server
 ```
 
-### Step 3: Configure MCP
+### Step 3: Configure MCP (Editor-Specific)
 
-**For Cursor** (`~/.cursor/mcp_config.json`):
+The configuration varies by editor. Add this to your editor's MCP config file:
+
 ```json
 {
   "mcpServers": {
@@ -26,29 +29,12 @@ npm install -g tick-mcp-server
 }
 ```
 
-**For Claude Desktop** (`~/Library/Application Support/Claude/claude_desktop_config.json`):
-```json
-{
-  "mcpServers": {
-    "tick": {
-      "command": "tick-mcp",
-      "args": []
-    }
-  }
-}
-```
-
-**For Cline** (`.vscode/cline_mcp_settings.json`):
-```json
-{
-  "mcpServers": {
-    "tick": {
-      "command": "tick-mcp",
-      "args": []
-    }
-  }
-}
-```
+**Config file locations**:
+- **Cursor**: `~/.cursor/mcp_config.json`
+- **Claude Code** (VS Code): `.vscode/claude_code_config.json` in your project
+- **Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Cline**: `.vscode/cline_mcp_settings.json`
+- **Other**: Check your editor's MCP documentation
 
 ### Step 4: Initialize Project
 ```bash
