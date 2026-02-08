@@ -115,10 +115,10 @@ function Hero() {
 
       <FadeIn delay={0.3}>
         <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", marginBottom: 64 }}>
-          <a href="#get-started" style={{ padding: "14px 32px", background: C.accent, color: C.bg, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 16,
-            borderRadius: 8, textDecoration: "none", transition: "all 0.2s", border: "none" }}>
+          <Link href="/#get-started" style={{ padding: "14px 32px", background: C.accent, color: C.bg, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 16,
+            borderRadius: 8, textDecoration: "none", transition: "all 0.2s", border: "none", display: "inline-block" }}>
             Get Started — Free
-          </a>
+          </Link>
           <Link href="/dashboard-demo" style={{ padding: "14px 32px", background: "transparent", color: C.text, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 16,
             borderRadius: 8, textDecoration: "none", border: `1px solid ${C.border}`, transition: "all 0.2s", display: "inline-block" }}>
             Try Live Demo →
@@ -382,23 +382,31 @@ function Pricing() {
       features: ["TICK protocol spec", "CLI tool (tick)", "JSON Schema validation", "Git integration", "Claude / MCP skill", "DIY dashboard", "Community support"],
       cta: "Get Started",
       ctaStyle: { background: "transparent", color: C.text, border: `1px solid ${C.border}` },
+      ctaLink: "/#get-started",
       highlight: false,
+      disabled: false,
     },
     {
-      name: "TICK Cloud", price: "$12", period: "/month",
-      desc: "Hosted dashboard with real-time sync for your team.",
-      features: ["Everything in Free", "Hosted Kanban dashboard", "Real-time agent monitor", "Activity feed & analytics", "Dependency graph view", "Webhook notifications", "Team collaboration (5 seats)", "Priority support"],
-      cta: "Start Free Trial",
-      ctaStyle: { background: C.accent, color: C.bg, border: "none" },
+      name: "Solo", price: "$79", period: "lifetime",
+      desc: "Self-hosted dashboard license. Pay once, own forever.",
+      features: ["Full dashboard source code", "License key authentication", "Lifetime updates", "Priority support (1 year)", "Custom branding & theming", "Deploy to your infrastructure", "No recurring fees"],
+      cta: "Coming Soon",
+      ctaStyle: { background: "transparent", color: C.textMuted, border: `1px solid ${C.border}` },
+      ctaLink: "#",
+      highlight: false,
+      disabled: true,
+      badge: "SOON",
+    },
+    {
+      name: "Cloud", price: "$15", period: "/month",
+      desc: "Hosted dashboard with real-time sync for teams.",
+      features: ["Everything in Solo", "Hosted infrastructure", "Real-time sync", "Team collaboration (5 seats)", "Webhook notifications", "Priority support", "No setup required"],
+      cta: "Coming Soon",
+      ctaStyle: { background: "transparent", color: C.textMuted, border: `1px solid ${C.border}` },
+      ctaLink: "#",
       highlight: true,
-    },
-    {
-      name: "Lifetime", price: "$149", period: "one-time",
-      desc: "Self-hosted dashboard with license key. Pay once, own forever.",
-      features: ["Full dashboard source code", "License key authentication", "Lifetime updates", "Priority support (1 year)", "Custom branding & theming", "White-label ready", "Deploy to your infrastructure", "No recurring fees"],
-      cta: "Buy Lifetime",
-      ctaStyle: { background: "transparent", color: C.text, border: `1px solid ${C.border}` },
-      highlight: false,
+      disabled: true,
+      badge: "SOON",
     },
   ];
 
@@ -426,6 +434,22 @@ function Pricing() {
               boxShadow: p.highlight ? `0 0 40px ${C.accentGlow2}` : "none",
             }}>
               {p.highlight && <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: 3, background: `linear-gradient(90deg, ${C.accent}, ${C.accentDim})` }} />}
+              {p.badge && (
+                <div style={{ 
+                  position: "absolute", top: 16, right: 16, 
+                  background: C.accent + "20", 
+                  border: `1px solid ${C.accent}40`,
+                  color: C.accent, 
+                  padding: "4px 10px", 
+                  borderRadius: 6, 
+                  fontFamily: "'JetBrains Mono', monospace", 
+                  fontSize: 11, 
+                  fontWeight: 700,
+                  letterSpacing: 1
+                }}>
+                  {p.badge}
+                </div>
+              )}
               <h3 style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 18, fontWeight: 700, color: C.white, marginBottom: 8 }}>{p.name}</h3>
               <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 4 }}>
                 <span style={{ fontFamily: "'Instrument Serif', Georgia, serif", fontSize: 44, color: C.white }}>{p.price}</span>
@@ -441,11 +465,15 @@ function Pricing() {
                 ))}
               </div>
               <a
-                href={p.name === "TICK Cloud" ? "/dashboard-demo" : "#get-started"}
+                href={p.ctaLink}
                 style={{
                   display: "block", width: "100%", padding: "12px 0", borderRadius: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 15,
-                  textDecoration: "none", textAlign: "center", transition: "all 0.2s", ...p.ctaStyle
+                  textDecoration: "none", textAlign: "center", transition: "all 0.2s", 
+                  cursor: p.disabled ? "not-allowed" : "pointer",
+                  opacity: p.disabled ? 0.6 : 1,
+                  ...p.ctaStyle
                 }}
+                onClick={p.disabled ? (e) => e.preventDefault() : undefined}
               >
                 {p.cta}
               </a>
