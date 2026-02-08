@@ -378,8 +378,8 @@ function Pricing() {
   const plans = [
     {
       name: "Open Source", price: "Free", period: "forever",
-      desc: "The full protocol, CLI, and self-hosted dashboard.",
-              features: ["TICK protocol spec", "CLI tool (tick)", "JSON Schema validation", "Git integration", "Claude / MCP skill", "Self-host dashboard", "Community support"],
+      desc: "The full protocol and CLI. Build your own tools.",
+      features: ["TICK protocol spec", "CLI tool (tick)", "JSON Schema validation", "Git integration", "Claude / MCP skill", "DIY dashboard", "Community support"],
       cta: "Get Started",
       ctaStyle: { background: "transparent", color: C.text, border: `1px solid ${C.border}` },
       highlight: false,
@@ -394,8 +394,8 @@ function Pricing() {
     },
     {
       name: "Lifetime", price: "$149", period: "one-time",
-      desc: "Pay once, use forever. Self-hosted dashboard license.",
-      features: ["Everything in Free", "Dashboard source code", "Lifetime updates", "Priority support (1 year)", "Custom branding", "Unlimited agents", "Deploy anywhere"],
+      desc: "Self-hosted dashboard with license key. Pay once, own forever.",
+      features: ["Full dashboard source code", "License key authentication", "Lifetime updates", "Priority support (1 year)", "Custom branding & theming", "White-label ready", "Deploy to your infrastructure", "No recurring fees"],
       cta: "Buy Lifetime",
       ctaStyle: { background: "transparent", color: C.text, border: `1px solid ${C.border}` },
       highlight: false,
