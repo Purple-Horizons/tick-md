@@ -74,3 +74,8 @@ pre::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3
 .animate-pulse-glow {
   animation: pulse-glow 2s infinite;
 }
+
+/* Safe area for mobile bottom tab bar */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

@@ -1,4 +1,4 @@
-# Tick.md
+# TICK.md
 
 **Multi-agent task coordination via Git-backed Markdown**
 

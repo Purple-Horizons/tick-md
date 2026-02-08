@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef, ReactNode } from "react";
+import Link from "next/link";
 
 const C = {
   bg: "#0a0a0f",
@@ -118,10 +119,14 @@ function Hero() {
             borderRadius: 8, textDecoration: "none", transition: "all 0.2s", border: "none" }}>
             Get Started — Free
           </a>
-          <a href="/docs/protocol" style={{ padding: "14px 32px", background: "transparent", color: C.text, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 16,
-            borderRadius: 8, textDecoration: "none", border: `1px solid ${C.border}`, transition: "all 0.2s" }}>
-            Read the Protocol ↓
-          </a>
+          <Link href="/dashboard-demo" style={{ padding: "14px 32px", background: "transparent", color: C.text, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 16,
+            borderRadius: 8, textDecoration: "none", border: `1px solid ${C.border}`, transition: "all 0.2s", display: "inline-block" }}>
+            Try Live Demo →
+          </Link>
+          <Link href="/docs/protocol" style={{ padding: "14px 32px", background: "transparent", color: C.text, fontFamily: "'DM Sans', sans-serif", fontWeight: 600, fontSize: 16,
+            borderRadius: 8, textDecoration: "none", border: `1px solid ${C.border}`, transition: "all 0.2s", display: "inline-block" }}>
+            Read the Protocol
+          </Link>
         </div>
       </FadeIn>
 
@@ -374,13 +379,13 @@ function Pricing() {
     {
       name: "Open Source", price: "Free", period: "forever",
       desc: "The full protocol, CLI, and self-hosted dashboard.",
-      features: ["Tick protocol spec", "CLI tool (tick)", "JSON Schema validation", "Git integration", "Claude / MCP skill", "Self-host dashboard", "Community support"],
+              features: ["TICK protocol spec", "CLI tool (tick)", "JSON Schema validation", "Git integration", "Claude / MCP skill", "Self-host dashboard", "Community support"],
       cta: "Get Started",
       ctaStyle: { background: "transparent", color: C.text, border: `1px solid ${C.border}` },
       highlight: false,
     },
     {
-      name: "Tick Cloud", price: "$12", period: "/month",
+      name: "TICK Cloud", price: "$12", period: "/month",
       desc: "Hosted dashboard with real-time sync for your team.",
       features: ["Everything in Free", "Hosted Kanban dashboard", "Real-time agent monitor", "Activity feed & analytics", "Dependency graph view", "Webhook notifications", "Team collaboration (5 seats)", "Priority support"],
       cta: "Start Free Trial",
@@ -435,12 +440,15 @@ function Pricing() {
                   </div>
                 ))}
               </div>
-              <button style={{
-                width: "100%", padding: "12px 0", borderRadius: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 15,
-                cursor: "pointer", transition: "all 0.2s", ...p.ctaStyle
-              }}>
+              <a
+                href={p.name === "TICK Cloud" ? "/dashboard-demo" : "#get-started"}
+                style={{
+                  display: "block", width: "100%", padding: "12px 0", borderRadius: 8, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 15,
+                  textDecoration: "none", textAlign: "center", transition: "all 0.2s", ...p.ctaStyle
+                }}
+              >
                 {p.cta}
-              </button>
+              </a>
             </div>
           </FadeIn>
         ))}
@@ -489,7 +497,7 @@ function FooterSection() {
           display: "flex", alignItems: "center", justifyContent: "center" }}>
           <svg width="14" height="14" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#0a0a0f" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
         </div>
-        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: C.textDim }}>tick.md</span>
+        <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 14, color: C.textDim }}>TICK.md</span>
       </div>
       <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 13, color: C.textMuted, margin: 0 }}>
         Open source protocol by <a href="https://purplehorizons.com" style={{ color: C.accent, textDecoration: "none" }}>Purple Horizons</a> · MIT License · 2026
@@ -528,7 +536,7 @@ export default function TickLanding() {
               display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <svg width="16" height="16" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke="#0a0a0f" strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" /></svg>
             </div>
-            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, color: C.white, whiteSpace: "nowrap" }}>tick.md</span>
+            <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 15, fontWeight: 700, color: C.white, whiteSpace: "nowrap" }}>TICK.md</span>
           </a>
           <div style={{ display: "flex", alignItems: "center", gap: 24 }}>
             <a className="nav-link-desktop" href="/docs/protocol" style={{ fontFamily: "'DM Sans', sans-serif", fontSize: 14, color: C.textDim, textDecoration: "none" }}>Protocol</a>

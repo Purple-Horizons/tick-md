@@ -1,0 +1,300 @@
+import type { Task, Agent, ProjectMeta, TaskStatus, Priority } from "./types";
+
+export const DEMO_PROJECT_META: ProjectMeta = {
+  project: "adgena-demo",
+  title: "AdGena - AI-Powered Ad Platform",
+  schema_version: "1.0",
+  created: "2026-02-01T09:00:00.000Z",
+  updated: "2026-02-07T18:30:00.000Z",
+  default_workflow: ["backlog", "todo", "in_progress", "review", "done"],
+  id_prefix: "TASK",
+  next_id: 109,
+};
+
+export const DEMO_AGENTS: Agent[] = [
+  {
+    name: "@gianni",
+    type: "human",
+    roles: ["product", "design"],
+    status: "working",
+    working_on: null,
+    last_active: "2026-02-07T18:28:00.000Z",
+    trust_level: "owner",
+  },
+  {
+    name: "@openclaw-mia-sdr",
+    type: "bot",
+    roles: ["sales", "outreach"],
+    status: "idle",
+    working_on: null,
+    last_active: "2026-02-07T18:25:00.000Z",
+    trust_level: "trusted",
+  },
+  {
+    name: "@openclaw-rex-social",
+    type: "bot",
+    roles: ["copywriter", "social-media"],
+    status: "idle",
+    working_on: null,
+    last_active: "2026-02-07T18:20:00.000Z",
+    trust_level: "trusted",
+  },
+  {
+    name: "@claude-code",
+    type: "bot",
+    roles: ["engineer", "backend"],
+    status: "idle",
+    working_on: null,
+    last_active: "2026-02-07T18:15:00.000Z",
+    trust_level: "trusted",
+  },
+  {
+    name: "@support-sage",
+    type: "bot",
+    roles: ["support", "documentation"],
+    status: "idle",
+    working_on: null,
+    last_active: "2026-02-07T18:10:00.000Z",
+    trust_level: "trusted",
+  },
+  {
+    name: "@growth-hacker",
+    type: "bot",
+    roles: ["marketing", "analytics"],
+    status: "idle",
+    working_on: null,
+    last_active: "2026-02-07T18:05:00.000Z",
+    trust_level: "trusted",
+  },
+  {
+    name: "@qa-sentinel",
+    type: "bot",
+    roles: ["tester", "qa"],
+    status: "offline",
+    working_on: null,
+    last_active: "2026-02-07T17:45:00.000Z",
+    trust_level: "trusted",
+  },
+];
+
+export const DEMO_TASKS: Task[] = [
+  // Backlog
+  {
+    id: "TASK-101",
+    title: "Design campaign analytics dashboard",
+    status: "backlog",
+    priority: "high",
+    assigned_to: null,
+    claimed_by: null,
+    created_by: "@gianni",
+    created_at: "2026-02-06T10:00:00.000Z",
+    updated_at: "2026-02-06T10:00:00.000Z",
+    tags: ["design", "analytics"],
+    depends_on: [],
+    blocks: [],
+    description: "Wireframe the analytics view with real-time campaign metrics",
+    history: [
+      { ts: "2026-02-06T10:00:00.000Z", who: "@gianni", action: "created" },
+    ],
+  },
+  {
+    id: "TASK-102",
+    title: "Write API documentation",
+    status: "backlog",
+    priority: "medium",
+    assigned_to: null,
+    claimed_by: null,
+    created_by: "@gianni",
+    created_at: "2026-02-06T11:30:00.000Z",
+    updated_at: "2026-02-06T11:30:00.000Z",
+    tags: ["docs", "api"],
+    depends_on: ["TASK-103"],
+    blocks: [],
+    description: "Document all REST endpoints with examples",
+    history: [
+      { ts: "2026-02-06T11:30:00.000Z", who: "@gianni", action: "created" },
+    ],
+  },
+  // Todo
+  {
+    id: "TASK-103",
+    title: "Build auth middleware",
+    status: "todo",
+    priority: "urgent",
+    assigned_to: "@claude-code",
+    claimed_by: null,
+    created_by: "@gianni",
+    created_at: "2026-02-05T14:00:00.000Z",
+    updated_at: "2026-02-05T14:00:00.000Z",
+    tags: ["backend", "security"],
+    depends_on: [],
+    blocks: ["TASK-102", "TASK-104"],
+    description: "JWT validation, rate limiting, role-based access",
+    history: [
+      { ts: "2026-02-05T14:00:00.000Z", who: "@gianni", action: "created" },
+      { ts: "2026-02-05T14:15:00.000Z", who: "@gianni", action: "assigned", note: "Assigned to @claude-code" },
+    ],
+  },
+  {
+    id: "TASK-104",
+    title: "Write API integration tests",
+    status: "todo",
+    priority: "high",
+    assigned_to: "@qa-sentinel",
+    claimed_by: null,
+    created_by: "@gianni",
+    created_at: "2026-02-06T09:00:00.000Z",
+    updated_at: "2026-02-06T09:00:00.000Z",
+    tags: ["testing", "api"],
+    depends_on: ["TASK-103"],
+    blocks: [],
+    description: "E2E tests for all API endpoints",
+    history: [
+      { ts: "2026-02-06T09:00:00.000Z", who: "@gianni", action: "created" },
+    ],
+  },
+  // In Progress
+  {
+    id: "TASK-105",
+    title: "Implement ad targeting algorithm",
+    status: "in_progress",
+    priority: "urgent",
+    assigned_to: null,
+    claimed_by: "@openclaw-mia-sdr",
+    created_by: "@gianni",
+    created_at: "2026-02-04T10:00:00.000Z",
+    updated_at: "2026-02-07T14:20:00.000Z",
+    tags: ["ai", "backend"],
+    depends_on: [],
+    blocks: [],
+    description: "ML-based audience targeting using embeddings",
+    history: [
+      { ts: "2026-02-04T10:00:00.000Z", who: "@gianni", action: "created" },
+      { ts: "2026-02-07T14:20:00.000Z", who: "@openclaw-mia-sdr", action: "claimed" },
+      { ts: "2026-02-07T14:20:00.000Z", who: "@openclaw-mia-sdr", action: "status_change", from: "todo", to: "in_progress" },
+    ],
+  },
+  {
+    id: "TASK-106",
+    title: "Create landing page copy",
+    status: "in_progress",
+    priority: "high",
+    assigned_to: null,
+    claimed_by: "@openclaw-rex-social",
+    created_by: "@gianni",
+    created_at: "2026-02-05T11:00:00.000Z",
+    updated_at: "2026-02-07T15:00:00.000Z",
+    tags: ["content", "marketing"],
+    depends_on: [],
+    blocks: [],
+    description: "Hero, features, pricing sections",
+    history: [
+      { ts: "2026-02-05T11:00:00.000Z", who: "@gianni", action: "created" },
+      { ts: "2026-02-07T15:00:00.000Z", who: "@openclaw-rex-social", action: "claimed" },
+      { ts: "2026-02-07T15:00:00.000Z", who: "@openclaw-rex-social", action: "status_change", from: "todo", to: "in_progress" },
+    ],
+  },
+  // Review
+  {
+    id: "TASK-107",
+    title: "Build user profile page",
+    status: "review",
+    priority: "medium",
+    assigned_to: null,
+    claimed_by: null,
+    created_by: "@gianni",
+    created_at: "2026-02-03T10:00:00.000Z",
+    updated_at: "2026-02-07T16:00:00.000Z",
+    tags: ["frontend", "ux"],
+    depends_on: [],
+    blocks: [],
+    description: "Avatar, bio, connected accounts, settings",
+    history: [
+      { ts: "2026-02-03T10:00:00.000Z", who: "@gianni", action: "created" },
+      { ts: "2026-02-07T14:00:00.000Z", who: "@claude-code", action: "claimed" },
+      { ts: "2026-02-07T14:00:00.000Z", who: "@claude-code", action: "status_change", from: "todo", to: "in_progress" },
+      { ts: "2026-02-07T16:00:00.000Z", who: "@claude-code", action: "completed", from: "in_progress", to: "review" },
+    ],
+  },
+  // Done
+  {
+    id: "TASK-108",
+    title: "Set up CI/CD pipeline",
+    status: "done",
+    priority: "high",
+    assigned_to: null,
+    claimed_by: null,
+    created_by: "@gianni",
+    created_at: "2026-02-02T09:00:00.000Z",
+    updated_at: "2026-02-07T12:00:00.000Z",
+    tags: ["devops", "infrastructure"],
+    depends_on: [],
+    blocks: [],
+    description: "GitHub Actions for test, build, deploy",
+    history: [
+      { ts: "2026-02-02T09:00:00.000Z", who: "@gianni", action: "created" },
+      { ts: "2026-02-06T10:00:00.000Z", who: "@claude-code", action: "claimed" },
+      { ts: "2026-02-06T10:00:00.000Z", who: "@claude-code", action: "status_change", from: "backlog", to: "in_progress" },
+      { ts: "2026-02-06T16:00:00.000Z", who: "@claude-code", action: "completed", from: "in_progress", to: "review" },
+      { ts: "2026-02-07T12:00:00.000Z", who: "@gianni", action: "status_change", from: "review", to: "done" },
+    ],
+  },
+];
+
+// Scripted event timeline for the demo simulation
+export interface DemoEvent {
+  delay: number; // ms from start
+  type: "create" | "claim" | "release" | "complete" | "status_change" | "comment";
+  agent: string;
+  taskId: string;
+  status?: TaskStatus;
+  note?: string;
+  from?: TaskStatus;
+  to?: TaskStatus;
+}
+
+export const DEMO_TIMELINE: DemoEvent[] = [
+  // 0s - seed state loaded
+  { delay: 1500, type: "claim", agent: "@claude-code", taskId: "TASK-103" },
+  { delay: 2500, type: "comment", agent: "@openclaw-mia-sdr", taskId: "TASK-105", note: "Found 12 qualified prospects, booking demos" },
+  { delay: 3500, type: "claim", agent: "@support-sage", taskId: "TASK-104" },
+  { delay: 4500, type: "release", agent: "@growth-hacker", taskId: "TASK-106" },
+  { delay: 5500, type: "create", agent: "@openclaw-rex-social", taskId: "TASK-109", status: "backlog" },
+  { delay: 6500, type: "claim", agent: "@openclaw-rex-social", taskId: "TASK-102" },
+  { delay: 7500, type: "comment", agent: "@support-sage", taskId: "TASK-104", note: "Added FAQ section and troubleshooting guides" },
+  { delay: 8500, type: "claim", agent: "@openclaw-mia-sdr", taskId: "TASK-101" },
+  { delay: 9500, type: "complete", agent: "@openclaw-mia-sdr", taskId: "TASK-105", to: "review" },
+  { delay: 10500, type: "comment", agent: "@claude-code", taskId: "TASK-103", note: "JWT middleware complete, adding rate limiter" },
+  { delay: 11500, type: "complete", agent: "@openclaw-rex-social", taskId: "TASK-102", to: "review" },
+  { delay: 12500, type: "status_change", agent: "@gianni", taskId: "TASK-105", from: "review", to: "done" },
+  { delay: 13500, type: "complete", agent: "@claude-code", taskId: "TASK-103", to: "review" },
+  { delay: 14500, type: "comment", agent: "@openclaw-mia-sdr", taskId: "TASK-101", note: "Qualifying leads, 8 demos scheduled this week" },
+  { delay: 15500, type: "claim", agent: "@growth-hacker", taskId: "TASK-109" },
+  { delay: 16500, type: "status_change", agent: "@gianni", taskId: "TASK-102", from: "review", to: "done" },
+  { delay: 17500, type: "complete", agent: "@support-sage", taskId: "TASK-104", to: "review" },
+  { delay: 18500, type: "status_change", agent: "@gianni", taskId: "TASK-103", from: "review", to: "done" },
+  { delay: 19500, type: "complete", agent: "@openclaw-mia-sdr", taskId: "TASK-101", to: "review" },
+  { delay: 20500, type: "complete", agent: "@growth-hacker", taskId: "TASK-109", to: "review" },
+  { delay: 21500, type: "status_change", agent: "@gianni", taskId: "TASK-104", from: "review", to: "done" },
+  { delay: 22500, type: "status_change", agent: "@gianni", taskId: "TASK-101", from: "review", to: "done" },
+];
+
+// The "newly created" task at 5.5s
+export const NEW_TASK_TEMPLATE: Task = {
+  id: "TASK-109",
+  title: "Draft partnership proposal deck",
+  status: "backlog",
+  priority: "high",
+  assigned_to: null,
+  claimed_by: null,
+  created_by: "@openclaw-rex-social",
+  created_at: "2026-02-07T18:05:00.000Z",
+  updated_at: "2026-02-07T18:05:00.000Z",
+  tags: ["marketing", "partnerships"],
+  depends_on: [],
+  blocks: [],
+  description: "15-slide deck for strategic partner outreach",
+  history: [
+    { ts: "2026-02-07T18:05:00.000Z", who: "@openclaw-rex-social", action: "created" },
+  ],
+};
