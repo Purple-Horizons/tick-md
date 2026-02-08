@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -57,7 +57,7 @@ function KanbanColumn({ status, tasks, collapsed, onToggle }: { status: string; 
               {tasks.length}
             </span>
           </div>
-          <span className="font-sans text-xs font-semibold text-[var(--color-text-muted)] writing-mode-vertical rotate-180 group-hover:text-[var(--color-text)] transition-colors"
+          <span className="font-heading text-xs font-semibold text-[var(--color-text-muted)] writing-mode-vertical rotate-180 group-hover:text-[var(--color-text)] transition-colors"
             style={{ writingMode: "vertical-rl" }}>
             {STATUS_LABELS[status] || status}
           </span>
@@ -79,7 +79,7 @@ function KanbanColumn({ status, tasks, collapsed, onToggle }: { status: string; 
       <div className="hidden md:flex items-center justify-between px-3 py-2 mb-3">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full" style={{ backgroundColor: STATUS_COLORS[status] }} />
-          <span className="font-sans text-sm font-semibold text-[var(--color-text)]">
+          <span className="font-heading text-sm font-semibold text-[var(--color-text)]">
             {STATUS_LABELS[status] || status}
           </span>
         </div>
@@ -127,6 +127,9 @@ export default function KanbanBoard() {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [mobileStatus, setMobileStatus] = useState<string>("all");
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set(["done"])); // Default collapse "done"
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } })
@@ -248,33 +251,39 @@ export default function KanbanBoard() {
         </div>
       </div>
 
-      {/* ── Desktop/Tablet: full kanban columns ── */}
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-      >
-        <div className="hidden md:flex flex-1 gap-3 lg:gap-4 p-4 lg:p-6 overflow-x-auto">
-          {visibleStatuses.map((status) => (
-            <KanbanColumn 
-              key={status} 
-              status={status} 
-              tasks={tasksByStatus[status] || []} 
-              collapsed={collapsedColumns.has(status)}
-              onToggle={() => toggleColumn(status)}
-            />
-          ))}
-        </div>
+      {/* ── Desktop/Tablet: full kanban columns (deferred to avoid hydration mismatch from dnd-kit) ── */}
+      {mounted ? (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragStart={handleDragStart}
+          onDragEnd={handleDragEnd}
+        >
+          <div className="hidden md:flex flex-1 gap-3 lg:gap-4 p-4 lg:p-6 overflow-x-auto">
+            {visibleStatuses.map((status) => (
+              <KanbanColumn 
+                key={status} 
+                status={status} 
+                tasks={tasksByStatus[status] || []} 
+                collapsed={collapsedColumns.has(status)}
+                onToggle={() => toggleColumn(status)}
+              />
+            ))}
+          </div>
 
-        <DragOverlay>
-          {activeTask ? (
-            <div className="w-64 lg:w-72 opacity-90 rotate-2">
-              <TaskCard task={activeTask} />
-            </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+          <DragOverlay>
+            {activeTask ? (
+              <div className="w-64 lg:w-72 opacity-90 rotate-2">
+                <TaskCard task={activeTask} />
+              </div>
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      ) : (
+        <div className="hidden md:flex flex-1 items-center justify-center">
+          <p className="font-sans text-sm text-[var(--color-text-muted)]">Loading board…</p>
+        </div>
+      )}
 
       {/* Task detail slide-over / full-screen on mobile */}
       {selectedTask && (

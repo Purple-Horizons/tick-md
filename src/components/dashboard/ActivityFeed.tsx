@@ -52,7 +52,7 @@ export default function ActivityFeed() {
   }, [feed]);
 
   return (
-    <div className="p-6 max-w-3xl">
+    <div className="p-4 md:p-6 max-w-3xl">
       {Object.entries(grouped).map(([date, items]) => (
         <div key={date} className="mb-8">
           <div className="font-sans text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-4 sticky top-0 bg-[var(--color-bg)] py-2 z-10">
