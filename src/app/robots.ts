@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/dashboard", "/dashboard/", "/api/"],
       },
     ],
-    sitemap: "https://tick-md.vercel.app/sitemap.xml",
+    sitemap: "https://tick.md/sitemap.xml",
   };
 }

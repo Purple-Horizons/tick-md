@@ -1,6 +1,6 @@
 import type { MetadataRoute } from "next";
 
-const BASE_URL = "https://tick-md.vercel.app";
+const BASE_URL = "https://tick.md";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   return [

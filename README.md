@@ -256,7 +256,7 @@ Built with:
 
 ## 🔗 Links
 
-- **Website**: [tick-md.vercel.app](https://tick-md.vercel.app)
+- **Website**: [tick.md](https://tick.md)
 - **npm**: [tick-md](https://www.npmjs.com/package/tick-md) · [tick-mcp-server](https://www.npmjs.com/package/tick-mcp-server)
 - **Documentation**: [Full Docs](cli/README.md)
 - **Issues**: [GitHub Issues](https://github.com/Purple-Horizons/tick-md/issues)

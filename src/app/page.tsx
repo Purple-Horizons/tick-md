@@ -19,7 +19,7 @@ const jsonLd = {
     priceCurrency: "USD",
   },
   description: "Open source multi-agent task coordination protocol. CLI, dashboard, and MCP server for AI agents and humans to coordinate work through Git-backed Markdown.",
-  url: "https://tick-md.vercel.app",
+  url: "https://tick.md",
   downloadUrl: "https://www.npmjs.com/package/tick-md",
   softwareVersion: "1.0.0",
   author: {

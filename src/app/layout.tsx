@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
-const SITE_URL = "https://tick-md.vercel.app";
+const SITE_URL = "https://tick.md";
 const SITE_NAME = "TICK.md";
 const SITE_DESCRIPTION = "Open source protocol for AI agents and humans to coordinate work through Git-backed Markdown. CLI, dashboard, MCP server — all free forever.";
 
