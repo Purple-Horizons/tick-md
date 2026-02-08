@@ -114,7 +114,7 @@ function Hero() {
       </FadeIn>
 
       <FadeIn delay={0.3}>
-        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", marginBottom: 64 }}>
+        <div style={{ display: "flex", gap: 16, flexWrap: "wrap", justifyContent: "center", marginBottom: 64, position: "relative", zIndex: 10 }}>
           <Link href="/#get-started" style={{ padding: "14px 32px", background: C.accent, color: C.bg, fontFamily: "'DM Sans', sans-serif", fontWeight: 700, fontSize: 16,
             borderRadius: 8, textDecoration: "none", transition: "all 0.2s", border: "none", display: "inline-block" }}>
             Get Started — Free
