@@ -31,11 +31,11 @@ export default function DependencyGraph() {
     for (const task of tasks) {
       if (task.depends_on.length > 0 || task.blocks.length > 0) {
         ids.add(task.id);
-        task.depends_on.forEach((d) => ids.add(d));
-        task.blocks.forEach((b) => ids.add(b));
+        task.depends_on.forEach((d: string) => ids.add(d));
+        task.blocks.forEach((b: string) => ids.add(b));
       }
     }
-    return tasks.filter((t) => ids.has(t.id));
+    return tasks.filter((t: Task) => ids.has(t.id));
   }, [tasks]);
 
   // Build adjacency for topological sort
@@ -43,7 +43,7 @@ export default function DependencyGraph() {
     if (connectedTasks.length === 0) return { nodes: [] as GraphNode[], edges: [] as { from: string; to: string }[] };
 
     // Simple layered layout
-    const taskMap = new Map(tasks.map((t) => [t.id, t]));
+    const taskMap = new Map(tasks.map((t: Task) => [t.id, t]));
     const inDegree = new Map<string, number>();
     const adjList = new Map<string, string[]>();
     const edgeList: { from: string; to: string }[] = [];
@@ -102,7 +102,7 @@ export default function DependencyGraph() {
         const task = taskMap.get(id);
         if (task) {
           graphNodes.push({
-            task,
+            task: task as Task,
             x: level * xGap + 40,
             y: idx * yGap + 40,
             level,

@@ -3,7 +3,7 @@
 import { createContext, useContext, ReactNode } from "react";
 import type { DemoStore } from "@/lib/demo-store";
 
-type StoreHook = () => DemoStore;
+type StoreHook = () => any; // Accept any store type
 
 const DashboardContext = createContext<StoreHook | null>(null);
 

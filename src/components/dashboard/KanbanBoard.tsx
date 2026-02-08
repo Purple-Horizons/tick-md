@@ -165,8 +165,8 @@ export default function KanbanBoard() {
     return grouped;
   }, [tasks, workflow]);
 
-  const activeTask = activeId ? tasks.find((t) => t.id === activeId) : null;
-  const selectedTask = selectedTaskId ? tasks.find((t) => t.id === selectedTaskId) : null;
+  const activeTask = activeId ? tasks.find((t: Task) => t.id === activeId) : null;
+  const selectedTask = selectedTaskId ? tasks.find((t: Task) => t.id === selectedTaskId) : null;
 
   const visibleStatuses = [...workflow];
   if ((tasksByStatus["blocked"]?.length ?? 0) > 0) visibleStatuses.push("blocked");
@@ -175,7 +175,7 @@ export default function KanbanBoard() {
   // Mobile: filter tasks by selected status tab
   const mobileFilteredTasks = mobileStatus === "all"
     ? tasks
-    : tasks.filter((t) => t.status === mobileStatus);
+    : tasks.filter((t: Task) => t.status === mobileStatus);
 
   function handleDragStart(event: DragStartEvent) {
     setActiveId(event.active.id as string);
@@ -190,7 +190,7 @@ export default function KanbanBoard() {
     const targetStatus = over.id as string;
 
     if (workflow.includes(targetStatus as TaskStatus) || targetStatus === "blocked" || targetStatus === "reopened") {
-      const task = tasks.find((t) => t.id === taskId);
+      const task = tasks.find((t: Task) => t.id === taskId);
       if (task && task.status !== targetStatus) {
         moveTask(taskId, targetStatus as TaskStatus);
       }
@@ -237,7 +237,7 @@ export default function KanbanBoard() {
         {/* Mobile task list */}
         <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
           {mobileFilteredTasks.length > 0 ? (
-            mobileFilteredTasks.map((task) => (
+            mobileFilteredTasks.map((task: Task) => (
               <TaskCard key={task.id} task={task} />
             ))
           ) : (

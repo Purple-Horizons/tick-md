@@ -171,7 +171,7 @@ function parseTaskBlocks(content: string): Task[] {
     const afterYaml = taskBlock.slice(
       taskBlock.indexOf("```", yamlMatch.index! + 3) + 3
     );
-    const descMatch = afterYaml.match(/>\s*(.+?)(?=\n###|\n---|\n##|$)/s);
+    const descMatch = afterYaml.match(/>\s*([\s\S]+?)(?=\n###|\n---|\n##|$)/);
     const description = descMatch
       ? descMatch[1]
           .split("\n")

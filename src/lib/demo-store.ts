@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { Task, Agent, TaskStatus, ProjectMeta } from "./types";
 import { DEMO_PROJECT_META, DEMO_AGENTS, DEMO_TASKS, DEMO_TIMELINE, NEW_TASK_TEMPLATE, type DemoEvent } from "./demo-data";
 
-interface DemoStore {
+export interface DemoStore {
   // Data (same as useTickStore)
   meta: ProjectMeta;
   tasks: Task[];

@@ -1,7 +1,7 @@
 "use client";
 
 import { useDashboardStore } from "./DashboardProvider";
-import type { AgentStatus } from "@/lib/types";
+import type { AgentStatus, Agent } from "@/lib/types";
 
 const STATUS_CONFIG: Record<AgentStatus, { color: string; label: string; pulse: boolean }> = {
   working: { color: "var(--color-accent)", label: "Working", pulse: true },
@@ -13,9 +13,9 @@ export default function AgentMonitor() {
   const store = useDashboardStore();
   const { agents, tasks } = store;
 
-  const working = agents.filter((a) => a.status === "working").length;
-  const idle = agents.filter((a) => a.status === "idle").length;
-  const offline = agents.filter((a) => a.status === "offline").length;
+  const working = agents.filter((a: Agent) => a.status === "working").length;
+  const idle = agents.filter((a: Agent) => a.status === "idle").length;
+  const offline = agents.filter((a: Agent) => a.status === "offline").length;
 
   return (
     <div className="p-4 md:p-6 max-w-4xl">
@@ -38,7 +38,7 @@ export default function AgentMonitor() {
 
       {/* ── Mobile: Agent cards ── */}
       <div className="md:hidden space-y-2">
-        {agents.map((agent) => {
+        {agents.map((agent: Agent) => {
           const config = STATUS_CONFIG[agent.status];
           return (
             <div
@@ -84,7 +84,7 @@ export default function AgentMonitor() {
           <span className="font-mono text-xs text-[var(--color-text-muted)] uppercase tracking-wider hidden lg:block">Trust</span>
         </div>
 
-        {agents.map((agent) => {
+        {agents.map((agent: Agent) => {
           const config = STATUS_CONFIG[agent.status];
           return (
             <div
