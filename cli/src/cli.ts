@@ -64,6 +64,8 @@ program
   .option("--depends-on <tasks>", "Comma-separated task IDs this depends on")
   .option("--blocks <tasks>", "Comma-separated task IDs this blocks")
   .option("--estimated-hours <hours>", "Estimated hours to complete", parseFloat)
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
   .action(async (title, options) => {
     try {
       await addCommand(title, {
@@ -74,6 +76,8 @@ program
         dependsOn: options.dependsOn ? options.dependsOn.split(",").map((t: string) => t.trim()) : undefined,
         blocks: options.blocks ? options.blocks.split(",").map((t: string) => t.trim()) : undefined,
         estimatedHours: options.estimatedHours,
+        commit: options.commit,
+        noCommit: options.noCommit,
       });
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
@@ -85,9 +89,14 @@ program
 program
   .command("claim <task-id> <agent>")
   .description("Claim a task for an agent")
-  .action(async (taskId, agent) => {
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (taskId, agent, options) => {
     try {
-      await claimCommand(taskId, agent);
+      await claimCommand(taskId, agent, {
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
@@ -98,9 +107,14 @@ program
 program
   .command("release <task-id> <agent>")
   .description("Release a claimed task")
-  .action(async (taskId, agent) => {
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (taskId, agent, options) => {
     try {
-      await releaseCommand(taskId, agent);
+      await releaseCommand(taskId, agent, {
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
@@ -111,9 +125,14 @@ program
 program
   .command("done <task-id> <agent>")
   .description("Mark a task as complete")
-  .action(async (taskId, agent) => {
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (taskId, agent, options) => {
     try {
-      await doneCommand(taskId, agent);
+      await doneCommand(taskId, agent, {
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
@@ -125,9 +144,14 @@ program
   .command("comment <task-id> <agent>")
   .description("Add a comment to a task")
   .requiredOption("-n, --note <text>", "Comment text")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
   .action(async (taskId, agent, options) => {
     try {
-      await commentCommand(taskId, agent, options.note);
+      await commentCommand(taskId, agent, options.note, {
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);

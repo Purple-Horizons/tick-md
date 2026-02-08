@@ -3,13 +3,20 @@ import path from "path";
 import { parseTickFile, serializeTickFile } from "../parser/index.js";
 import { LockManager } from "../utils/lock.js";
 import type { TaskStatus } from "../types.js";
+import { autoCommit, shouldAutoCommit } from "../utils/auto-commit.js";
+
+export interface DoneCommentOptions {
+  commit?: boolean;
+  noCommit?: boolean;
+}
 
 /**
  * Mark a task as done
  */
 export async function doneCommand(
   taskId: string,
-  agent: string
+  agent: string,
+  options: DoneCommentOptions = {}
 ): Promise<void> {
   const cwd = process.cwd();
   const tickPath = path.join(cwd, "TICK.md");
@@ -126,6 +133,11 @@ export async function doneCommand(
     console.log(`  Auto-unblocked: ${unblockedTasks.join(", ")}`);
   }
 
+  // Auto-commit if enabled
+  if (await shouldAutoCommit(options, cwd)) {
+    await autoCommit(`${taskId} completed by ${agent}`, cwd);
+  }
+
   console.log("");
   console.log("🎉 Task complete!");
 }
@@ -136,7 +148,8 @@ export async function doneCommand(
 export async function commentCommand(
   taskId: string,
   agent: string,
-  note: string
+  note: string,
+  options: DoneCommentOptions = {}
 ): Promise<void> {
   const cwd = process.cwd();
   const tickPath = path.join(cwd, "TICK.md");
@@ -187,6 +200,12 @@ export async function commentCommand(
 
   console.log(`✓ Added comment to ${taskId}`);
   console.log(`  ${agent}: "${note}"`);
+
+  // Auto-commit if enabled
+  if (await shouldAutoCommit(options, cwd)) {
+    await autoCommit(`${taskId}: comment`, cwd);
+  }
+
   console.log("");
   console.log(`Total history entries: ${task.history.length}`);
 }

@@ -2,6 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 import { parseTickFile, serializeTickFile } from "../parser/index.js";
 import type { Task, Priority, TaskStatus } from "../types.js";
+import { autoCommit, shouldAutoCommit } from "../utils/auto-commit.js";
 
 export interface AddOptions {
   priority?: Priority;
@@ -11,6 +12,8 @@ export interface AddOptions {
   blocks?: string[];
   description?: string;
   estimatedHours?: number;
+  commit?: boolean;
+  noCommit?: boolean;
 }
 
 /**
@@ -87,6 +90,12 @@ export async function addCommand(
   if (newTask.assigned_to) {
     console.log(`  Assigned to: ${newTask.assigned_to}`);
   }
+
+  // Auto-commit if enabled
+  if (await shouldAutoCommit(options, cwd)) {
+    await autoCommit(`${taskId}: created`, cwd);
+  }
+
   console.log("");
   console.log("Next steps:");
   console.log(`  Claim task:  tick claim ${taskId} @yourname`);

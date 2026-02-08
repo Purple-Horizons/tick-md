@@ -3,13 +3,20 @@ import path from "path";
 import { parseTickFile, serializeTickFile } from "../parser/index.js";
 import { LockManager } from "../utils/lock.js";
 import type { TaskStatus } from "../types.js";
+import { autoCommit, shouldAutoCommit } from "../utils/auto-commit.js";
+
+export interface ClaimReleaseOptions {
+  commit?: boolean;
+  noCommit?: boolean;
+}
 
 /**
  * Claim a task for an agent
  */
 export async function claimCommand(
   taskId: string,
-  agent: string
+  agent: string,
+  options: ClaimReleaseOptions = {}
 ): Promise<void> {
   const cwd = process.cwd();
   const tickPath = path.join(cwd, "TICK.md");
@@ -97,6 +104,12 @@ export async function claimCommand(
   if (previousStatus !== task.status) {
     console.log(`  Status: ${previousStatus} → ${task.status}`);
   }
+
+  // Auto-commit if enabled
+  if (await shouldAutoCommit(options, cwd)) {
+    await autoCommit(`${taskId} claimed by ${agent}`, cwd);
+  }
+
   console.log("");
   console.log("Next steps:");
   console.log(`  Work on the task`);
@@ -110,7 +123,8 @@ export async function claimCommand(
  */
 export async function releaseCommand(
   taskId: string,
-  agent: string
+  agent: string,
+  options: ClaimReleaseOptions = {}
 ): Promise<void> {
   const cwd = process.cwd();
   const tickPath = path.join(cwd, "TICK.md");
@@ -197,6 +211,12 @@ export async function releaseCommand(
   if (previousStatus !== task.status) {
     console.log(`  Status: ${previousStatus} → ${task.status}`);
   }
+
+  // Auto-commit if enabled
+  if (await shouldAutoCommit(options, cwd)) {
+    await autoCommit(`${taskId} released by ${agent}`, cwd);
+  }
+
   console.log("");
   console.log("Task is now available for other agents to claim.");
 }

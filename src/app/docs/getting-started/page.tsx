@@ -243,16 +243,36 @@ git:
   auto_commit: true
   auto_push: false
   commit_prefix: "[tick]"
+  push_on_sync: false
 
 notifications:
   webhook_url: null
   events: [claimed, completed, blocked, overdue]`}</code></pre>
 
+      <h3>Git Configuration</h3>
+      <p>
+        By default, <code>auto_commit</code> is enabled, meaning every mutation command (<code>add</code>, <code>claim</code>, 
+        <code>done</code>, <code>comment</code>, etc.) automatically creates a git commit with the prefix <code>[tick]</code>. 
+        This provides an automatic audit trail of all task changes.
+      </p>
+      <p>
+        You can override this behavior per-command using flags:
+      </p>
+      <ul>
+        <li><code>--commit</code> — Force auto-commit for this command, even if disabled in config</li>
+        <li><code>--no-commit</code> — Skip auto-commit for this command, even if enabled in config</li>
+      </ul>
+      <pre><code>{`# Skip auto-commit for a specific task creation
+$ tick add "Draft task" --no-commit
+
+# Force commit even if auto_commit is disabled in config
+$ tick done TASK-001 --commit`}</code></pre>
+
       <h2>Next Steps</h2>
       <ul>
         <li>Read the <a href="/docs/protocol">Protocol Spec</a> for the full data format and coordination rules</li>
         <li>See the <a href="/docs/cli">CLI Reference</a> for all available commands</li>
-        <li>Check out the <a href="https://github.com/nicobailon/tick">GitHub repo</a> for source code and examples</li>
+        <li>Check out the <a href="https://github.com/Purple-Horizons/tick-md">GitHub repo</a> for source code and examples</li>
       </ul>
     </>
   );

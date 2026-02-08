@@ -80,7 +80,9 @@ Options:
   --assign <agent>     Agent to assign (e.g., @claude-code)
   --depends-on <ids>   Comma-separated task IDs this depends on
   --detail             Create a detail file in tasks/
-  --due <date>         Due date (ISO 8601 or natural language)`}</code></pre>
+  --due <date>         Due date (ISO 8601 or natural language)
+  --commit             Auto-commit after change (override config)
+  --no-commit          Skip auto-commit even if config enables it`}</code></pre>
       <pre><code>{`$ tick add "Build user auth" --priority high --tags backend,auth --assign @claude-code
 
 ✓ Created TASK-001: Build user auth
@@ -98,7 +100,9 @@ Options:
 
 Options:
   --as <agent>    Agent identifier (default: detected from git config or env)
-  --force         Override existing claim (owner role only)`}</code></pre>
+  --force         Override existing claim (owner role only)
+  --commit        Auto-commit after change (override config)
+  --no-commit     Skip auto-commit even if config enables it`}</code></pre>
       <blockquote>
         <p>
           A task can only be claimed if <code>claimed_by</code> is null,
@@ -108,7 +112,12 @@ Options:
 
       <h3><code>tick release</code></h3>
       <p>Release a claim without changing status. Useful when an agent needs to hand off mid-work.</p>
-      <pre><code>{`$ tick release <task-id> [--comment "reason"]`}</code></pre>
+      <pre><code>{`$ tick release <task-id> [options]
+
+Options:
+  --comment <msg>  Add a comment explaining why the task was released
+  --commit         Auto-commit after change (override config)
+  --no-commit      Skip auto-commit even if config enables it`}</code></pre>
 
       <h3><code>tick update</code></h3>
       <p>Update task fields.</p>
@@ -128,12 +137,19 @@ Options:
 
 Options:
   --skip-review    Go directly to done (skip review state)
-  --comment <msg>  Add a completion comment`}</code></pre>
+  --comment <msg>  Add a completion comment
+  --commit         Auto-commit after change (override config)
+  --no-commit      Skip auto-commit even if config enables it`}</code></pre>
 
       <h3><code>tick comment</code></h3>
       <p>Add a comment to a task&rsquo;s history log.</p>
-      <pre><code>{`$ tick comment <task-id> <message>
+      <pre><code>{`$ tick comment <task-id> <message> [options]
 
+Options:
+  --commit        Auto-commit after change (override config)
+  --no-commit     Skip auto-commit even if config enables it
+
+Example:
 $ tick comment TASK-001 "JWT middleware done, working on refresh tokens"`}</code></pre>
 
       <hr />
@@ -209,13 +225,18 @@ Agent          Type   Roles          Status   Working On   Last Active
 
       <h2>Git Integration</h2>
       <p>
-        When <code>git.auto_commit</code> is enabled in <code>.tick/config.yml</code>, every CLI mutation
+        When <code>git.auto_commit</code> is enabled in <code>.tick/config.yml</code> (enabled by default), every CLI mutation
         automatically creates a git commit:
       </p>
       <pre><code>{`[tick] TASK-001 claimed by @claude-code
 [tick] TASK-001 status: todo → in_progress
 [tick] TASK-003 created: Write launch email
 [tick] TASK-001 completed by @claude-code`}</code></pre>
+      <p>
+        Set <code>git.auto_commit: false</code> to disable automatic commits, or use the <code>--no-commit</code> flag
+        on individual commands to skip auto-commit for specific operations. Conversely, use <code>--commit</code> to force
+        auto-commit even when disabled in config.
+      </p>
       <p>
         Set <code>git.auto_push: true</code> to automatically push after each commit (useful for
         remote teams).
