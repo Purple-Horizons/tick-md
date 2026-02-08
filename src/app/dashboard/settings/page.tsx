@@ -7,7 +7,7 @@ export default function SettingsPage() {
 
   return (
     <div className="p-6 max-w-2xl">
-      <h2 className="font-serif text-2xl text-white mb-6">Project Settings</h2>
+      <h2 className="font-sans font-semibold text-2xl text-white mb-6">Project Settings</h2>
 
       {/* Project info */}
       <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-5 mb-6">

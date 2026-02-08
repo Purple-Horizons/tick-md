@@ -31,7 +31,7 @@ export default function AgentMonitor() {
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: stat.color }} />
               <span className="font-sans text-[10px] md:text-xs text-[var(--color-text-muted)] uppercase tracking-wider">{stat.label}</span>
             </div>
-            <span className="font-serif text-2xl md:text-3xl text-white">{stat.count}</span>
+            <span className="font-sans font-bold text-2xl md:text-3xl text-white">{stat.count}</span>
           </div>
         ))}
       </div>

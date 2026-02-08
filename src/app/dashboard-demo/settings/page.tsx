@@ -2,7 +2,7 @@ export default function DemoSettingsPage() {
   return (
     <div className="p-6 max-w-2xl">
       <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-6">
-        <h2 className="font-serif text-xl text-white mb-2">Demo Mode</h2>
+        <h2 className="font-sans font-semibold text-xl text-white mb-2">Demo Mode</h2>
         <p className="font-sans text-sm text-[var(--color-text-muted)] mb-4">
           This is a simulated dashboard. Settings are not available in demo mode.
         </p>

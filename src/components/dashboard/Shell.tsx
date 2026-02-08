@@ -171,7 +171,7 @@ export default function Shell({ children, isDemo = false }: { children: React.Re
               </div>
             </Link>
 
-            <h1 className="font-serif text-base md:text-lg text-white truncate">
+            <h1 className="font-sans font-semibold text-base md:text-lg text-white truncate">
               {meta?.title || meta?.project || "Dashboard"}
             </h1>
 
