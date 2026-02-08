@@ -1,7 +1,7 @@
 {
   "name": "tick-md",
-  "version": "0.1.0",
-  "description": "Multi-agent task coordination via Markdown",
+  "version": "1.0.0",
+  "description": "Multi-agent task coordination via Git-backed Markdown",
   "main": "dist/index.js",
   "bin": {
     "tick": "dist/cli.js"
@@ -10,17 +10,31 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "test": "node --test"
+    "test": "node --test",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "task-management",
     "ai-agents",
     "coordination",
     "markdown",
-    "cli"
+    "cli",
+    "multi-agent",
+    "git",
+    "workflow",
+    "automation",
+    "mcp"
   ],
   "author": "Purple Horizons",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Purple-Horizons/tick-md.git"
+  },
+  "homepage": "https://github.com/Purple-Horizons/tick-md#readme",
+  "bugs": {
+    "url": "https://github.com/Purple-Horizons/tick-md/issues"
+  },
   "dependencies": {
     "gray-matter": "^4.0.3",
     "commander": "^12.1.0",
@@ -33,5 +47,10 @@
   },
   "engines": {
     "node": ">=18.0.0"
-  }
+  },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ]
 }

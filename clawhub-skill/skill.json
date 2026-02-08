@@ -15,8 +15,8 @@
     "mcp",
     "workflow"
   ],
-  "homepage": "https://tick-md.dev",
-  "repository": "https://github.com/your-org/tick-md",
+  "homepage": "https://github.com/Purple-Horizons/tick-md",
+  "repository": "https://github.com/Purple-Horizons/tick-md",
   "license": "MIT",
   "requirements": {
     "runtime": "node >=18",

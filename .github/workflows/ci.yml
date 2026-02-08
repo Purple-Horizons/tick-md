@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x, 22.x]
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+    
+    - name: Install CLI dependencies
+      working-directory: ./cli
+      run: npm ci
+    
+    - name: Build CLI
+      working-directory: ./cli
+      run: npm run build
+    
+    - name: Test CLI
+      working-directory: ./cli
+      run: npm test
+    
+    - name: Install MCP dependencies
+      working-directory: ./mcp
+      run: npm ci
+    
+    - name: Build MCP server
+      working-directory: ./mcp
+      run: npm run build
+    
+    - name: Verify package structure
+      run: |
+        test -f cli/dist/cli.js
+        test -f cli/dist/index.js
+        test -f mcp/dist/index.js
+        echo "✅ All packages built successfully"
