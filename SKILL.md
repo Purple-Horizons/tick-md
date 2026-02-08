@@ -190,6 +190,83 @@ agents:
 4. **Check dependencies**: Use `tick list --blocked` to find blocked tasks
 5. **Use MCP server**: Enables natural language task management
 
+## 🔧 OpenClaw Multi-Agent Setup
+
+Step-by-step guide for coordinating multiple OpenClaw bots via TICK.md.
+
+### 1. Create a shared tasks repo
+
+```bash
+gh repo create yourorg/project-tasks --private
+cd project-tasks
+npx tick-md init
+git add -A && git commit -m "init" && git push
+```
+
+### 2. On each OpenClaw bot's server
+
+```bash
+cd /data/.openclaw/workspace
+git clone git@github.com:yourorg/project-tasks.git tasks
+cd tasks && npx tick-md status
+```
+
+### 3. Add to each bot's AGENTS.md
+
+```markdown
+## ✅ Task Coordination (TICK.md)
+
+I coordinate with other agents via TICK.md in `./tasks/`.
+
+### Before starting work:
+1. `cd tasks && npx tick-md sync` — get latest
+2. `npx tick-md list --status backlog --priority high` — find available work
+3. `npx tick-md claim TASK-XXX @mybotname` — claim before working
+4. `npx tick-md done TASK-XXX @mybotname` — mark complete
+
+### Rules:
+- **Never work on a task claimed by another agent**
+- **Always claim before starting**
+- **Sync before and after work**
+```
+
+### 4. Add to each bot's HEARTBEAT.md
+
+```markdown
+## Task Sync (TICK.md)
+
+- [ ] Sync tasks: `cd tasks && npx tick-md sync`
+- [ ] Check for my work: `npx tick-md list --claimed-by @mybotname --status in_progress`
+- [ ] Check for available tasks: `npx tick-md list --status backlog --priority high`
+```
+
+### 5. Deploy keys
+
+Each bot needs SSH access to the shared repo. Generate a deploy key on each server:
+
+```bash
+ssh-keygen -t ed25519 -C "botname@tasks" -f ~/.ssh/tasks_deploy -N ""
+cat ~/.ssh/tasks_deploy.pub
+# Add this to repo Settings → Deploy Keys (with write access)
+```
+
+Configure git to use it:
+
+```bash
+cd tasks
+git config core.sshCommand "ssh -i ~/.ssh/tasks_deploy -o IdentitiesOnly=yes"
+```
+
+### 6. Sync command for bots
+
+After any tick mutation, push changes:
+
+```bash
+cd tasks && git push
+```
+
+Or use `tick sync` which handles pull + push automatically.
+
 ## 📦 Package Info
 
 - **CLI**: `tick-md` on npm
