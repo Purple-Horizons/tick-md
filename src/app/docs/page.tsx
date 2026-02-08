@@ -109,19 +109,19 @@ export default function DocsOverview() {
       <p>Tick is composed of five independent layers:</p>
       <pre><code>{`┌───────────────────────────────────────────────────────┐
 │  LAYER 5: GUI DASHBOARD (React Web App)               │
-│  Kanban board, agent monitor, activity feed            │
+│ Kanban board, agent monitor, activity feed            │
 ├───────────────────────────────────────────────────────┤
 │  LAYER 4: INTEGRATION (MCP Server / Skill / Plugin)   │
-│  Exposes Tick to agent frameworks                      │
+│ Exposes Tick to agent frameworks                      │
 ├───────────────────────────────────────────────────────┤
 │  LAYER 3: COORDINATION PROTOCOL                       │
-│  Claim/release, locking, transitions, roles            │
+│ Claim/release, locking, transitions, roles            │
 ├───────────────────────────────────────────────────────┤
 │  LAYER 2: CLI & VALIDATION ENGINE                     │
-│  tick create/claim/update/query/validate               │
+│ tick create/claim/update/query/validate               │
 ├───────────────────────────────────────────────────────┤
 │  LAYER 1: DATA LAYER (Markdown + YAML + Git)          │
-│  Master task file + optional detail files              │
+│ Master task file + optional detail files              │
 └───────────────────────────────────────────────────────┘`}</code></pre>
       <p>
         Only Layer 1 (the Data Layer) is required. All other layers are optional enhancements.
