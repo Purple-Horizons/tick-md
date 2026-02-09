@@ -3,10 +3,10 @@ project: tick-md
 title: Tick.md - Multi-Agent Coordination Protocol
 schema_version: "1.0"
 created: Sun Feb 01 2026 09:00:00 GMT-0500 (Eastern Standard Time)
-updated: 2026-02-09T19:50:36.194Z
+updated: 2026-02-09T20:27:04.180Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 32
+next_id: 37
 ---
 
 ## Agents
@@ -320,4 +320,109 @@ history:
     action: completed
     from: backlog
     to: done
+```
+
+### TASK-032 · Build orchestrator role & skill
+
+```yaml
+id: TASK-032
+status: backlog
+priority: urgent
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T20:26:54.123Z
+updated_at: 2026-02-09T20:26:54.123Z
+tags:
+  - orchestrator
+  - skill
+  - multi-agent
+history:
+  - ts: 2026-02-09T20:26:54.123Z
+    who: "@gianni-d'alerta"
+    action: created
+```
+
+### TASK-033 · Build agent polling skill (check-in loop)
+
+```yaml
+id: TASK-033
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T20:26:56.691Z
+updated_at: 2026-02-09T20:26:56.691Z
+tags:
+  - skill
+  - polling
+  - multi-agent
+history:
+  - ts: 2026-02-09T20:26:56.691Z
+    who: "@gianni-d'alerta"
+    action: created
+```
+
+### TASK-034 · Add deliverables field to task schema
+
+```yaml
+id: TASK-034
+status: backlog
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T20:26:59.200Z
+updated_at: 2026-02-09T20:26:59.200Z
+tags:
+  - parser
+  - cli
+  - protocol
+history:
+  - ts: 2026-02-09T20:26:59.200Z
+    who: "@gianni-d'alerta"
+    action: created
+```
+
+### TASK-035 · Build tick broadcast command & squad log
+
+```yaml
+id: TASK-035
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T20:27:01.671Z
+updated_at: 2026-02-09T20:27:01.671Z
+tags:
+  - cli
+  - protocol
+  - communication
+history:
+  - ts: 2026-02-09T20:27:01.671Z
+    who: "@gianni-d'alerta"
+    action: created
+```
+
+### TASK-036 · Build tick notify command (notification hooks)
+
+```yaml
+id: TASK-036
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T20:27:04.180Z
+updated_at: 2026-02-09T20:27:04.180Z
+tags:
+  - cli
+  - notifications
+  - gateway
+history:
+  - ts: 2026-02-09T20:27:04.180Z
+    who: "@gianni-d'alerta"
+    action: created
 ```
