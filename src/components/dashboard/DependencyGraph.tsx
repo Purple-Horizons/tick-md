@@ -133,7 +133,7 @@ export default function DependencyGraph() {
   const svgHeight = Math.max(...nodes.map((n) => n.y)) + 100;
 
   return (
-    <div className="p-4 md:p-6 overflow-auto h-full">
+    <div className="p-5 md:p-8 overflow-auto h-full">
       <svg width={svgWidth} height={svgHeight} className="select-none">
         {/* Edges */}
         {edges.map((edge, i) => {

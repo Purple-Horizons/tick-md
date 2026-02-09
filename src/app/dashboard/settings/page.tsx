@@ -6,11 +6,11 @@ export default function SettingsPage() {
   const { meta, agents, summary } = useTickStore();
 
   return (
-    <div className="p-4 md:p-6 max-w-2xl">
+    <div className="p-5 md:p-8 max-w-2xl">
       <h2 className="font-heading font-semibold text-2xl text-white mb-6">Project Settings</h2>
 
       {/* Project info */}
-      <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-5 mb-6">
+      <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-6 mb-6">
         <h3 className="font-sans text-sm font-semibold text-white mb-4">Project</h3>
         <div className="space-y-3">
           {[
@@ -31,7 +31,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Workflow */}
-      <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-5 mb-6">
+      <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-6 mb-6">
         <h3 className="font-sans text-sm font-semibold text-white mb-4">Workflow States</h3>
         <div className="flex gap-2 flex-wrap">
           {meta?.default_workflow.map((status, i) => (
@@ -48,7 +48,7 @@ export default function SettingsPage() {
       </div>
 
       {/* License */}
-      <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-5">
+      <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-6">
         <h3 className="font-sans text-sm font-semibold text-white mb-4">License</h3>
         <div className="flex items-center gap-3 mb-4">
           <span className="w-2 h-2 rounded-full bg-[var(--color-success)]" />
