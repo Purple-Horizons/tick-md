@@ -13,6 +13,12 @@ Coordinate work across human and AI agents using structured TICK.md files. Built
 
 > **100% open source.** Protocol, CLI, dashboard, MCP server — all free forever.
 
+## 💡 Why tick-md?
+
+AI agents speak Markdown. So does your documentation, your notes, and your Git history. **tick-md** turns that into a coordination protocol — no databases, no APIs, no vendor lock-in. Just a `TICK.md` file that humans can read and bots can parse.
+
+When you have multiple agents (or humans) working on a project, they need a shared source of truth. tick-md gives you that through Git: every claim, every status change, every completion is a commit. Conflicts resolve the same way code conflicts do. History is built in.
+
 ## ✨ Features
 
 - 🤖 **AI-Native**: MCP server for seamless bot integration
