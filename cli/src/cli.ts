@@ -13,6 +13,17 @@ import { registerAgentCommand, listAgentsCommand } from "./commands/agent.js";
 import { listCommand } from "./commands/list.js";
 import { graphCommand } from "./commands/graph.js";
 import { watchCommand } from "./commands/watch.js";
+import { reopenCommand } from "./commands/reopen.js";
+import { deleteCommand } from "./commands/delete.js";
+import { editCommand } from "./commands/edit.js";
+import { undoCommand } from "./commands/undo.js";
+import { importCommand } from "./commands/import.js";
+import {
+  batchStartCommand,
+  batchCommitCommand,
+  batchAbortCommand,
+  batchStatusCommand,
+} from "./commands/batch.js";
 import type { Priority, AgentStatus, AgentType, TaskStatus } from "./types.js";
 
 const program = new Command();
@@ -20,7 +31,7 @@ const program = new Command();
 program
   .name("tick")
   .description("Multi-agent task coordination via Markdown")
-  .version("0.1.0");
+  .version("1.2.0");
 
 // Init command
 program
@@ -127,9 +138,95 @@ program
   .description("Mark a task as complete")
   .option("--commit", "Auto-commit after change")
   .option("--no-commit", "Skip auto-commit even if config enables it")
+  .option("--skip-workflow", "Skip workflow warning for tasks that were never started")
   .action(async (taskId, agent, options) => {
     try {
       await doneCommand(taskId, agent, {
+        commit: options.commit,
+        noCommit: options.noCommit,
+        skipWorkflow: options.skipWorkflow,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Reopen command
+program
+  .command("reopen <task-id> <agent>")
+  .description("Reopen a completed task")
+  .option("-n, --note <text>", "Reason for reopening")
+  .option("-s, --status <status>", "Target status (default: reopened)", "reopened")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (taskId, agent, options) => {
+    try {
+      await reopenCommand(taskId, agent, {
+        note: options.note,
+        status: options.status as TaskStatus,
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Delete command
+program
+  .command("delete <task-id>")
+  .description("Delete a task from TICK.md")
+  .option("-f, --force", "Force delete even if task is in progress or has dependents")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (taskId, options) => {
+    try {
+      await deleteCommand(taskId, {
+        force: options.force,
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Edit command
+program
+  .command("edit <task-id> <agent>")
+  .description("Edit task fields directly")
+  .option("-s, --status <status>", "Set status (backlog|todo|in_progress|review|done|blocked|reopened)")
+  .option("-p, --priority <priority>", "Set priority (urgent|high|medium|low)")
+  .option("--title <text>", "Set title")
+  .option("-d, --description <text>", "Set description")
+  .option("-a, --assigned-to <agent>", "Set assigned agent (empty string to unassign)")
+  .option("-t, --tags <tags>", "Set tags (comma-separated, replaces existing)")
+  .option("--depends-on <tasks>", "Set dependencies (comma-separated task IDs, replaces existing)")
+  .option("--blocks <tasks>", "Set blocked tasks (comma-separated task IDs, replaces existing)")
+  .option("--estimated-hours <hours>", "Set estimated hours", parseFloat)
+  .option("--actual-hours <hours>", "Set actual hours", parseFloat)
+  .option("--due-date <date>", "Set due date (ISO format or empty to clear)")
+  .option("-n, --note <text>", "Note for history entry")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (taskId, agent, options) => {
+    try {
+      await editCommand(taskId, agent, {
+        status: options.status as TaskStatus | undefined,
+        priority: options.priority as Priority | undefined,
+        title: options.title,
+        description: options.description,
+        assignedTo: options.assignedTo,
+        tags: options.tags ? options.tags.split(",").map((t: string) => t.trim()) : undefined,
+        dependsOn: options.dependsOn ? options.dependsOn.split(",").map((t: string) => t.trim()) : undefined,
+        blocks: options.blocks ? options.blocks.split(",").map((t: string) => t.trim()) : undefined,
+        estimatedHours: options.estimatedHours,
+        actualHours: options.actualHours,
+        dueDate: options.dueDate,
+        note: options.note,
         commit: options.commit,
         noCommit: options.noCommit,
       });
@@ -301,6 +398,98 @@ program
         interval: parseInt(options.interval),
         filter: options.filter as TaskStatus | undefined,
       });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Import command
+program
+  .command("import [file]")
+  .description("Import tasks from a YAML file or stdin")
+  .option("--dry-run", "Show what would be imported without making changes")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (file, options) => {
+    try {
+      await importCommand(file, {
+        dryRun: options.dryRun,
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Undo command
+program
+  .command("undo")
+  .description("Undo the last tick commit by reverting it")
+  .option("-f, --force", "Force revert even if not a tick commit")
+  .option("--dry-run", "Show what would be reverted without making changes")
+  .action(async (options) => {
+    try {
+      await undoCommand({
+        force: options.force,
+        dryRun: options.dryRun,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Batch commands
+const batch = program
+  .command("batch")
+  .description("Batch mode for grouping multiple changes into one commit");
+
+batch
+  .command("start")
+  .description("Start batch mode - suppress auto-commits")
+  .action(async () => {
+    try {
+      await batchStartCommand();
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+batch
+  .command("commit")
+  .description("Commit all batched changes")
+  .option("-m, --message <text>", "Custom commit message")
+  .action(async (options) => {
+    try {
+      await batchCommitCommand(options.message);
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+batch
+  .command("abort")
+  .description("Exit batch mode without committing")
+  .action(async () => {
+    try {
+      await batchAbortCommand();
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+batch
+  .command("status")
+  .description("Show batch mode status")
+  .action(async () => {
+    try {
+      await batchStatusCommand();
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);

@@ -1,5 +1,22 @@
+import fs from "fs/promises";
+import path from "path";
 import { isGitRepo, gitAdd, gitCommit } from "./git.js";
 import { loadConfig } from "./config.js";
+
+const BATCH_FILE = ".tick/batch";
+
+/**
+ * Check if batch mode is active
+ */
+async function isBatchMode(cwd: string): Promise<boolean> {
+  const batchPath = path.join(cwd, BATCH_FILE);
+  try {
+    await fs.access(batchPath);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 /**
  * Auto-commit changes to TICK.md if configured
@@ -34,7 +51,7 @@ export async function autoCommit(
 }
 
 /**
- * Determine if auto-commit should run based on flags and config
+ * Determine if auto-commit should run based on flags, config, and batch mode
  */
 export async function shouldAutoCommit(
   options: { commit?: boolean; noCommit?: boolean },
@@ -42,6 +59,15 @@ export async function shouldAutoCommit(
 ): Promise<boolean> {
   // --no-commit forces skip
   if (options.noCommit) {
+    return false;
+  }
+
+  // Batch mode suppresses auto-commit (unless --commit is explicit)
+  if (await isBatchMode(cwd)) {
+    if (options.commit) {
+      // Explicit --commit overrides batch mode
+      return true;
+    }
     return false;
   }
 

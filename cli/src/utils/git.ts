@@ -241,3 +241,22 @@ export function getLastCommitMessage(cwd: string = process.cwd()): string {
     return "";
   }
 }
+
+/**
+ * Get the git user name from config
+ */
+export function getGitUser(cwd: string = process.cwd()): string | null {
+  try {
+    const gitName = execSync("git config user.name", {
+      cwd,
+      encoding: "utf-8",
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+    if (gitName) {
+      return `@${gitName.toLowerCase().replace(/\s+/g, "-")}`;
+    }
+  } catch {
+    // Git not available or not configured
+  }
+  return null;
+}

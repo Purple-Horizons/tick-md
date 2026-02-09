@@ -1,6 +1,6 @@
 {
   "name": "tick-md",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "Multi-agent task coordination via Git-backed Markdown",
   "main": "dist/index.js",
   "bin": {

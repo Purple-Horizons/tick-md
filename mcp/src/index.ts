@@ -22,6 +22,16 @@ import { doneCommand, commentCommand } from "../../cli/dist/commands/done.js";
 import { validateTickFile } from "../../cli/dist/utils/validator.js";
 // @ts-ignore
 import { registerAgentCommand, listAgentsCommand } from "../../cli/dist/commands/agent.js";
+// @ts-ignore
+import { reopenCommand } from "../../cli/dist/commands/reopen.js";
+// @ts-ignore
+import { deleteCommand } from "../../cli/dist/commands/delete.js";
+// @ts-ignore
+import { editCommand } from "../../cli/dist/commands/edit.js";
+// @ts-ignore
+import { undoCommand } from "../../cli/dist/commands/undo.js";
+// @ts-ignore
+import { importCommand } from "../../cli/dist/commands/import.js";
 
 // Types copied from CLI
 type Priority = "urgent" | "high" | "medium" | "low";
@@ -281,6 +291,118 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ["name"],
         },
       },
+      {
+        name: "tick_reopen",
+        description: "Reopen a completed task. Use when a task was marked done prematurely.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            taskId: {
+              type: "string",
+              description: "Task ID to reopen (e.g., TASK-001)",
+            },
+            agent: {
+              type: "string",
+              description: "Agent reopening the task",
+            },
+            note: {
+              type: "string",
+              description: "Reason for reopening",
+            },
+            status: {
+              type: "string",
+              enum: ["backlog", "todo", "in_progress", "reopened"],
+              description: "Target status (default: reopened)",
+            },
+          },
+          required: ["taskId", "agent"],
+        },
+      },
+      {
+        name: "tick_delete",
+        description: "Delete a task from the project. Use for duplicates or mistaken entries.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            taskId: {
+              type: "string",
+              description: "Task ID to delete",
+            },
+            force: {
+              type: "boolean",
+              description: "Force delete even if task is in progress or has dependents",
+            },
+          },
+          required: ["taskId"],
+        },
+      },
+      {
+        name: "tick_edit",
+        description: "Edit task fields directly. Allows changing status, priority, title, etc. without going through state transitions.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            taskId: {
+              type: "string",
+              description: "Task ID to edit",
+            },
+            agent: {
+              type: "string",
+              description: "Agent making the edit",
+            },
+            status: {
+              type: "string",
+              enum: ["backlog", "todo", "in_progress", "review", "done", "blocked", "reopened"],
+              description: "New status",
+            },
+            priority: {
+              type: "string",
+              enum: ["urgent", "high", "medium", "low"],
+              description: "New priority",
+            },
+            title: {
+              type: "string",
+              description: "New title",
+            },
+            description: {
+              type: "string",
+              description: "New description",
+            },
+            assignedTo: {
+              type: "string",
+              description: "New assignee (empty to unassign)",
+            },
+            tags: {
+              type: "array",
+              items: { type: "string" },
+              description: "New tags (replaces existing)",
+            },
+            dependsOn: {
+              type: "array",
+              items: { type: "string" },
+              description: "New dependencies (replaces existing)",
+            },
+            note: {
+              type: "string",
+              description: "Note for history entry",
+            },
+          },
+          required: ["taskId", "agent"],
+        },
+      },
+      {
+        name: "tick_undo",
+        description: "Undo the last tick commit by reverting it. Only works on tick commits.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            force: {
+              type: "boolean",
+              description: "Force revert even if not a tick commit",
+            },
+          },
+        },
+      },
     ],
   };
 });
@@ -537,6 +659,116 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: "text",
               text: `Agent ${name} registered (type: ${type}, roles: ${roles.join(", ")})`,
+            },
+          ],
+        };
+      }
+
+      case "tick_reopen": {
+        checkTickFile();
+        const { taskId, agent, note, status = "reopened" } = args as any;
+
+        // Suppress console output
+        const originalLog = console.log;
+        const originalWarn = console.warn;
+        console.log = () => {};
+        console.warn = () => {};
+
+        await reopenCommand(taskId, agent, { note, status });
+
+        console.log = originalLog;
+        console.warn = originalWarn;
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Task ${taskId} reopened by ${agent}${note ? ` (${note})` : ""}`,
+            },
+          ],
+        };
+      }
+
+      case "tick_delete": {
+        checkTickFile();
+        const { taskId, force = false } = args as any;
+
+        // Suppress console output
+        const originalLog = console.log;
+        console.log = () => {};
+
+        await deleteCommand(taskId, { force });
+
+        console.log = originalLog;
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Task ${taskId} deleted`,
+            },
+          ],
+        };
+      }
+
+      case "tick_edit": {
+        checkTickFile();
+        const {
+          taskId,
+          agent,
+          status,
+          priority,
+          title,
+          description,
+          assignedTo,
+          tags,
+          dependsOn,
+          note,
+        } = args as any;
+
+        // Suppress console output
+        const originalLog = console.log;
+        console.log = () => {};
+
+        await editCommand(taskId, agent, {
+          status,
+          priority,
+          title,
+          description,
+          assignedTo,
+          tags,
+          dependsOn,
+          note,
+        });
+
+        console.log = originalLog;
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: `Task ${taskId} edited by ${agent}`,
+            },
+          ],
+        };
+      }
+
+      case "tick_undo": {
+        const { force = false } = (args as any) || {};
+
+        // Suppress console output
+        const originalLog = console.log;
+        console.log = () => {};
+
+        await undoCommand({ force });
+
+        console.log = originalLog;
+
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Last tick commit reverted",
             },
           ],
         };

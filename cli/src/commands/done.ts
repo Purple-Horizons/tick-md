@@ -8,6 +8,7 @@ import { autoCommit, shouldAutoCommit } from "../utils/auto-commit.js";
 export interface DoneCommentOptions {
   commit?: boolean;
   noCommit?: boolean;
+  skipWorkflow?: boolean;
 }
 
 /**
@@ -44,6 +45,19 @@ export async function doneCommand(
   if (task.status === "done") {
     console.log(`Task ${taskId} is already done.`);
     return;
+  }
+
+  // Warn if task was never started (backlog → done)
+  const neverStartedStatuses = ["backlog", "todo"];
+  if (neverStartedStatuses.includes(task.status) && !options.skipWorkflow) {
+    console.warn(
+      `⚠️  Warning: Task ${taskId} was never started (status: ${task.status})`
+    );
+    console.warn(
+      `   This task is going directly from '${task.status}' to 'done'.`
+    );
+    console.warn(`   Use --skip-workflow to suppress this warning.`);
+    console.warn("");
   }
 
   // Check if claimed by this agent (optional - can be done by anyone)
