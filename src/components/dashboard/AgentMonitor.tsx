@@ -18,7 +18,7 @@ export default function AgentMonitor() {
   const offline = agents.filter((a: Agent) => a.status === "offline").length;
 
   return (
-    <div className="p-5 md:p-8 max-w-4xl">
+    <div className="p-4 md:p-6 max-w-4xl">
       {/* Header stats */}
       <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-8">
         {[
@@ -26,7 +26,7 @@ export default function AgentMonitor() {
           { label: "Idle", count: idle, color: "var(--color-warning)" },
           { label: "Offline", count: offline, color: "var(--color-text-muted)" },
         ].map((stat) => (
-          <div key={stat.label} className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-4 md:p-5">
+          <div key={stat.label} className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-3 md:p-4">
             <div className="flex items-center gap-1.5 md:gap-2 mb-1">
               <span className="w-2 h-2 rounded-full" style={{ backgroundColor: stat.color }} />
               <span className="font-sans text-[10px] md:text-xs text-[var(--color-text-muted)] uppercase tracking-wider">{stat.label}</span>
@@ -43,7 +43,7 @@ export default function AgentMonitor() {
           return (
             <div
               key={agent.name}
-              className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-4"
+              className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-3"
             >
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">

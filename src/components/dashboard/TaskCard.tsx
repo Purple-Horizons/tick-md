@@ -46,7 +46,7 @@ export default function TaskCard({ task }: { task: Task }) {
       onClick={() => setSelectedTask(task.id)}
       className={`
         group bg-[var(--color-bg-card)] border border-[var(--color-border)]
-        rounded-lg p-4 cursor-grab active:cursor-grabbing
+        rounded-lg p-3 cursor-grab active:cursor-grabbing
         hover:border-[var(--color-border-accent)] transition-all duration-150
         ${isDragging ? "shadow-lg shadow-[var(--color-glow)]" : ""}
       `}

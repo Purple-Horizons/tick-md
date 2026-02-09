@@ -52,7 +52,7 @@ export default function ActivityFeed() {
   }, [feed]);
 
   return (
-    <div className="p-5 md:p-8 max-w-3xl">
+    <div className="p-4 md:p-6 max-w-3xl">
       {Object.entries(grouped).map(([date, items]) => (
         <div key={date} className="mb-8">
           <div className="font-sans text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-4 sticky top-0 bg-[var(--color-bg)] py-2 z-10">
@@ -66,7 +66,7 @@ export default function ActivityFeed() {
               return (
                 <div
                   key={`${item.taskId}-${i}`}
-                  className="flex gap-4 py-4 border-b border-[var(--color-border)]/30 last:border-0 group hover:bg-[var(--color-bg-surface)]/30 -mx-4 px-4 rounded-lg transition-colors"
+                  className="flex gap-4 py-3 border-b border-[var(--color-border)]/30 last:border-0 group hover:bg-[var(--color-bg-surface)]/30 -mx-3 px-3 rounded-lg transition-colors"
                 >
                   {/* Timeline dot */}
                   <div className="flex flex-col items-center pt-1">

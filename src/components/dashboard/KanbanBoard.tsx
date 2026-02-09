@@ -98,7 +98,7 @@ function KanbanColumn({ status, tasks, collapsed, onToggle }: { status: string; 
       </div>
 
       {/* Cards */}
-      <div className="flex-1 md:overflow-y-auto space-y-3 px-1 pb-4 min-h-[60px]">
+      <div className="flex-1 md:overflow-y-auto space-y-2 px-1 pb-4 min-h-[60px]">
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
             <TaskCard key={task.id} task={task} />
@@ -238,7 +238,7 @@ export default function KanbanBoard() {
         </div>
 
         {/* Mobile task list */}
-        <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3">
+        <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
           {mobileFilteredTasks.length > 0 ? (
             mobileFilteredTasks.map((task: Task) => (
               <TaskCard key={task.id} task={task} />
@@ -259,7 +259,7 @@ export default function KanbanBoard() {
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <div className="hidden md:flex flex-1 gap-4 lg:gap-5 p-5 lg:p-8 overflow-x-auto">
+          <div className="hidden md:flex flex-1 gap-3 lg:gap-4 p-4 lg:p-6 overflow-x-auto">
             {visibleStatuses.map((status) => (
               <KanbanColumn 
                 key={status} 

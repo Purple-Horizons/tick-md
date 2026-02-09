@@ -40,7 +40,7 @@ function DetailContent({ task, onClose }: { task: Task; onClose: () => void }) {
   return (
     <>
       {/* Header */}
-      <div className="sticky top-0 bg-[var(--color-bg-surface)] border-b border-[var(--color-border)] px-5 md:px-6 py-4 flex items-center justify-between z-10">
+      <div className="sticky top-0 bg-[var(--color-bg-surface)] border-b border-[var(--color-border)] px-4 md:px-5 py-3 md:py-4 flex items-center justify-between z-10">
         <div className="flex items-center gap-2">
           <span className="font-mono text-xs text-[var(--color-accent)]">{task.id}</span>
           <span className="font-mono text-xs text-[var(--color-text-muted)]">·</span>
@@ -59,7 +59,7 @@ function DetailContent({ task, onClose }: { task: Task; onClose: () => void }) {
         </button>
       </div>
 
-      <div className="px-5 md:px-6 py-5 space-y-5">
+      <div className="px-4 md:px-5 py-4 space-y-5">
         {/* Title */}
         <h2 className="font-sans text-lg font-semibold text-white leading-snug">
           {task.title}
@@ -146,7 +146,7 @@ function DetailContent({ task, onClose }: { task: Task; onClose: () => void }) {
         {task.description && (
           <div>
             <span className="font-mono text-xs text-[var(--color-text-muted)] uppercase tracking-wider block mb-2">Description</span>
-            <div className="font-sans text-sm text-[var(--color-text-dim)] leading-relaxed bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-4">
+            <div className="font-sans text-sm text-[var(--color-text-dim)] leading-relaxed bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-3">
               {task.description}
             </div>
           </div>
