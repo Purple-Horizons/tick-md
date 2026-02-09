@@ -295,6 +295,6 @@ TICK.md is 100% free and open source. If it helps you, consider supporting devel
 
 ---
 
-**Made with ❤️ by Purple Horizons**
+**Created by [@giannidalerta](https://twitter.com/giannidalerta) and his mass of agents**
 
 *Coordinate smarter, not harder.*
