@@ -1,6 +1,6 @@
 {
   "name": "tick-coordination",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "summary": "Multi-agent task coordination using Git-backed Markdown files",
   "description": "Coordinate work across human and AI agents using the Tick protocol. Maintain structured task tracking in TICK.md files while enabling natural conversation. Supports CLI and MCP server for programmatic access.",
   "author": "Purple Horizons",
@@ -29,7 +29,12 @@
     "Real-time task monitoring",
     "Git-based version control",
     "MCP server integration",
-    "Natural language task coordination"
+    "Natural language task coordination",
+    "Task reopening and deletion",
+    "Direct field editing",
+    "Undo last operation",
+    "Bulk import from YAML",
+    "Batch mode for multiple operations"
   ],
   "examples": [
     {
@@ -43,6 +48,14 @@
     {
       "title": "Visualize dependencies",
       "code": "tick graph --format mermaid"
+    },
+    {
+      "title": "Corrections and recovery",
+      "code": "tick reopen TASK-001 @bot\ntick undo --dry-run\ntick edit TASK-001 --priority urgent --add-tag hotfix"
+    },
+    {
+      "title": "Bulk import tasks",
+      "code": "tick import tasks.yaml --dry-run\ntick import tasks.yaml"
     }
   ]
 }

@@ -145,8 +145,48 @@ tick add "Task title" \
 tick claim TASK-001 @agent         # Claim task (sets in_progress)
 tick release TASK-001 @agent       # Release task (back to todo)
 tick done TASK-001 @agent          # Complete task
+tick reopen TASK-001 @agent        # Reopen completed task
+tick delete TASK-001               # Delete a task
 tick comment TASK-001 @agent \     # Add note
   --note "Progress update"
+tick edit TASK-001 \               # Direct field edit
+  --title "New title" \
+  --priority high \
+  --status in_progress
+```
+
+### Corrections & Recovery
+```bash
+tick reopen TASK-001 @agent        # Reopen completed task
+tick reopen TASK-001 @agent \      # Reopen and re-block dependents
+  --re-block
+
+tick delete TASK-001               # Delete task, cleans up deps
+tick delete TASK-001 --force       # Delete even if has dependents
+
+tick edit TASK-001 --title "X"     # Change title
+tick edit TASK-001 --priority high # Change priority
+tick edit TASK-001 --status todo   # Change status directly
+tick edit TASK-001 --tags a,b,c    # Replace tags
+tick edit TASK-001 --add-tag new   # Add tag
+tick edit TASK-001 --remove-tag old # Remove tag
+tick edit TASK-001 \               # Edit dependencies
+  --depends-on TASK-002,TASK-003
+
+tick undo                          # Undo last tick operation
+tick undo --dry-run                # Preview what would be undone
+```
+
+### Bulk Operations
+```bash
+tick import tasks.yaml             # Import tasks from YAML file
+tick import - < tasks.yaml         # Import from stdin
+tick import tasks.yaml --dry-run   # Preview import
+
+tick batch start                   # Begin batch mode (no auto-commit)
+tick batch status                  # Check batch status
+tick batch commit                  # Commit all batched changes
+tick batch abort                   # Discard batched changes
 ```
 
 ### Advanced Task Listing
@@ -201,6 +241,12 @@ If using Model Context Protocol, use these tools instead of CLI commands:
 - `tick_release` - Release claimed task
 - `tick_done` - Complete task (auto-unblocks dependents)
 - `tick_comment` - Add note to task
+
+### Corrections & Recovery
+- `tick_reopen` - Reopen completed task
+- `tick_delete` - Delete a task
+- `tick_edit` - Direct field edit (bypasses state machine)
+- `tick_undo` - Undo last tick operation
 
 ### Agent Operations
 - `tick_agent_register` - Register new agent
@@ -344,6 +390,44 @@ tick sync --push
 # Automatically generates: "feat: complete TASK-001, TASK-002; update TASK-003"
 ```
 
+### Reopening Completed Tasks
+
+If a task was marked done prematurely:
+```bash
+tick reopen TASK-001 @bot
+# Sets status back to in_progress, records in history
+
+tick reopen TASK-001 @bot --re-block
+# Also re-blocks any tasks that depend on this one
+```
+
+### Fixing Mistakes
+
+```bash
+# Undo the last tick operation
+tick undo
+
+# Preview what would be undone first
+tick undo --dry-run
+
+# Direct field edits (bypasses state machine)
+tick edit TASK-001 --status todo --priority urgent
+```
+
+### Batch Operations
+
+For multiple changes without individual commits:
+```bash
+tick batch start
+# Now make multiple changes...
+tick add "Task 1" --priority high
+tick add "Task 2" --priority medium
+tick claim TASK-001 @bot
+# ...
+tick batch commit   # Single commit for all changes
+# Or: tick batch abort  # Discard all changes
+```
+
 ### Real-time Monitoring
 
 ```bash
@@ -358,6 +442,8 @@ tick watch
 ```
 Workflow:      init → add → claim → work → comment → done → sync
 Essential:     status | add | claim | done | list | graph
+Corrections:   reopen | delete | edit | undo
+Bulk:          import | batch start/commit/abort
 Coordination:  agent register | agent list | validate | watch
 Git:           sync --pull | sync --push
 ```

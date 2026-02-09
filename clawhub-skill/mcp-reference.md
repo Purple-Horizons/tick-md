@@ -292,6 +292,130 @@ const bots = await tick_agent_list({ type: "bot", verbose: true });
 const working = await tick_agent_list({ status: "working" });
 ```
 
+### 10. tick_reopen
+
+Reopen a completed task (sets status back to `in_progress` or previous state).
+
+**Arguments**:
+- `taskId` (required): Task ID
+- `agent` (required): Agent name
+- `reBlock` (optional): Boolean - re-block tasks that depend on this one (default: false)
+
+**Returns**:
+```json
+{
+  "success": true,
+  "message": "🔄 @bot reopened TASK-001"
+}
+```
+
+**Example**:
+```javascript
+// Simple reopen
+await tick_reopen({
+  taskId: "TASK-023",
+  agent: "@bot"
+});
+
+// Reopen and re-block dependent tasks
+await tick_reopen({
+  taskId: "TASK-023",
+  agent: "@bot",
+  reBlock: true
+});
+```
+
+### 11. tick_delete
+
+Delete a task from the project.
+
+**Arguments**:
+- `taskId` (required): Task ID
+- `force` (optional): Boolean - delete even if task has dependents (default: false)
+
+**Returns**:
+```json
+{
+  "success": true,
+  "message": "🗑️ Deleted TASK-001"
+}
+```
+
+**Example**:
+```javascript
+// Delete a task
+await tick_delete({ taskId: "TASK-023" });
+
+// Force delete even if it has dependents
+await tick_delete({ taskId: "TASK-023", force: true });
+```
+
+### 12. tick_edit
+
+Directly edit task fields, bypassing state machine validation.
+
+**Arguments**:
+- `taskId` (required): Task ID
+- `title` (optional): New title
+- `priority` (optional): "urgent" | "high" | "medium" | "low"
+- `status` (optional): New status
+- `tags` (optional): Array of tags (replaces existing)
+- `addTag` (optional): Tag to add
+- `removeTag` (optional): Tag to remove
+- `dependsOn` (optional): Array of task IDs
+- `description` (optional): New description
+
+**Returns**:
+```json
+{
+  "success": true,
+  "message": "✏️ Updated TASK-001: title, priority"
+}
+```
+
+**Example**:
+```javascript
+// Edit multiple fields
+await tick_edit({
+  taskId: "TASK-023",
+  title: "Updated task title",
+  priority: "urgent",
+  addTag: "critical"
+});
+
+// Fix status directly
+await tick_edit({
+  taskId: "TASK-023",
+  status: "todo"
+});
+```
+
+### 13. tick_undo
+
+Undo the last tick operation by reverting the most recent tick commit.
+
+**Arguments**:
+- `dryRun` (optional): Boolean - preview what would be undone (default: false)
+
+**Returns**:
+```json
+{
+  "success": true,
+  "message": "↩️ Reverted: tick: complete TASK-001",
+  "revertedCommit": "abc1234"
+}
+```
+
+**Example**:
+```javascript
+// Preview undo
+const preview = await tick_undo({ dryRun: true });
+console.log("Would revert:", preview.message);
+
+// Actually undo
+await tick_undo();
+```
+
 ## Common Patterns
 
 ### Pattern 1: Full Task Lifecycle
@@ -406,6 +530,29 @@ await tick_agent_register({
 // List to see team composition
 const team = await tick_agent_list({ verbose: true });
 console.log(`Team size: ${team.count}`);
+```
+
+### Pattern 5: Corrections and Recovery
+
+```javascript
+// Oops - marked task done too early
+await tick_reopen({
+  taskId: "TASK-023",
+  agent: "@bot"
+});
+
+// Or undo the entire last operation
+await tick_undo();
+
+// Fix a task's fields directly
+await tick_edit({
+  taskId: "TASK-023",
+  priority: "urgent",
+  addTag: "hotfix"
+});
+
+// Delete an obsolete task
+await tick_delete({ taskId: "TASK-OLD" });
 ```
 
 ## Error Handling
