@@ -111,3 +111,58 @@ Tests are in `cli/test/` using Node.js built-in test runner:
 1. Add tool definition in the `ListToolsRequestSchema` handler in `mcp/src/index.ts`
 2. Add implementation in the `CallToolRequestSchema` switch statement
 3. Update `clawhub-skill/mcp-reference.md`
+
+## Release Workflow
+
+Publishing to npm is automated via GitHub Actions. When you push a version tag, both packages are built, tested, and published.
+
+### Steps to Release
+
+1. **Bump version numbers** in both package.json files:
+   ```bash
+   # Edit cli/package.json and mcp/package.json
+   # Also update version in cli/src/cli.ts (.version("x.x.x"))
+   ```
+
+2. **Rebuild to include version change:**
+   ```bash
+   cd cli && npm run build
+   ```
+
+3. **Commit the version bump:**
+   ```bash
+   git add -A
+   git commit -m "chore: bump version to vX.Y.Z"
+   git push
+   ```
+
+4. **Create and push a version tag:**
+   ```bash
+   git tag vX.Y.Z
+   git push origin vX.Y.Z
+   ```
+
+5. **GitHub Actions automatically:**
+   - Builds and tests the CLI
+   - Publishes `tick-md` to npm
+   - Builds and publishes `tick-mcp-server` to npm
+
+### Version Conventions
+
+- **CLI and MCP versions** should stay in sync for major/minor releases
+- Use semantic versioning: `MAJOR.MINOR.PATCH`
+  - MAJOR: Breaking changes
+  - MINOR: New features (like new commands)
+  - PATCH: Bug fixes
+
+### Manual Publishing (if needed)
+
+```bash
+cd cli && npm publish
+cd ../mcp && npm publish
+```
+
+Requires `NPM_TOKEN` configured locally via `npm login` or:
+```bash
+npm config set //registry.npmjs.org/:_authToken=<your-token>
+```
