@@ -3,10 +3,10 @@ project: tick-md
 title: Tick.md - Multi-Agent Coordination Protocol
 schema_version: "1.0"
 created: Sun Feb 01 2026 09:00:00 GMT-0500 (Eastern Standard Time)
-updated: 2026-02-08T04:10:00.000Z
+updated: 2026-02-09T19:50:36.194Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 24
+next_id: 32
 ---
 
 ## Agents
@@ -15,7 +15,7 @@ next_id: 24
 |-------|------|------|--------|------------|-------------|-------------|
 | @gianni | human | owner | working | TASK-003 | 2026-02-07T14:28:00 | owner |
 | @ralph | human | owner | offline | - | 2026-02-06T18:00:00 | owner |
-| @claude-code | bot | engineer | idle | - | 2026-02-08T01:14:38.477Z | trusted |
+| @claude-code | bot | engineer | idle | - | 2026-02-09T19:50:36.194Z | trusted |
 | @content-bot | bot | copywriter | working | TASK-012 | 2026-02-07T14:32:00 | trusted |
 | @qa-bot | bot | tester | idle | - | 2026-02-07T14:15:00 | trusted |
 | test-bot | bot | backend, api | idle | - | 2026-02-08T01:14:03.522Z | trusted |
@@ -114,8 +114,6 @@ tags:
   - clawhub
   - plugin
   - enhancement
-depends_on: []
-blocks: []
 history:
   - ts: 2026-02-08T04:10:00.000Z
     who: "@gianni"
@@ -123,3 +121,203 @@ history:
 ```
 
 > Create a native ClawHub plugin that registers tick tools directly instead of requiring separate npm install of tick-mcp-server. This would make it cleaner for OpenClaw bots - they'd get the tools built-in rather than needing external dependencies. Currently we're `kind: skill` (bot follows instructions to install), but a `kind: plugin` would provide the tools natively.
+
+### TASK-024 · Build tick reopen command
+
+```yaml
+id: TASK-024
+status: done
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T19:50:21.724Z
+updated_at: 2026-02-09T19:50:33.316Z
+tags:
+  - cli
+  - undo
+history:
+  - ts: 2026-02-09T19:50:21.724Z
+    who: "@gianni-d'alerta"
+    action: created
+  - ts: 2026-02-09T19:50:33.316Z
+    who: "@claude-code"
+    action: completed
+    from: backlog
+    to: done
+```
+
+### TASK-025 · Build tick delete command
+
+```yaml
+id: TASK-025
+status: done
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T19:50:22.215Z
+updated_at: 2026-02-09T19:50:33.748Z
+tags:
+  - cli
+  - task-management
+history:
+  - ts: 2026-02-09T19:50:22.215Z
+    who: "@gianni-d'alerta"
+    action: created
+  - ts: 2026-02-09T19:50:33.748Z
+    who: "@claude-code"
+    action: completed
+    from: backlog
+    to: done
+```
+
+### TASK-026 · Build tick edit command
+
+```yaml
+id: TASK-026
+status: done
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T19:50:22.650Z
+updated_at: 2026-02-09T19:50:34.168Z
+tags:
+  - cli
+  - task-management
+history:
+  - ts: 2026-02-09T19:50:22.650Z
+    who: "@gianni-d'alerta"
+    action: created
+  - ts: 2026-02-09T19:50:34.168Z
+    who: "@claude-code"
+    action: completed
+    from: backlog
+    to: done
+```
+
+### TASK-027 · Build tick undo command
+
+```yaml
+id: TASK-027
+status: done
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T19:50:23.088Z
+updated_at: 2026-02-09T19:50:34.595Z
+tags:
+  - cli
+  - git
+history:
+  - ts: 2026-02-09T19:50:23.088Z
+    who: "@gianni-d'alerta"
+    action: created
+  - ts: 2026-02-09T19:50:34.595Z
+    who: "@claude-code"
+    action: completed
+    from: backlog
+    to: done
+```
+
+### TASK-028 · Build tick import command for bulk operations
+
+```yaml
+id: TASK-028
+status: done
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T19:50:23.515Z
+updated_at: 2026-02-09T19:50:35.045Z
+tags:
+  - cli
+  - bulk
+history:
+  - ts: 2026-02-09T19:50:23.515Z
+    who: "@gianni-d'alerta"
+    action: created
+  - ts: 2026-02-09T19:50:35.045Z
+    who: "@claude-code"
+    action: completed
+    from: backlog
+    to: done
+```
+
+### TASK-029 · Build tick batch mode
+
+```yaml
+id: TASK-029
+status: done
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T19:50:23.881Z
+updated_at: 2026-02-09T19:50:35.445Z
+tags:
+  - cli
+  - git
+history:
+  - ts: 2026-02-09T19:50:23.881Z
+    who: "@gianni-d'alerta"
+    action: created
+  - ts: 2026-02-09T19:50:35.445Z
+    who: "@claude-code"
+    action: completed
+    from: backlog
+    to: done
+```
+
+### TASK-030 · Add workflow warning to tick done
+
+```yaml
+id: TASK-030
+status: done
+priority: low
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T19:50:24.247Z
+updated_at: 2026-02-09T19:50:35.818Z
+tags:
+  - cli
+  - ux
+history:
+  - ts: 2026-02-09T19:50:24.247Z
+    who: "@gianni-d'alerta"
+    action: created
+  - ts: 2026-02-09T19:50:35.818Z
+    who: "@claude-code"
+    action: completed
+    from: backlog
+    to: done
+```
+
+### TASK-031 · Add GitHub Actions workflow for npm publishing
+
+```yaml
+id: TASK-031
+status: done
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-d'alerta"
+created_at: 2026-02-09T19:50:24.617Z
+updated_at: 2026-02-09T19:50:36.194Z
+tags:
+  - ci
+  - npm
+history:
+  - ts: 2026-02-09T19:50:24.617Z
+    who: "@gianni-d'alerta"
+    action: created
+  - ts: 2026-02-09T19:50:36.194Z
+    who: "@claude-code"
+    action: completed
+    from: backlog
+    to: done
+```
