@@ -166,3 +166,18 @@ Requires `NPM_TOKEN` configured locally via `npm login` or:
 ```bash
 npm config set //registry.npmjs.org/:_authToken=<your-token>
 ```
+
+## ClawHub Skill Publishing
+
+The skill is published to ClawHub at: https://clawhub.ai/gianni-dalerta/tick-md
+
+### Publishing Updates
+
+```bash
+clawhub publish clawhub-skill --slug tick-md --version X.Y.Z --changelog "Description of changes"
+```
+
+**Important**:
+- The slug is `tick-md` (not `tick-coordination`)
+- Keep `clawhub-skill/skill.json` version in sync with CLI version
+- Update `clawhub-skill/SKILL.md` and `clawhub-skill/mcp-reference.md` when adding new commands/tools
