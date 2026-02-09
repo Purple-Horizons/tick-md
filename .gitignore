@@ -47,6 +47,9 @@ tmp/
 temp/
 *.tmp
 
+# Promo assets (Remotion project for GIFs/videos)
+promo/
+
 # OS
 Thumbs.db
 
