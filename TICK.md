@@ -3,10 +3,10 @@ project: tick-md
 title: Tick.md - Multi-Agent Coordination Protocol
 schema_version: "1.0"
 created: Sun Feb 01 2026 09:00:00 GMT-0500 (Eastern Standard Time)
-updated: 2026-02-09T20:27:04.180Z
+updated: 2026-02-10T03:14:27.857Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
-next_id: 37
+next_id: 38
 ---
 
 ## Agents
@@ -32,7 +32,7 @@ status: done
 priority: high
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-08T01:14:22.398Z
 updated_at: 2026-02-08T01:14:28.374Z
 tags:
@@ -40,7 +40,7 @@ tags:
   - validation
 history:
   - ts: 2026-02-08T01:14:22.398Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-08T01:14:28.374Z
     who: "@claude-code"
@@ -57,7 +57,7 @@ status: done
 priority: high
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-08T01:14:33.487Z
 updated_at: 2026-02-08T01:14:33.584Z
 tags:
@@ -65,7 +65,7 @@ tags:
   - agents
 history:
   - ts: 2026-02-08T01:14:33.487Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-08T01:14:33.584Z
     who: "@claude-code"
@@ -82,7 +82,7 @@ status: done
 priority: high
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-08T01:14:38.385Z
 updated_at: 2026-02-08T01:14:38.477Z
 tags:
@@ -90,7 +90,7 @@ tags:
   - agents
 history:
   - ts: 2026-02-08T01:14:38.385Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-08T01:14:38.477Z
     who: "@claude-code"
@@ -130,7 +130,7 @@ status: done
 priority: high
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T19:50:21.724Z
 updated_at: 2026-02-09T19:50:33.316Z
 tags:
@@ -138,7 +138,7 @@ tags:
   - undo
 history:
   - ts: 2026-02-09T19:50:21.724Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-09T19:50:33.316Z
     who: "@claude-code"
@@ -155,7 +155,7 @@ status: done
 priority: high
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T19:50:22.215Z
 updated_at: 2026-02-09T19:50:33.748Z
 tags:
@@ -163,7 +163,7 @@ tags:
   - task-management
 history:
   - ts: 2026-02-09T19:50:22.215Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-09T19:50:33.748Z
     who: "@claude-code"
@@ -180,7 +180,7 @@ status: done
 priority: high
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T19:50:22.650Z
 updated_at: 2026-02-09T19:50:34.168Z
 tags:
@@ -188,7 +188,7 @@ tags:
   - task-management
 history:
   - ts: 2026-02-09T19:50:22.650Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-09T19:50:34.168Z
     who: "@claude-code"
@@ -205,7 +205,7 @@ status: done
 priority: high
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T19:50:23.088Z
 updated_at: 2026-02-09T19:50:34.595Z
 tags:
@@ -213,7 +213,7 @@ tags:
   - git
 history:
   - ts: 2026-02-09T19:50:23.088Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-09T19:50:34.595Z
     who: "@claude-code"
@@ -230,7 +230,7 @@ status: done
 priority: medium
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T19:50:23.515Z
 updated_at: 2026-02-09T19:50:35.045Z
 tags:
@@ -238,7 +238,7 @@ tags:
   - bulk
 history:
   - ts: 2026-02-09T19:50:23.515Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-09T19:50:35.045Z
     who: "@claude-code"
@@ -255,7 +255,7 @@ status: done
 priority: medium
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T19:50:23.881Z
 updated_at: 2026-02-09T19:50:35.445Z
 tags:
@@ -263,7 +263,7 @@ tags:
   - git
 history:
   - ts: 2026-02-09T19:50:23.881Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-09T19:50:35.445Z
     who: "@claude-code"
@@ -280,7 +280,7 @@ status: done
 priority: low
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T19:50:24.247Z
 updated_at: 2026-02-09T19:50:35.818Z
 tags:
@@ -288,7 +288,7 @@ tags:
   - ux
 history:
   - ts: 2026-02-09T19:50:24.247Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-09T19:50:35.818Z
     who: "@claude-code"
@@ -305,7 +305,7 @@ status: done
 priority: medium
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T19:50:24.617Z
 updated_at: 2026-02-09T19:50:36.194Z
 tags:
@@ -313,7 +313,7 @@ tags:
   - npm
 history:
   - ts: 2026-02-09T19:50:24.617Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
   - ts: 2026-02-09T19:50:36.194Z
     who: "@claude-code"
@@ -330,7 +330,7 @@ status: backlog
 priority: urgent
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T20:26:54.123Z
 updated_at: 2026-02-09T20:26:54.123Z
 tags:
@@ -339,7 +339,7 @@ tags:
   - multi-agent
 history:
   - ts: 2026-02-09T20:26:54.123Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
 ```
 
@@ -351,7 +351,7 @@ status: backlog
 priority: high
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T20:26:56.691Z
 updated_at: 2026-02-09T20:26:56.691Z
 tags:
@@ -360,7 +360,7 @@ tags:
   - multi-agent
 history:
   - ts: 2026-02-09T20:26:56.691Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
 ```
 
@@ -372,7 +372,7 @@ status: backlog
 priority: high
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T20:26:59.200Z
 updated_at: 2026-02-09T20:26:59.200Z
 tags:
@@ -381,7 +381,7 @@ tags:
   - protocol
 history:
   - ts: 2026-02-09T20:26:59.200Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
 ```
 
@@ -393,7 +393,7 @@ status: backlog
 priority: medium
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T20:27:01.671Z
 updated_at: 2026-02-09T20:27:01.671Z
 tags:
@@ -402,7 +402,7 @@ tags:
   - communication
 history:
   - ts: 2026-02-09T20:27:01.671Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
 ```
 
@@ -414,7 +414,7 @@ status: backlog
 priority: medium
 assigned_to: null
 claimed_by: null
-created_by: "@gianni-d'alerta"
+created_by: "@gianni-dalerta"
 created_at: 2026-02-09T20:27:04.180Z
 updated_at: 2026-02-09T20:27:04.180Z
 tags:
@@ -423,6 +423,29 @@ tags:
   - gateway
 history:
   - ts: 2026-02-09T20:27:04.180Z
-    who: "@gianni-d'alerta"
+    who: "@gianni-dalerta"
     action: created
 ```
+
+### TASK-037 · Build tick archive command for completed tasks
+
+```yaml
+id: TASK-037
+status: backlog
+priority: medium
+assigned_to: null
+claimed_by: null
+created_by: "@gianni-dalerta"
+created_at: 2026-02-10T03:14:27.857Z
+updated_at: 2026-02-10T03:14:27.857Z
+tags:
+  - cli
+  - cleanup
+  - feature-request
+history:
+  - ts: 2026-02-10T03:14:27.857Z
+    who: "@gianni-dalerta"
+    action: created
+```
+
+> Currently, TICK.md grows indefinitely as tasks accumulate. Add a `tick archive` command to move completed tasks to an ARCHIVE.md file. Options: `--before <date>` (e.g. `30d`, `2026-01-01`), `--status done` (default), `--dry-run`. Archived tasks remain recoverable via git history and the separate archive file. This keeps the main TICK.md lean for active work.
