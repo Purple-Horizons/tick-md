@@ -3,7 +3,7 @@ project: tick-md
 title: Tick.md - Multi-Agent Coordination Protocol
 schema_version: "1.0"
 created: Sun Feb 01 2026 09:00:00 GMT-0500 (Eastern Standard Time)
-updated: 2026-02-18T03:27:10.078Z
+updated: 2026-02-18T03:28:35.834Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 52
@@ -15,7 +15,7 @@ next_id: 52
 |-------|------|------|--------|------------|-------------|-------------|
 | @gianni | human | owner | working | TASK-003 | 2026-02-07T14:28:00 | owner |
 | @ralph | human | owner | offline | - | 2026-02-06T18:00:00 | owner |
-| @claude-code | bot | engineer | working | TASK-042 | 2026-02-18T03:27:10.078Z | trusted |
+| @claude-code | bot | engineer | idle | - | 2026-02-18T03:28:35.834Z | trusted |
 | @content-bot | bot | copywriter | working | TASK-012 | 2026-02-07T14:32:00 | trusted |
 | @qa-bot | bot | tester | idle | - | 2026-02-07T14:15:00 | trusted |
 | test-bot | bot | backend, api | idle | - | 2026-02-08T01:14:03.522Z | trusted |
@@ -605,13 +605,13 @@ history:
 
 ```yaml
 id: TASK-042
-status: in_progress
+status: done
 priority: medium
 assigned_to: null
-claimed_by: "@claude-code"
+claimed_by: null
 created_by: "@gianni-d'alerta"
 created_at: 2026-02-17T23:16:08.732Z
-updated_at: 2026-02-18T03:27:10.078Z
+updated_at: 2026-02-18T03:28:35.834Z
 tags:
   - ergonomics
   - ux
@@ -624,6 +624,11 @@ history:
     action: claimed
     from: backlog
     to: in_progress
+  - ts: 2026-02-18T03:28:35.834Z
+    who: "@claude-code"
+    action: completed
+    from: in_progress
+    to: done
 ```
 
 ### TASK-043 · Generate shell completion scripts
