@@ -3,7 +3,7 @@ project: tick-md
 title: Tick.md - Multi-Agent Coordination Protocol
 schema_version: "1.0"
 created: Sun Feb 01 2026 09:00:00 GMT-0500 (Eastern Standard Time)
-updated: 2026-02-18T03:42:55.072Z
+updated: 2026-02-18T03:43:03.222Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 52
@@ -15,7 +15,7 @@ next_id: 52
 |-------|------|------|--------|------------|-------------|-------------|
 | @gianni | human | owner | working | TASK-003 | 2026-02-07T14:28:00 | owner |
 | @ralph | human | owner | offline | - | 2026-02-06T18:00:00 | owner |
-| @claude-code | bot | engineer | idle | - | 2026-02-18T03:42:55.072Z | trusted |
+| @claude-code | bot | engineer | working | TASK-047 | 2026-02-18T03:43:03.222Z | trusted |
 | @content-bot | bot | copywriter | working | TASK-012 | 2026-02-07T14:32:00 | trusted |
 | @qa-bot | bot | tester | idle | - | 2026-02-07T14:15:00 | trusted |
 | test-bot | bot | backend, api | idle | - | 2026-02-08T01:14:03.522Z | trusted |
@@ -765,13 +765,13 @@ history:
 
 ```yaml
 id: TASK-047
-status: backlog
+status: in_progress
 priority: low
 assigned_to: null
-claimed_by: null
+claimed_by: "@claude-code"
 created_by: "@gianni-d'alerta"
 created_at: 2026-02-17T23:16:15.794Z
-updated_at: 2026-02-17T23:16:15.794Z
+updated_at: 2026-02-18T03:43:03.222Z
 tags:
   - integration
   - notify
@@ -779,6 +779,11 @@ history:
   - ts: 2026-02-17T23:16:15.794Z
     who: "@gianni-d'alerta"
     action: created
+  - ts: 2026-02-18T03:43:03.222Z
+    who: "@claude-code"
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 ### TASK-048 · Implement GitHub Issues sync
