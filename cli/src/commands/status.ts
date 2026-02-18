@@ -1,7 +1,5 @@
-import fs from "fs/promises";
-import path from "path";
 import chalk from "chalk";
-import { parseTickFile } from "../parser/index.js";
+import { parseTickFileCached } from "../utils/parse-cache.js";
 import type { TaskStatus, Priority } from "../types.js";
 
 /**
@@ -9,20 +7,9 @@ import type { TaskStatus, Priority } from "../types.js";
  */
 export async function statusCommand(): Promise<void> {
   const cwd = process.cwd();
-  const tickPath = path.join(cwd, "TICK.md");
 
-  // Check if TICK.md exists
-  try {
-    await fs.access(tickPath);
-  } catch {
-    throw new Error(
-      "TICK.md not found. Run 'tick init' first to create a project."
-    );
-  }
-
-  // Read and parse TICK.md
-  const content = await fs.readFile(tickPath, "utf-8");
-  const tickFile = parseTickFile(content);
+  // Parse with caching
+  const tickFile = await parseTickFileCached(cwd);
 
   console.log("");
   console.log(chalk.bold.cyan(`📋 ${tickFile.meta.title || tickFile.meta.project}`));

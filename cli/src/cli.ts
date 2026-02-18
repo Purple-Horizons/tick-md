@@ -2,6 +2,19 @@
 
 import { Command } from "commander";
 import chalk from "chalk";
+import { TickError, formatError } from "./utils/errors.js";
+
+/**
+ * Handle errors with contextual suggestions
+ */
+function handleError(error: any): never {
+  if (error instanceof TickError) {
+    console.error(chalk.red("Error:"), formatError(error));
+  } else {
+    console.error(chalk.red("Error:"), error.message);
+  }
+  process.exit(1);
+}
 import { initCommand } from "./commands/init.js";
 import { addCommand } from "./commands/add.js";
 import { claimCommand, releaseCommand } from "./commands/claim.js";
@@ -24,6 +37,31 @@ import {
   batchAbortCommand,
   batchStatusCommand,
 } from "./commands/batch.js";
+import { broadcastCommand, listBroadcastsCommand } from "./commands/broadcast.js";
+import {
+  notifyCommand,
+  listNotifyCommand,
+  testNotifyCommand,
+  queueStatusCommand,
+  queueListCommand,
+  queueClearCommand,
+  queueRetryCommand,
+  queueRemoveCommand,
+} from "./commands/notify.js";
+import { archiveCommand, listArchiveCommand } from "./commands/archive.js";
+import { repairCommand } from "./commands/repair.js";
+import { conflictsCommand } from "./commands/conflicts.js";
+import { compactCommand, historyStatsCommand } from "./commands/compact.js";
+import { warnAboutActiveAgents } from "./utils/conflict.js";
+import { completionCommand, type ShellType } from "./commands/completion.js";
+import { getLastAgent, getCurrentTask, rememberAgent, getAvailableTasks } from "./utils/session.js";
+import {
+  backupListCommand,
+  backupCreateCommand,
+  backupRestoreCommand,
+  backupShowCommand,
+  backupCleanCommand,
+} from "./commands/backup.js";
 import type { Priority, AgentStatus, AgentType, TaskStatus } from "./types.js";
 
 const program = new Command();
@@ -98,19 +136,75 @@ program
 
 // Claim command
 program
-  .command("claim <task-id> <agent>")
-  .description("Claim a task for an agent")
+  .command("claim [task-id] [agent]")
+  .description("Claim a task for an agent (shows available tasks if task-id omitted)")
   .option("--commit", "Auto-commit after change")
   .option("--no-commit", "Skip auto-commit even if config enables it")
   .action(async (taskId, agent, options) => {
     try {
-      await claimCommand(taskId, agent, {
+      // Smart argument handling: if taskId looks like an agent, swap them
+      let resolvedTaskId = taskId;
+      let resolvedAgent = agent;
+
+      if (taskId && taskId.startsWith("@") && !agent) {
+        // User passed agent as first arg - swap them
+        resolvedAgent = taskId;
+        resolvedTaskId = undefined;
+      }
+
+      // Resolve agent from session if not provided
+      if (!resolvedAgent) {
+        resolvedAgent = await getLastAgent();
+        if (!resolvedAgent) {
+          throw new Error("No agent specified. Use: tick claim <task-id> <agent>");
+        }
+        console.log(chalk.gray(`Using last agent: ${resolvedAgent}`));
+      }
+
+      // If no task ID, show available tasks
+      if (!resolvedTaskId) {
+        const available = await getAvailableTasks();
+        if (available.length === 0) {
+          console.log("No available tasks to claim.");
+          console.log(chalk.gray("All tasks are either claimed, blocked, or done."));
+          return;
+        }
+
+        console.log(chalk.cyan("Available tasks to claim:\n"));
+        for (const task of available.slice(0, 10)) {
+          const priorityColor = task.priority === "urgent" || task.priority === "high"
+            ? chalk.red
+            : task.priority === "low"
+            ? chalk.gray
+            : chalk.yellow;
+          console.log(`  ${task.id}  ${priorityColor(`[${task.priority}]`)}  ${task.title}`);
+        }
+        if (available.length > 10) {
+          console.log(chalk.gray(`\n  ... and ${available.length - 10} more`));
+        }
+        console.log(chalk.gray(`\nUse: tick claim <task-id> ${resolvedAgent}`));
+        return;
+      }
+
+      // Warn about other active agents
+      const activeWarnings = await warnAboutActiveAgents(resolvedAgent);
+      if (activeWarnings.length > 0) {
+        console.log(chalk.yellow("Note: Other agents are currently working:"));
+        for (const warning of activeWarnings) {
+          console.log(chalk.yellow(`  ${warning}`));
+        }
+        console.log("");
+      }
+
+      await claimCommand(resolvedTaskId, resolvedAgent, {
         commit: options.commit,
         noCommit: options.noCommit,
       });
+
+      // Remember agent for next time
+      await rememberAgent(resolvedAgent);
     } catch (error: any) {
-      console.error(chalk.red("Error:"), error.message);
-      process.exit(1);
+      handleError(error);
     }
   });
 
@@ -134,18 +228,54 @@ program
 
 // Done command
 program
-  .command("done <task-id> <agent>")
-  .description("Mark a task as complete")
+  .command("done [task-id] [agent]")
+  .description("Mark a task as complete (defaults to current task if omitted)")
   .option("--commit", "Auto-commit after change")
   .option("--no-commit", "Skip auto-commit even if config enables it")
   .option("--skip-workflow", "Skip workflow warning for tasks that were never started")
   .action(async (taskId, agent, options) => {
     try {
-      await doneCommand(taskId, agent, {
+      // Smart argument handling: if taskId looks like an agent, swap them
+      let argTaskId = taskId;
+      let argAgent = agent;
+
+      if (taskId && taskId.startsWith("@") && !agent) {
+        // User passed agent as first arg - swap them
+        argAgent = taskId;
+        argTaskId = undefined;
+      }
+
+      // Resolve agent (use last agent if not provided)
+      let resolvedAgent = argAgent;
+      if (!resolvedAgent) {
+        resolvedAgent = await getLastAgent();
+        if (!resolvedAgent) {
+          throw new Error("No agent specified. Use: tick done <task-id> <agent>");
+        }
+        console.log(chalk.gray(`Using last agent: ${resolvedAgent}`));
+      }
+
+      // Resolve task ID (use current task for agent if not provided)
+      let resolvedTaskId = argTaskId;
+      if (!resolvedTaskId) {
+        resolvedTaskId = await getCurrentTask(resolvedAgent);
+        if (!resolvedTaskId) {
+          throw new Error(
+            `No task specified and ${resolvedAgent} is not working on any task.\n` +
+            `Use: tick done <task-id> ${resolvedAgent}`
+          );
+        }
+        console.log(chalk.gray(`Completing current task: ${resolvedTaskId}`));
+      }
+
+      await doneCommand(resolvedTaskId, resolvedAgent, {
         commit: options.commit,
         noCommit: options.noCommit,
         skipWorkflow: options.skipWorkflow,
       });
+
+      // Remember agent for next time
+      await rememberAgent(resolvedAgent);
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
@@ -297,6 +427,75 @@ program
     }
   });
 
+// Repair command
+program
+  .command("repair")
+  .description("Auto-fix common TICK.md issues")
+  .option("--dry-run", "Show what would be fixed without making changes")
+  .option("-f, --force", "Apply repairs without confirmation")
+  .action(async (options) => {
+    try {
+      await repairCommand({
+        dryRun: options.dryRun,
+        force: options.force,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Conflicts command
+program
+  .command("conflicts")
+  .description("Check for conflicts and concurrent agent activity")
+  .option("-v, --verbose", "Show detailed information")
+  .action(async (options) => {
+    try {
+      await conflictsCommand({
+        verbose: options.verbose,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Compact command
+program
+  .command("compact")
+  .description("Compact task history to reduce file size")
+  .option("-n, --max-history <n>", "Keep only last N entries per task (default: 10)", "10")
+  .option("-m, --milestones-only", "Keep only milestone events (created, completed, etc.)")
+  .option("--dry-run", "Show what would be removed without making changes")
+  .option("--no-backup", "Skip creating a backup before compacting")
+  .action(async (options) => {
+    try {
+      await compactCommand({
+        maxHistory: parseInt(options.maxHistory, 10),
+        milestonesOnly: options.milestonesOnly,
+        dryRun: options.dryRun,
+        noBackup: options.backup === false,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// History stats command
+program
+  .command("history-stats")
+  .description("Show history statistics and compaction recommendations")
+  .action(async () => {
+    try {
+      await historyStatsCommand();
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
 // Agent commands
 const agent = program
   .command("agent")
@@ -351,6 +550,9 @@ program
   .option("-t, --tag <tag>", "Filter by tag")
   .option("-b, --blocked", "Show only blocked tasks")
   .option("--json", "Output as JSON")
+  .option("-f, --format <format>", "Output format (compact|wide|table|ids|oneline)")
+  .option("--no-group", "Don't group by status")
+  .option("--no-color", "Disable colors (for piping)")
   .action(async (options) => {
     try {
       await listCommand({
@@ -361,6 +563,9 @@ program
         tag: options.tag,
         blocked: options.blocked,
         json: options.json,
+        format: options.format,
+        noGroup: options.group === false,
+        noColor: options.color === false,
       });
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
@@ -427,14 +632,18 @@ program
 // Undo command
 program
   .command("undo")
-  .description("Undo the last tick commit by reverting it")
+  .description("Undo the last tick commit or restore from backup")
   .option("-f, --force", "Force revert even if not a tick commit")
-  .option("--dry-run", "Show what would be reverted without making changes")
+  .option("--dry-run", "Show what would be undone without making changes")
+  .option("-b, --backup [identifier]", "Restore from backup instead of git revert (index or timestamp)")
+  .option("-l, --list", "List available backups for undo")
   .action(async (options) => {
     try {
       await undoCommand({
         force: options.force,
         dryRun: options.dryRun,
+        backup: options.backup,
+        list: options.list,
       });
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
@@ -490,6 +699,280 @@ batch
   .action(async () => {
     try {
       await batchStatusCommand();
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Broadcast command
+program
+  .command("broadcast <agent> <message>")
+  .description("Send a message to the squad log")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (agent, message, options) => {
+    try {
+      await broadcastCommand(agent, message, {
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Broadcasts list command
+program
+  .command("broadcasts")
+  .description("List recent broadcasts from the squad log")
+  .option("-l, --limit <count>", "Number of broadcasts to show", "10")
+  .action(async (options) => {
+    try {
+      await listBroadcastsCommand({
+        limit: parseInt(options.limit),
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Notify commands
+const notify = program
+  .command("notify")
+  .description("Send notifications to configured webhooks");
+
+notify
+  .command("send <event> <message>")
+  .description("Send a notification")
+  .option("-w, --webhook <url>", "Send to specific webhook URL")
+  .option("-t, --type <type>", "Webhook type (slack|discord|generic)", "generic")
+  .option("--dry-run", "Show what would be sent without sending")
+  .action(async (event, message, options) => {
+    try {
+      await notifyCommand(event, message, {
+        webhook: options.webhook,
+        type: options.type,
+        dryRun: options.dryRun,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+notify
+  .command("list")
+  .description("List configured webhooks")
+  .action(async () => {
+    try {
+      await listNotifyCommand();
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+notify
+  .command("test <webhook-name>")
+  .description("Test a configured webhook")
+  .action(async (webhookName) => {
+    try {
+      await testNotifyCommand(webhookName);
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Queue subcommands
+const queue = notify
+  .command("queue")
+  .description("Manage webhook retry queue");
+
+queue
+  .command("status")
+  .description("Show queue status")
+  .action(async () => {
+    try {
+      await queueStatusCommand();
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+queue
+  .command("list")
+  .description("List queued webhooks")
+  .action(async () => {
+    try {
+      await queueListCommand();
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+queue
+  .command("clear")
+  .description("Clear all queued webhooks")
+  .action(async () => {
+    try {
+      await queueClearCommand();
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+queue
+  .command("retry")
+  .description("Retry failed webhooks")
+  .action(async () => {
+    try {
+      await queueRetryCommand();
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+queue
+  .command("remove <id>")
+  .description("Remove a specific item from queue")
+  .action(async (id) => {
+    try {
+      await queueRemoveCommand(id);
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Archive command
+program
+  .command("archive")
+  .description("Archive completed tasks to ARCHIVE.md")
+  .option("-b, --before <date>", "Archive tasks completed before date (e.g., 30d, 2026-01-01)")
+  .option("-s, --status <status>", "Status to archive (default: done)", "done")
+  .option("--dry-run", "Show what would be archived without making changes")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (options) => {
+    try {
+      await archiveCommand({
+        before: options.before,
+        status: options.status as TaskStatus,
+        dryRun: options.dryRun,
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Archive list command
+program
+  .command("archived")
+  .description("List archived tasks from ARCHIVE.md")
+  .option("-l, --limit <count>", "Number of tasks to show", "20")
+  .action(async (options) => {
+    try {
+      await listArchiveCommand({
+        limit: parseInt(options.limit),
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Backup commands
+const backup = program
+  .command("backup")
+  .description("Manage TICK.md backups");
+
+backup
+  .command("list")
+  .description("List available backups")
+  .option("-l, --limit <count>", "Number of backups to show", "10")
+  .action(async (options) => {
+    try {
+      await backupListCommand({
+        limit: parseInt(options.limit),
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+backup
+  .command("create")
+  .description("Create a manual backup of TICK.md")
+  .action(async () => {
+    try {
+      await backupCreateCommand();
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+backup
+  .command("restore <identifier>")
+  .description("Restore TICK.md from a backup (index number or timestamp)")
+  .option("-f, --force", "Proceed with restore without confirmation")
+  .action(async (identifier, options) => {
+    try {
+      await backupRestoreCommand(identifier, {
+        force: options.force,
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+backup
+  .command("show <identifier>")
+  .description("Show details about a specific backup")
+  .action(async (identifier) => {
+    try {
+      await backupShowCommand(identifier);
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+backup
+  .command("clean")
+  .description("Remove old backups, keeping recent ones")
+  .option("-k, --keep <count>", "Number of backups to keep", "10")
+  .action(async (options) => {
+    try {
+      await backupCleanCommand({
+        keep: parseInt(options.keep),
+      });
+    } catch (error: any) {
+      console.error(chalk.red("Error:"), error.message);
+      process.exit(1);
+    }
+  });
+
+// Completion command
+program
+  .command("completion <shell>")
+  .description("Generate shell completion script (bash, zsh, fish)")
+  .action(async (shell) => {
+    try {
+      await completionCommand(shell as ShellType);
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);

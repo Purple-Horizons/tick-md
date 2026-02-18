@@ -1,5 +1,5 @@
 import YAML from "yaml";
-import type { TickFile, Agent, Task, HistoryEntry } from "../types.js";
+import type { TickFile, Agent, Task, HistoryEntry, Deliverable } from "../types.js";
 
 /**
  * Serialize a TickFile back to TICK.md format
@@ -75,6 +75,20 @@ export function serializeTickFile(tickFile: TickFile): string {
       if (task.estimated_hours) metadata.estimated_hours = task.estimated_hours;
       if (task.actual_hours) metadata.actual_hours = task.actual_hours;
       if (task.detail_file) metadata.detail_file = task.detail_file;
+
+      // Format deliverables
+      if (task.deliverables && task.deliverables.length > 0) {
+        metadata.deliverables = task.deliverables.map((d: Deliverable) => {
+          const entry: Record<string, any> = {
+            name: d.name,
+            type: d.type,
+          };
+          if (d.path) entry.path = d.path;
+          if (d.completed) entry.completed = d.completed;
+          if (d.notes) entry.notes = d.notes;
+          return entry;
+        });
+      }
 
       // Format history for better readability
       if (task.history.length > 0) {

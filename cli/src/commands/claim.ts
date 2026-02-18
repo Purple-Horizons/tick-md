@@ -4,6 +4,12 @@ import { parseTickFile, serializeTickFile } from "../parser/index.js";
 import { LockManager } from "../utils/lock.js";
 import type { TaskStatus } from "../types.js";
 import { autoCommit, shouldAutoCommit } from "../utils/auto-commit.js";
+import {
+  tickFileNotFoundError,
+  taskNotFoundError,
+  taskAlreadyClaimedError,
+  invalidStatusTransitionError,
+} from "../utils/errors.js";
 
 export interface ClaimReleaseOptions {
   commit?: boolean;
@@ -25,9 +31,7 @@ export async function claimCommand(
   try {
     await fs.access(tickPath);
   } catch {
-    throw new Error(
-      "TICK.md not found. Run 'tick init' first to create a project."
-    );
+    throw tickFileNotFoundError();
   }
 
   // Read and parse TICK.md
@@ -37,19 +41,17 @@ export async function claimCommand(
   // Find the task
   const task = tickFile.tasks.find((t) => t.id === taskId);
   if (!task) {
-    throw new Error(`Task ${taskId} not found`);
+    throw taskNotFoundError(taskId, tickFile.tasks);
   }
 
   // Check if already claimed
   if (task.claimed_by) {
-    throw new Error(
-      `Task ${taskId} is already claimed by ${task.claimed_by}`
-    );
+    throw taskAlreadyClaimedError(taskId, task.claimed_by);
   }
 
   // Check if task is in a claimable state
   if (task.status === "done") {
-    throw new Error(`Task ${taskId} is already done`);
+    throw invalidStatusTransitionError(taskId, task.status, "claim");
   }
 
   // Acquire lock

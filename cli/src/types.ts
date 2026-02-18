@@ -25,6 +25,14 @@ export interface HistoryEntry {
   to?: string;
 }
 
+export interface Deliverable {
+  name: string;
+  type: "file" | "url" | "artifact" | "other";
+  path?: string;
+  completed?: boolean;
+  notes?: string;
+}
+
 export interface Task {
   id: string;
   title: string;
@@ -44,6 +52,7 @@ export interface Task {
   detail_file?: string;
   description: string;
   history: HistoryEntry[];
+  deliverables?: Deliverable[];
 }
 
 export interface Agent {
@@ -67,9 +76,18 @@ export interface ProjectMeta {
   next_id: number;
 }
 
+/** Parse error collected during parsing */
+export interface ParseError {
+  type: "frontmatter" | "task" | "agent" | "yaml";
+  taskId?: string;
+  message: string;
+  recoverable: boolean;
+}
+
 export interface TickFile {
   meta: ProjectMeta;
   agents: Agent[];
   tasks: Task[];
   raw_content?: string;
+  parseErrors?: ParseError[];
 }

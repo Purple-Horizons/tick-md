@@ -369,3 +369,266 @@ describe("Serializer: generateDefaultTickFile", () => {
     assert.equal(parsed.agents.length, 0);
   });
 });
+
+// ─── Freeform Format Tests ────────────────────────────────────────
+
+const TICK_FREEFORM_TASKS = `---
+project: billing-system
+schema_version: "1.0"
+created: 2026-01-01T00:00:00Z
+updated: 2026-01-01T00:00:00Z
+default_workflow: [backlog, todo, in_progress, review, done]
+id_prefix: TASK
+next_id: 301
+---
+
+## TASK-124: HTTP Proxy Billing System ✅ COMPLETE
+**Status:** Complete
+**Priority:** P0 (Revenue-critical)
+**Owner:** Mia
+
+### Objective
+Build HTTP proxy service that intercepts all bot API calls and logs usage for billing.
+
+### Implementation Notes
+- Use middleware pattern
+- Track token counts
+
+## TASK-300: Move Plan from Tenant to User/Account Level 🔲 TODO
+**Status:** TODO
+**Priority:** P0 (Architecture)
+**Owner:** Mia
+**Depends on:** TASK-124
+
+### Problem
+Plan is stored per-tenant but should be per-user for proper billing.
+
+## TASK-301: Implement Rate Limiting 🔄 IN PROGRESS
+**Status:** In Progress
+**Priority:** P1 (High)
+**Assigned to:** Bob
+**Blocks:** TASK-302
+
+Rate limiting implementation for API endpoints.
+
+## TASK-302: Add Usage Dashboard
+**Status:** Blocked
+**Priority:** P2
+**Owner:** Alice
+**Tags:** frontend, billing
+**Due date:** 2026-02-15
+
+Dashboard showing API usage statistics.
+`;
+
+const TICK_MIXED_FORMAT = `---
+project: mixed-project
+schema_version: "1.0"
+created: 2026-01-01T00:00:00Z
+updated: 2026-01-01T00:00:00Z
+default_workflow: [backlog, todo, in_progress, review, done]
+id_prefix: TASK
+next_id: 5
+---
+
+## Tasks
+
+### TASK-001 · Structured task
+
+\`\`\`yaml
+id: TASK-001
+status: done
+priority: high
+assigned_to: "@alice"
+claimed_by: "@alice"
+created_by: "@alice"
+created_at: 2026-01-01T08:00:00Z
+updated_at: 2026-01-01T10:00:00Z
+\`\`\`
+
+> This is a structured task with YAML metadata.
+
+## TASK-002: Freeform task ✅ COMPLETE
+**Status:** Complete
+**Priority:** P1
+**Owner:** Bob
+
+This is a freeform task written by a human or bot.
+`;
+
+describe("Parser: Freeform task parsing", () => {
+  it("parses freeform tasks with emoji status in header", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    assert.ok(result.tasks.length >= 4);
+  });
+
+  it("extracts task ID from ## TASK-XXX: format", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task124 = result.tasks.find((t) => t.id === "TASK-124");
+    assert.ok(task124, "TASK-124 should be parsed");
+    assert.equal(task124.id, "TASK-124");
+  });
+
+  it("extracts title without emoji status", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task124 = result.tasks.find((t) => t.id === "TASK-124");
+    assert.equal(task124.title, "HTTP Proxy Billing System");
+  });
+
+  it("parses status from emoji (✅ COMPLETE -> done)", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task124 = result.tasks.find((t) => t.id === "TASK-124");
+    assert.equal(task124.status, "done");
+  });
+
+  it("parses status from emoji (🔲 TODO -> todo)", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task300 = result.tasks.find((t) => t.id === "TASK-300");
+    assert.equal(task300.status, "todo");
+  });
+
+  it("parses status from emoji (🔄 IN PROGRESS -> in_progress)", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task301 = result.tasks.find((t) => t.id === "TASK-301");
+    assert.equal(task301.status, "in_progress");
+  });
+
+  it("parses **Status:** line as fallback", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task302 = result.tasks.find((t) => t.id === "TASK-302");
+    assert.equal(task302.status, "blocked");
+  });
+
+  it("parses P0 priority as urgent", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task124 = result.tasks.find((t) => t.id === "TASK-124");
+    assert.equal(task124.priority, "urgent");
+  });
+
+  it("parses P1 priority as high", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task301 = result.tasks.find((t) => t.id === "TASK-301");
+    assert.equal(task301.priority, "high");
+  });
+
+  it("parses P2 priority as medium", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task302 = result.tasks.find((t) => t.id === "TASK-302");
+    assert.equal(task302.priority, "medium");
+  });
+
+  it("parses **Owner:** as assigned_to with @ prefix", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task124 = result.tasks.find((t) => t.id === "TASK-124");
+    assert.equal(task124.assigned_to, "@Mia");
+  });
+
+  it("parses **Assigned to:** as assigned_to", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task301 = result.tasks.find((t) => t.id === "TASK-301");
+    assert.equal(task301.assigned_to, "@Bob");
+  });
+
+  it("parses **Depends on:** as depends_on array", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task300 = result.tasks.find((t) => t.id === "TASK-300");
+    assert.deepEqual(task300.depends_on, ["TASK-124"]);
+  });
+
+  it("parses **Blocks:** as blocks array", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task301 = result.tasks.find((t) => t.id === "TASK-301");
+    assert.deepEqual(task301.blocks, ["TASK-302"]);
+  });
+
+  it("parses **Tags:** as tags array", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task302 = result.tasks.find((t) => t.id === "TASK-302");
+    assert.deepEqual(task302.tags, ["frontend", "billing"]);
+  });
+
+  it("parses **Due date:** as due_date", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task302 = result.tasks.find((t) => t.id === "TASK-302");
+    assert.equal(task302.due_date, "2026-02-15");
+  });
+
+  it("extracts description from content after metadata", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task124 = result.tasks.find((t) => t.id === "TASK-124");
+    assert.ok(task124.description.includes("Build HTTP proxy service"));
+  });
+
+  it("includes subsections in description", () => {
+    const result = parseTickFile(TICK_FREEFORM_TASKS);
+    const task124 = result.tasks.find((t) => t.id === "TASK-124");
+    assert.ok(task124.description.includes("### Objective"));
+    assert.ok(task124.description.includes("### Implementation Notes"));
+  });
+});
+
+describe("Parser: Mixed format (structured + freeform)", () => {
+  it("parses both structured and freeform tasks", () => {
+    const result = parseTickFile(TICK_MIXED_FORMAT);
+    assert.equal(result.tasks.length, 2);
+  });
+
+  it("parses structured task correctly", () => {
+    const result = parseTickFile(TICK_MIXED_FORMAT);
+    const task1 = result.tasks.find((t) => t.id === "TASK-001");
+    assert.ok(task1, "TASK-001 should be parsed");
+    assert.equal(task1.status, "done");
+    assert.equal(task1.priority, "high");
+    assert.equal(task1.assigned_to, "@alice");
+  });
+
+  it("parses freeform task correctly", () => {
+    const result = parseTickFile(TICK_MIXED_FORMAT);
+    const task2 = result.tasks.find((t) => t.id === "TASK-002");
+    assert.ok(task2, "TASK-002 should be parsed");
+    assert.equal(task2.status, "done");
+    assert.equal(task2.priority, "high");
+    assert.equal(task2.assigned_to, "@Bob");
+  });
+
+  it("does not duplicate tasks that exist in both formats", () => {
+    // If someone has both ### TASK-001 · and ## TASK-001:, only parse once
+    const duplicateContent = `---
+project: test
+schema_version: "1.0"
+created: 2026-01-01T00:00:00Z
+updated: 2026-01-01T00:00:00Z
+default_workflow: [backlog, todo, in_progress, review, done]
+id_prefix: TASK
+next_id: 2
+---
+
+### TASK-001 · Structured version
+
+\`\`\`yaml
+id: TASK-001
+status: done
+priority: high
+assigned_to: null
+claimed_by: null
+created_by: "@alice"
+created_at: 2026-01-01T08:00:00Z
+updated_at: 2026-01-01T08:00:00Z
+\`\`\`
+
+> Structured description
+
+## TASK-001: Freeform version ✅ COMPLETE
+**Status:** Complete
+**Priority:** P0
+**Owner:** Bob
+
+Freeform description
+`;
+    const result = parseTickFile(duplicateContent);
+    const task001s = result.tasks.filter((t) => t.id === "TASK-001");
+    assert.equal(task001s.length, 1, "Should not duplicate TASK-001");
+    // Structured format takes precedence
+    assert.equal(task001s[0].priority, "high");
+  });
+});
