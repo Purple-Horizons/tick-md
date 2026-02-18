@@ -3,7 +3,7 @@ project: tick-md
 title: Tick.md - Multi-Agent Coordination Protocol
 schema_version: "1.0"
 created: Sun Feb 01 2026 09:00:00 GMT-0500 (Eastern Standard Time)
-updated: 2026-02-18T03:18:42.671Z
+updated: 2026-02-18T03:22:15.700Z
 default_workflow: [backlog, todo, in_progress, review, done]
 id_prefix: TASK
 next_id: 52
@@ -15,7 +15,7 @@ next_id: 52
 |-------|------|------|--------|------------|-------------|-------------|
 | @gianni | human | owner | working | TASK-003 | 2026-02-07T14:28:00 | owner |
 | @ralph | human | owner | offline | - | 2026-02-06T18:00:00 | owner |
-| @claude-code | bot | engineer | idle | - | 2026-02-18T03:18:42.671Z | trusted |
+| @claude-code | bot | engineer | working | TASK-039 | 2026-02-18T03:22:15.700Z | trusted |
 | @content-bot | bot | copywriter | working | TASK-012 | 2026-02-07T14:32:00 | trusted |
 | @qa-bot | bot | tester | idle | - | 2026-02-07T14:15:00 | trusted |
 | test-bot | bot | backend, api | idle | - | 2026-02-08T01:14:03.522Z | trusted |
@@ -519,13 +519,13 @@ history:
 
 ```yaml
 id: TASK-039
-status: backlog
+status: in_progress
 priority: high
 assigned_to: null
-claimed_by: null
+claimed_by: "@claude-code"
 created_by: "@gianni-d'alerta"
 created_at: 2026-02-17T23:16:07.909Z
-updated_at: 2026-02-17T23:16:35.006Z
+updated_at: 2026-02-18T03:22:15.700Z
 tags:
   - reliability
   - undo
@@ -539,6 +539,11 @@ history:
     who: "@claude-code"
     action: edited
     note: "depends_on: [] → [TASK-038]"
+  - ts: 2026-02-18T03:22:15.700Z
+    who: "@claude-code"
+    action: claimed
+    from: backlog
+    to: in_progress
 ```
 
 ### TASK-040 · Add conflict detection for multi-agent scenarios
