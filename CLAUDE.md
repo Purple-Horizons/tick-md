@@ -4,11 +4,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Tick.md is a multi-agent task coordination system using Git-backed Markdown files. It consists of three main packages in a monorepo:
+Tick.md is a multi-agent task coordination system using Git-backed Markdown files. It consists of these packages in a monorepo:
 
 - **cli/** - Command-line tool (`tick-md` npm package)
 - **mcp/** - Model Context Protocol server for AI agents (`tick-mcp-server` npm package)
 - **src/** - Next.js dashboard/landing page
+- **clawhub-skill/** - ClawHub skill definition (SKILL.md, skill.json)
+- **clawhub-plugin/** - Nix flake plugin for OpenClaw (pre-built MCP bundle)
 
 ## Build Commands
 
@@ -22,6 +24,7 @@ npm run build:all
 # Build individual packages
 cd cli && npm run build     # TypeScript → dist/
 cd mcp && npm run build     # TypeScript → dist/
+cd mcp && npm run build:bundle  # Creates standalone bundle for Nix plugin
 
 # Run Next.js dashboard
 npm run dev                 # Development server
@@ -105,12 +108,15 @@ Tests are in `cli/test/` using Node.js built-in test runner:
 2. Wire in `cli/src/cli.ts` using Commander.js pattern
 3. Add tests in `cli/test/`
 4. Update `cli/README.md`
+5. If adding MCP tool, see "Adding New MCP Tools" below
 
 ## Adding New MCP Tools
 
 1. Add tool definition in the `ListToolsRequestSchema` handler in `mcp/src/index.ts`
 2. Add implementation in the `CallToolRequestSchema` switch statement
 3. Update `clawhub-skill/mcp-reference.md`
+4. Rebuild the Nix plugin bundle: `./clawhub-plugin/update-bundle.sh`
+5. Sync SKILL.md: `cp clawhub-skill/SKILL.md clawhub-plugin/skills/tick-coordination/`
 
 ## Release Workflow
 
@@ -181,3 +187,69 @@ clawhub publish clawhub-skill --slug tick-md --version X.Y.Z --changelog "Descri
 - The slug is `tick-md` (not `tick-coordination`)
 - Keep `clawhub-skill/skill.json` version in sync with CLI version
 - Update `clawhub-skill/SKILL.md` and `clawhub-skill/mcp-reference.md` when adding new commands/tools
+
+## ClawHub Nix Plugin
+
+The `clawhub-plugin/` directory contains a Nix flake that packages the MCP server for OpenClaw environments. This allows bots to use tick-md without running `npm install`.
+
+### Plugin Structure
+
+```
+clawhub-plugin/
+  flake.nix                              # Nix package definition
+  lib/tick-mcp-bundled.cjs               # Pre-built standalone bundle (~619KB)
+  skills/tick-coordination/SKILL.md      # Agent instructions (copy of clawhub-skill/SKILL.md)
+  update-bundle.sh                       # Rebuilds and copies bundle
+  test-plugin.sh                         # Test script
+```
+
+### How It Works
+
+- **esbuild** bundles the MCP server + all dependencies into a single `.cjs` file
+- The bundle is committed to git in `clawhub-plugin/lib/`
+- Nix flake wraps the bundle with Node.js 18
+- No npm install needed - everything is self-contained
+
+### Adding New Features (Updated Workflow)
+
+When adding a new command like `archive`:
+
+1. **Add CLI command**: `cli/src/commands/archive.ts`
+2. **Wire in CLI**: Update `cli/src/cli.ts`
+3. **Add MCP tool** (if exposing to agents): Update `mcp/src/index.ts`
+4. **Update docs**: Edit `clawhub-skill/SKILL.md`
+5. **Rebuild bundle**:
+   ```bash
+   ./clawhub-plugin/update-bundle.sh
+   ```
+6. **Sync SKILL.md to plugin**:
+   ```bash
+   cp clawhub-skill/SKILL.md clawhub-plugin/skills/tick-coordination/
+   ```
+7. **Commit everything** (including the updated bundle)
+
+### Testing the Plugin
+
+```bash
+# Basic test (no Nix required)
+./clawhub-plugin/test-plugin.sh
+
+# Full Nix test (requires Nix installed)
+cd clawhub-plugin && nix build .#tick-mcp
+./result/bin/tick-mcp
+```
+
+### Bundle Details
+
+- Format: CommonJS (`.cjs`) - required because `gray-matter` uses `require()`
+- Size: ~619KB (includes MCP SDK, gray-matter, yaml)
+- The `mcp/esbuild.config.js` uses a plugin to redirect CLI imports from `dist/` to `src/` during bundling
+- Shebang is added post-build for direct execution
+
+### Version Sync
+
+Keep these in sync:
+- `cli/package.json` version
+- `mcp/package.json` version
+- `clawhub-skill/skill.json` version
+- `clawhub-plugin/flake.nix` version

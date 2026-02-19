@@ -1,6 +1,6 @@
 {
   "name": "tick-coordination",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "summary": "Multi-agent task coordination using Git-backed Markdown files",
   "description": "Coordinate work across human and AI agents using the Tick protocol. Maintain structured task tracking in TICK.md files while enabling natural conversation. Supports CLI and MCP server for programmatic access.",
   "author": "Purple Horizons",
@@ -22,6 +22,14 @@
     "runtime": "node >=18",
     "packages": ["tick-md", "tick-mcp-server"]
   },
+  "metadata": {
+    "clawhub": {
+      "nix": {
+        "plugin": "github:Purple-Horizons/tick-md?dir=clawhub-plugin",
+        "systems": ["x86_64-linux", "aarch64-linux", "x86_64-darwin", "aarch64-darwin"]
+      }
+    }
+  },
   "capabilities": [
     "Task creation and management",
     "Agent registration and coordination",
@@ -34,8 +42,20 @@
     "Direct field editing",
     "Undo last operation",
     "Bulk import from YAML",
-    "Batch mode for multiple operations"
+    "Batch mode for multiple operations",
+    "Orchestrator role for multi-agent coordination",
+    "Worker role with polling/check-in loop"
   ],
+  "roles": {
+    "orchestrator": {
+      "description": "Coordinates work across multiple agents, assigns tasks, monitors progress",
+      "instructions": "roles/ORCHESTRATOR.md"
+    },
+    "worker": {
+      "description": "Polls for available tasks, works autonomously, follows check-in loop",
+      "instructions": "roles/WORKER.md"
+    }
+  },
   "examples": [
     {
       "title": "Create and claim a task",

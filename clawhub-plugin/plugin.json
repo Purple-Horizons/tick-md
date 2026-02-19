@@ -1,0 +1,102 @@
+{
+  "name": "tick-coordination",
+  "kind": "plugin",
+  "version": "1.3.0",
+  "summary": "Multi-agent task coordination via TICK.md files",
+  "description": "Native MCP server plugin that provides tick tools directly to bots. No npm install required - tools are available immediately.",
+  "author": "Purple Horizons",
+  "license": "MIT",
+  "homepage": "https://github.com/Purple-Horizons/tick-md",
+  "repository": "https://github.com/Purple-Horizons/tick-md",
+
+  "mcp": {
+    "command": "tick-mcp",
+    "transport": "stdio",
+    "tools": [
+      {
+        "name": "tick_status",
+        "description": "Get project status overview (tasks, agents, progress)"
+      },
+      {
+        "name": "tick_add",
+        "description": "Create a new task"
+      },
+      {
+        "name": "tick_claim",
+        "description": "Claim a task for an agent (sets status to in_progress)"
+      },
+      {
+        "name": "tick_release",
+        "description": "Release a claimed task back to todo"
+      },
+      {
+        "name": "tick_done",
+        "description": "Complete a task (auto-unblocks dependents)"
+      },
+      {
+        "name": "tick_comment",
+        "description": "Add a comment/note to a task"
+      },
+      {
+        "name": "tick_validate",
+        "description": "Validate TICK.md structure and dependencies"
+      },
+      {
+        "name": "tick_reopen",
+        "description": "Reopen a completed task"
+      },
+      {
+        "name": "tick_delete",
+        "description": "Delete a task"
+      },
+      {
+        "name": "tick_edit",
+        "description": "Direct field editing on a task"
+      },
+      {
+        "name": "tick_undo",
+        "description": "Undo the last tick operation"
+      },
+      {
+        "name": "tick_agent_register",
+        "description": "Register a new agent"
+      },
+      {
+        "name": "tick_agent_list",
+        "description": "List registered agents"
+      }
+    ]
+  },
+
+  "skills": [
+    {
+      "path": "skills/tick-coordination",
+      "description": "Agent instructions for using tick tools"
+    }
+  ],
+
+  "roles": {
+    "orchestrator": {
+      "description": "Coordinates work across multiple agents",
+      "skillPath": "skills/tick-coordination/roles/ORCHESTRATOR.md"
+    },
+    "worker": {
+      "description": "Polls for tasks and works autonomously",
+      "skillPath": "skills/tick-coordination/roles/WORKER.md"
+    }
+  },
+
+  "tags": [
+    "coordination",
+    "tasks",
+    "agents",
+    "mcp",
+    "multi-agent",
+    "workflow"
+  ],
+
+  "nix": {
+    "flake": ".",
+    "systems": ["x86_64-linux", "aarch64-linux", "x86_64-darwin", "aarch64-darwin"]
+  }
+}

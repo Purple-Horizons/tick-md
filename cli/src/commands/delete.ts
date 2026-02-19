@@ -3,6 +3,7 @@ import path from "path";
 import chalk from "chalk";
 import { parseTickFile, serializeTickFile } from "../parser/index.js";
 import { autoCommit, shouldAutoCommit } from "../utils/auto-commit.js";
+import { createBackup, writeFileAtomic } from "../utils/backup.js";
 
 export interface DeleteOptions {
   force?: boolean;
@@ -110,11 +111,15 @@ export async function deleteCommand(
   // Update metadata
   tickFile.meta.updated = now;
 
-  // Serialize and write
+  // Create backup before destructive operation
+  const backup = await createBackup(cwd);
+
+  // Serialize and write atomically
   const newContent = serializeTickFile(tickFile);
-  await fs.writeFile(tickPath, newContent);
+  await writeFileAtomic(tickPath, newContent);
 
   console.log(chalk.green(`✓ Deleted ${taskId}`));
+  console.log(chalk.gray(`  Backup created: ${backup.filename}`));
   console.log(`  Title: ${task.title}`);
   console.log(`  Status was: ${task.status}`);
 
