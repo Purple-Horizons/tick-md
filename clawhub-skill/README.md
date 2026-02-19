@@ -103,12 +103,14 @@ The `skill.json` file controls how the skill appears on ClawHub:
 ```json
 {
   "name": "tick-coordination",
-  "version": "1.0.0",
+  "version": "1.3.1",
   "summary": "Multi-agent task coordination using Git-backed Markdown files",
   "tags": ["coordination", "tasks", "agents", "git", "markdown"],
   "requirements": {
     "runtime": "node >=18",
-    "packages": ["tick-md", "tick-mcp-server"]
+    "packages": ["tick-md", "tick-mcp-server"],
+    "binaries": ["tick", "tick-mcp", "git"],
+    "config_paths": ["~/.cursor/mcp_config.json", ".vscode/claude_code_config.json"]
   }
 }
 ```

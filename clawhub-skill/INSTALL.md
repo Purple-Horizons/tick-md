@@ -36,6 +36,13 @@ The configuration varies by editor. Add this to your editor's MCP config file:
 - **Cline**: `.vscode/cline_mcp_settings.json`
 - **Other**: Check your editor's MCP documentation
 
+### Security Note (Important)
+
+- Back up config files before editing them.
+- Only apply MCP config changes with explicit user approval.
+- Prefer testing in a throwaway repository first.
+- `tick sync --push` and `git push` can send data to remotes; only run with explicit user approval.
+
 ### Step 4: Initialize Project
 ```bash
 cd your-project

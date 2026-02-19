@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.3.1] - 2026-02-18
+
+### Security Metadata Alignment
+
+- Added explicit `requirements.binaries` in `skill.json` (`tick`, `tick-mcp`, `git`).
+- Added explicit `requirements.config_paths` for common editor MCP config files.
+- Added explicit `requirements.network_access` and operational safety notes.
+- Added clear consent boundaries in `SKILL.md` for config edits and remote git push actions.
+- Added security guidance in `INSTALL.md` (backups, approval, isolated test recommendation).
+
 ## [1.0.0] - 2026-02-08
 
 ### Initial Release

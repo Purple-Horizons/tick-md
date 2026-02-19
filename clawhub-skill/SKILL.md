@@ -8,6 +8,12 @@ Coordinate work across human and AI agents using structured Markdown files. User
 
 **First time setup?** See `INSTALL.md` for editor-specific installation instructions.
 
+## Safety Boundaries
+
+- Ask for explicit user approval before editing editor MCP config files.
+- Ask for explicit user approval before running any command that pushes to remote git (`tick sync --push` or `git push`).
+- If user approval is not explicit, use read-only/status commands and explain what write action is pending.
+
 **Quick Check**:
 ```bash
 # Verify CLI is available
