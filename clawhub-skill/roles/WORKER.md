@@ -75,7 +75,8 @@ tick comment TASK-XXX @worker-bot --note "Working on: API endpoints"
 ```bash
 tick done TASK-XXX @worker-bot
 
-# Sync changes
+# Ask user approval before any remote push
+# If approved:
 tick sync --push
 ```
 

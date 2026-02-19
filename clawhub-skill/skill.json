@@ -1,6 +1,6 @@
 {
   "name": "tick-md",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "summary": "Multi-agent task coordination using Git-backed Markdown files",
   "description": "Coordinate work across human and AI agents using the Tick protocol. Maintain structured task tracking in TICK.md files while enabling natural conversation. Supports CLI and MCP server for programmatic access.",
   "author": "Purple Horizons",

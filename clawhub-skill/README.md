@@ -103,7 +103,7 @@ The `skill.json` file controls how the skill appears on ClawHub:
 ```json
 {
   "name": "tick-md",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "summary": "Multi-agent task coordination using Git-backed Markdown files",
   "tags": ["coordination", "tasks", "agents", "git", "markdown"],
   "requirements": {

@@ -136,7 +136,8 @@ tick list                          # List tasks with filters
 tick graph                         # Visualize dependencies
 tick watch                         # Monitor changes in real-time
 tick validate                      # Check for errors
-tick sync --push                   # Commit and push to git
+tick sync --pull                   # Pull latest changes
+# tick sync --push                 # Only with explicit user approval
 ```
 
 ### Task Operations
@@ -392,6 +393,7 @@ tick validate
 ### Smart Commit Messages
 
 ```bash
+# Only run with explicit user approval
 tick sync --push
 # Automatically generates: "feat: complete TASK-001, TASK-002; update TASK-003"
 ```
@@ -451,7 +453,7 @@ Essential:     status | add | claim | done | list | graph
 Corrections:   reopen | delete | edit | undo
 Bulk:          import | batch start/commit/abort
 Coordination:  agent register | agent list | validate | watch
-Git:           sync --pull | sync --push
+Git:           sync --pull | sync --push (explicit user approval required)
 ```
 
 ## Key Reminders

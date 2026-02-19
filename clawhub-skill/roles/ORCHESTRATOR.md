@@ -129,7 +129,8 @@ tick comment TASK-XXX @orchestrator --note "Checking in - any blockers?"
 # Final status
 tick status
 
-# Commit and sync
+# Ask user approval before any remote push
+# If approved:
 tick sync --push
 
 # Leave notes for next session

@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.3] - 2026-02-18
+
+### Security Clarifications
+
+- Updated all role/workflow examples so remote push operations are explicitly approval-gated.
+- Replaced default sync examples with pull-only flow unless user approval is given.
+- Clarified command cheatsheet to mark `sync --push` as approval-required.
+
 ## [1.3.2] - 2026-02-18
 
 ### Rename
