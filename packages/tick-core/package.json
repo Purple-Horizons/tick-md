@@ -1,6 +1,6 @@
 {
-  "name": "@tick/core",
-  "version": "1.0.1",
+  "name": "@gianni-dalerta/tick-core",
+  "version": "1.0.2",
   "description": "Shared Tick core logic: types, parser, serializer, validation, file I/O",
   "type": "module",
   "main": "dist/index.js",

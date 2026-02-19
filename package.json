@@ -15,7 +15,7 @@
     "build:mcp": "cd mcp && npm install && npm run build",
     "start": "next start",
     "lint": "next lint",
-    "build:core": "npm run build -w @tick/core"
+    "build:core": "npm run build -w @gianni-dalerta/tick-core"
   },
   "keywords": [],
   "author": "Purple Horizons",
@@ -29,7 +29,7 @@
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "zustand": "^5.0.11",
-    "@tick/core": "file:packages/tick-core"
+    "@tick/core": "npm:@gianni-dalerta/tick-core@^1.0.2"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.18",
