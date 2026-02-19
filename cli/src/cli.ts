@@ -2,6 +2,9 @@
 
 import { Command } from "commander";
 import chalk from "chalk";
+import { readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import { TickError, formatError } from "./utils/errors.js";
 
 /**
@@ -65,11 +68,21 @@ import {
 import type { Priority, AgentStatus, AgentType, TaskStatus } from "./types.js";
 
 const program = new Command();
+const CLI_VERSION = (() => {
+  try {
+    const here = dirname(fileURLToPath(import.meta.url));
+    const pkgPath = resolve(here, "../package.json");
+    const pkg = JSON.parse(readFileSync(pkgPath, "utf8"));
+    return typeof pkg.version === "string" ? pkg.version : "0.0.0";
+  } catch {
+    return "0.0.0";
+  }
+})();
 
 program
   .name("tick")
   .description("Multi-agent task coordination via Markdown")
-  .version("1.2.0");
+  .version(CLI_VERSION);
 
 // Init command
 program
