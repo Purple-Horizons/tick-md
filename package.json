@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "private": true,
   "workspaces": [
+    "packages/tick-core",
     "cli",
     "mcp"
   ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "build:all": "npm run build:cli && npm run build:mcp",
+    "build:all": "npm run build:core && npm run build:cli && npm run build:mcp",
     "build:cli": "cd cli && npm install && npm run build",
     "build:mcp": "cd mcp && npm install && npm run build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "build:core": "npm run build -w @tick/core"
   },
   "keywords": [],
   "author": "Purple Horizons",
