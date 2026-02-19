@@ -1,4 +1,4 @@
-# Tick Coordination Skill
+# tick-md Skill
 
 ClawHub-ready skill package for multi-agent task coordination.
 
@@ -31,28 +31,28 @@ clawhub-skill/
 
 From this directory:
 ```bash
-clawhub publish
+clawhub publish .
 ```
 
 The CLI will:
 - Package all files in this directory
 - Read metadata from `skill.json`
 - Upload to ClawHub registry
-- Make available at `clawhub.ai/skills/tick-coordination`
+- Make available at `clawhub.ai/gianni-dalerta/tick-md`
 
 ### Updating
 
 To publish a new version:
 1. Update `skill.json` version (follow semver)
 2. Update `CHANGELOG.md`
-3. Run `clawhub publish` again
+3. Run `clawhub publish .` again
 
 ```bash
 # Example: publish v1.0.1
 # 1. Edit skill.json: "version": "1.0.1"
 # 2. Add entry to CHANGELOG.md
 # 3. Publish
-clawhub publish
+clawhub publish .
 ```
 
 ## Local Testing
@@ -61,7 +61,7 @@ Test the skill locally before publishing:
 
 ### Option 1: Copy to Cursor Skills
 ```bash
-cp -r . ~/.cursor/skills/tick-coordination/
+cp -r . ~/.cursor/skills/tick-md/
 ```
 
 Restart Cursor and the skill will be available.
@@ -70,20 +70,20 @@ Restart Cursor and the skill will be available.
 ```bash
 # In your project
 mkdir -p skills
-cp -r . skills/tick-coordination/
+cp -r . skills/tick-md/
 ```
 
 OpenClaw/Cursor will pick up skills from `./skills/` in the current workspace.
 
 ### Option 3: Install from ClawHub (after publishing)
 ```bash
-clawhub search "tick coordination"
-clawhub install tick-coordination
+clawhub search "tick-md"
+clawhub install tick-md
 ```
 
 ## What Gets Published
 
-When you run `clawhub publish`, these files are included:
+When you run `clawhub publish .`, these files are included:
 - ✅ `SKILL.md` - Main documentation (required, editor-agnostic)
 - ✅ `skill.json` - Metadata (required)
 - ✅ `INSTALL.md` - Installation guide (editor-specific setup)
@@ -102,8 +102,8 @@ The `skill.json` file controls how the skill appears on ClawHub:
 
 ```json
 {
-  "name": "tick-coordination",
-  "version": "1.3.1",
+  "name": "tick-md",
+  "version": "1.3.2",
   "summary": "Multi-agent task coordination using Git-backed Markdown files",
   "tags": ["coordination", "tasks", "agents", "git", "markdown"],
   "requirements": {
@@ -141,7 +141,7 @@ Once published, users can install with:
 ```bash
 # Via ClawHub CLI
 clawhub search "tick"
-clawhub install tick-coordination
+clawhub install tick-md
 
 # Or direct npm install
 npm install -g tick-md tick-mcp-server
@@ -160,7 +160,7 @@ After publishing:
 2. **Test locally** by copying to skills directory
 3. **Update version** in skill.json
 4. **Update CHANGELOG.md**
-5. **Publish**: `clawhub publish`
+5. **Publish**: `clawhub publish .`
 6. **Verify** at clawhub.ai
 
 ## Related Packages

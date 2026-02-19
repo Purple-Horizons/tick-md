@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2] - 2026-02-18
+
+### Rename
+
+- Renamed ClawHub skill slug from `tick-coordination` to `tick-md`.
+- Updated publishing/install instructions to use the canonical `tick-md` identity.
+
 ## [1.3.1] - 2026-02-18
 
 ### Security Metadata Alignment
