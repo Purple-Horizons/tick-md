@@ -4,7 +4,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import {
   findTickFile,
-  readTickFileSync,
+  readTickFileStateSync,
   writeTickFileAtomicSync,
   validateTickFile,
 } from "@tick/core";
@@ -24,15 +24,19 @@ function checkTickFile(): string {
   return file;
 }
 
-function loadTickFile(): { tickPath: string; tickFile: TickFile } {
+function loadTickFile(): { tickPath: string; tickFile: TickFile; readState: { filePath: string; mtimeMs: number; size: number } } {
   const tickPath = checkTickFile();
-  const tickFile = readTickFileSync(tickPath);
-  return { tickPath, tickFile };
+  const { tickFile, state } = readTickFileStateSync(tickPath);
+  return { tickPath, tickFile, readState: state };
 }
 
-function saveTickFile(tickPath: string, tickFile: TickFile): void {
+function saveTickFile(
+  tickPath: string,
+  tickFile: TickFile,
+  readState?: { filePath: string; mtimeMs: number; size: number }
+): void {
   tickFile.meta.updated = new Date().toISOString();
-  writeTickFileAtomicSync(tickFile, tickPath);
+  writeTickFileAtomicSync(tickFile, tickPath, readState);
 }
 
 function toArrayStrings(value: unknown): string[] {
@@ -515,7 +519,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const title = asString(args.title);
         if (!title) throw new Error("title is required");
 
-        const { tickPath, tickFile } = loadTickFile();
+        const { tickPath, tickFile, readState } = loadTickFile();
         const task = addTask(tickFile, {
           title,
           priority: asString(args.priority) as Priority | undefined,
@@ -525,7 +529,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           dependsOn: toArrayStrings(args.dependsOn),
           estimatedHours: asNumber(args.estimatedHours),
         });
-        saveTickFile(tickPath, tickFile);
+        saveTickFile(tickPath, tickFile, readState);
 
         return { content: [{ type: "text", text: `Created task ${task.id}: ${task.title}` }] };
       }
@@ -535,9 +539,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const agent = asString(args.agent);
         if (!taskId || !agent) throw new Error("taskId and agent are required");
 
-        const { tickPath, tickFile } = loadTickFile();
+        const { tickPath, tickFile, readState } = loadTickFile();
         claimTask(tickFile, taskId, agent);
-        saveTickFile(tickPath, tickFile);
+        saveTickFile(tickPath, tickFile, readState);
 
         return { content: [{ type: "text", text: `Task ${taskId} claimed by ${agent}` }] };
       }
@@ -547,9 +551,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const agent = asString(args.agent);
         if (!taskId || !agent) throw new Error("taskId and agent are required");
 
-        const { tickPath, tickFile } = loadTickFile();
+        const { tickPath, tickFile, readState } = loadTickFile();
         releaseTask(tickFile, taskId, agent);
-        saveTickFile(tickPath, tickFile);
+        saveTickFile(tickPath, tickFile, readState);
 
         return { content: [{ type: "text", text: `Task ${taskId} released by ${agent}` }] };
       }
@@ -559,9 +563,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const agent = asString(args.agent);
         if (!taskId || !agent) throw new Error("taskId and agent are required");
 
-        const { tickPath, tickFile } = loadTickFile();
+        const { tickPath, tickFile, readState } = loadTickFile();
         const unblocked = completeTask(tickFile, taskId, agent);
-        saveTickFile(tickPath, tickFile);
+        saveTickFile(tickPath, tickFile, readState);
 
         const suffix = unblocked.length > 0 ? ` (unblocked: ${unblocked.join(", ")})` : "";
         return { content: [{ type: "text", text: `Task ${taskId} completed by ${agent}${suffix}` }] };
@@ -573,9 +577,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const note = asString(args.note);
         if (!taskId || !agent || !note) throw new Error("taskId, agent, and note are required");
 
-        const { tickPath, tickFile } = loadTickFile();
+        const { tickPath, tickFile, readState } = loadTickFile();
         commentTask(tickFile, taskId, agent, note);
-        saveTickFile(tickPath, tickFile);
+        saveTickFile(tickPath, tickFile, readState);
 
         return { content: [{ type: "text", text: `Added comment to ${taskId}` }] };
       }
@@ -641,14 +645,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const nameValue = asString(args.name);
         if (!nameValue) throw new Error("name is required");
 
-        const { tickPath, tickFile } = loadTickFile();
+        const { tickPath, tickFile, readState } = loadTickFile();
         const registered = registerAgent(tickFile, {
           name: nameValue,
           type: (asString(args.type) as "human" | "bot" | undefined) || "human",
           roles: toArrayStrings(args.roles),
           status: (asString(args.status) as "working" | "idle" | "offline" | undefined) || "idle",
         });
-        saveTickFile(tickPath, tickFile);
+        saveTickFile(tickPath, tickFile, readState);
 
         return {
           content: [
@@ -665,14 +669,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const agent = asString(args.agent);
         if (!taskId || !agent) throw new Error("taskId and agent are required");
 
-        const { tickPath, tickFile } = loadTickFile();
+        const { tickPath, tickFile, readState } = loadTickFile();
         reopenTask(tickFile, {
           taskId,
           agent,
           note: asString(args.note),
           status: asString(args.status) as "backlog" | "todo" | "in_progress" | "reopened" | undefined,
         });
-        saveTickFile(tickPath, tickFile);
+        saveTickFile(tickPath, tickFile, readState);
 
         return { content: [{ type: "text", text: `Task ${taskId} reopened by ${agent}` }] };
       }
@@ -681,9 +685,9 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const taskId = asString(args.taskId);
         if (!taskId) throw new Error("taskId is required");
 
-        const { tickPath, tickFile } = loadTickFile();
+        const { tickPath, tickFile, readState } = loadTickFile();
         deleteTask(tickFile, taskId, asBoolean(args.force) || false);
-        saveTickFile(tickPath, tickFile);
+        saveTickFile(tickPath, tickFile, readState);
 
         return { content: [{ type: "text", text: `Task ${taskId} deleted` }] };
       }
@@ -693,7 +697,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const agent = asString(args.agent);
         if (!taskId || !agent) throw new Error("taskId and agent are required");
 
-        const { tickPath, tickFile } = loadTickFile();
+        const { tickPath, tickFile, readState } = loadTickFile();
         editTask(tickFile, {
           taskId,
           agent,
@@ -706,7 +710,7 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           dependsOn: toArrayStrings(args.dependsOn),
           note: asString(args.note),
         });
-        saveTickFile(tickPath, tickFile);
+        saveTickFile(tickPath, tickFile, readState);
 
         return { content: [{ type: "text", text: `Task ${taskId} edited by ${agent}` }] };
       }

@@ -173,7 +173,7 @@ AI: I've claimed the task and I'm working on it now.
 
 ## Architecture
 
-The MCP server acts as a bridge between AI agents and the Tick CLI:
+The MCP server uses the shared `@tick/core` package directly:
 
 ```
 AI Agent (Claude/etc)
@@ -182,16 +182,16 @@ MCP Protocol
     ↓
 Tick MCP Server
     ↓
-Tick CLI Commands
+@tick/core (parser / serializer / validation / atomic I/O)
     ↓
 TICK.md File
 ```
 
 ### Key Features
 
-- **Reuses CLI Logic**: Imports commands from `../cli/src/commands/`
+- **Single Source of Truth**: Uses `@tick/core` shared with CLI and dashboard
 - **Stateless**: Each tool call reads/writes TICK.md
-- **Safe**: All CLI validation and locking apply
+- **Atomic Writes + Stale Write Guard**: Avoids silent clobbering under races
 - **JSON Responses**: Returns structured data for AI consumption
 
 ## Development

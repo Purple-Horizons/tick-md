@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { readTickFile, findTickFile } from "@/lib/tick-reader";
-import { updateTaskStatus, claimTask, releaseTask } from "@/lib/tick-writer";
+import { updateTaskStatus } from "@/lib/tick-writer";
+import { enforceMutationPolicy } from "@/app/api/_lib/runtime-guard";
 
 export const dynamic = "force-dynamic";
 
@@ -21,6 +22,9 @@ export async function GET() {
 /** PATCH /api/tick/tasks - update task status (kanban drag) */
 export async function PATCH(req: NextRequest) {
   try {
+    const guard = enforceMutationPolicy(req);
+    if (guard) return guard;
+
     const body = await req.json();
     const { taskId, status, agent } = body;
 

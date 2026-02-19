@@ -7,6 +7,7 @@ export {
   findTickFile,
   readTickFile,
   readTickFileSync,
+  readTickFileStateSync,
   writeTickFileAtomic,
   writeTickFileAtomicSync,
 } from "./io/tick-file.js";

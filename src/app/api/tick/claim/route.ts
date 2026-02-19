@@ -1,11 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { claimTask, releaseTask } from "@/lib/tick-writer";
+import { enforceMutationPolicy } from "@/app/api/_lib/runtime-guard";
 
 export const dynamic = "force-dynamic";
 
 /** POST /api/tick/claim - claim or release a task */
 export async function POST(req: NextRequest) {
   try {
+    const guard = enforceMutationPolicy(req);
+    if (guard) return guard;
+
     const body = await req.json();
     const { taskId, agent, action } = body;
 

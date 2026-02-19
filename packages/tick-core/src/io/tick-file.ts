@@ -7,6 +7,12 @@ import type { TickFile } from "../types.js";
 
 export const TICK_FILENAME = "TICK.md";
 
+export interface TickFileReadState {
+  filePath: string;
+  mtimeMs: number;
+  size: number;
+}
+
 export function findTickFile(baseDir: string = process.cwd()): string | null {
   const tickPath = path.join(baseDir, TICK_FILENAME);
   return fs.existsSync(tickPath) ? tickPath : null;
@@ -30,12 +36,42 @@ export function readTickFileSync(tickPath?: string): TickFile {
   return parseTickFile(content);
 }
 
-export async function writeTickFileAtomic(tickFile: TickFile, tickPath?: string): Promise<void> {
+export function readTickFileStateSync(tickPath?: string): { tickFile: TickFile; state: TickFileReadState } {
+  const filePath = tickPath || findTickFile();
+  if (!filePath || !fs.existsSync(filePath)) {
+    throw new Error("TICK.md not found. Run 'tick init' to create a project.");
+  }
+  const stat = fs.statSync(filePath);
+  const content = fs.readFileSync(filePath, "utf-8");
+  return {
+    tickFile: parseTickFile(content),
+    state: {
+      filePath,
+      mtimeMs: stat.mtimeMs,
+      size: stat.size,
+    },
+  };
+}
+
+function assertFileUnchanged(filePath: string, expected?: TickFileReadState): void {
+  if (!expected) return;
+  const current = fs.statSync(filePath);
+  if (current.mtimeMs !== expected.mtimeMs || current.size !== expected.size) {
+    throw new Error("Concurrent modification detected. Re-read TICK.md and retry.");
+  }
+}
+
+export async function writeTickFileAtomic(
+  tickFile: TickFile,
+  tickPath?: string,
+  expected?: TickFileReadState
+): Promise<void> {
   const filePath = tickPath || findTickFile();
   if (!filePath) {
     throw new Error("TICK.md not found. Run 'tick init' to create a project.");
   }
 
+  assertFileUnchanged(filePath, expected);
   const content = serializeTickFile(tickFile);
   const dir = path.dirname(filePath);
   const tempPath = path.join(dir, `${path.basename(filePath)}.${process.pid}.${Date.now()}.tmp`);
@@ -44,12 +80,17 @@ export async function writeTickFileAtomic(tickFile: TickFile, tickPath?: string)
   await fsp.rename(tempPath, filePath);
 }
 
-export function writeTickFileAtomicSync(tickFile: TickFile, tickPath?: string): void {
+export function writeTickFileAtomicSync(
+  tickFile: TickFile,
+  tickPath?: string,
+  expected?: TickFileReadState
+): void {
   const filePath = tickPath || findTickFile();
   if (!filePath) {
     throw new Error("TICK.md not found. Run 'tick init' to create a project.");
   }
 
+  assertFileUnchanged(filePath, expected);
   const content = serializeTickFile(tickFile);
   const dir = path.dirname(filePath);
   const tempPath = path.join(dir, `${path.basename(filePath)}.${process.pid}.${Date.now()}.tmp`);

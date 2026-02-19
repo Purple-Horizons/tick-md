@@ -1,4 +1,4 @@
-import { findTickFile, readTickFileSync, writeTickFileAtomicSync } from "@tick/core";
+import { findTickFile, readTickFileStateSync, writeTickFileAtomicSync } from "@tick/core";
 import type { TickFile, TaskStatus } from "./types";
 
 /** Write a TickFile back to disk as TICK.md */
@@ -13,7 +13,7 @@ export function updateTaskStatus(taskId: string, newStatus: TaskStatus, agent: s
   const filePath = tickPath || findTickFile();
   if (!filePath) throw new Error("TICK.md not found.");
 
-  const tickFile = readTickFileSync(filePath);
+  const { tickFile, state } = readTickFileStateSync(filePath);
   const task = tickFile.tasks.find((t) => t.id === taskId);
   if (!task) throw new Error(`Task ${taskId} not found`);
 
@@ -31,7 +31,7 @@ export function updateTaskStatus(taskId: string, newStatus: TaskStatus, agent: s
   });
 
   tickFile.meta.updated = now;
-  writeTickFile(tickFile, filePath);
+  writeTickFileAtomicSync(tickFile, filePath, state);
   return tickFile;
 }
 
@@ -40,7 +40,7 @@ export function claimTask(taskId: string, agent: string, tickPath?: string): Tic
   const filePath = tickPath || findTickFile();
   if (!filePath) throw new Error("TICK.md not found.");
 
-  const tickFile = readTickFileSync(filePath);
+  const { tickFile, state } = readTickFileStateSync(filePath);
   const task = tickFile.tasks.find((t) => t.id === taskId);
   if (!task) throw new Error(`Task ${taskId} not found`);
   if (task.claimed_by) throw new Error(`Task ${taskId} is already claimed by ${task.claimed_by}`);
@@ -70,7 +70,7 @@ export function claimTask(taskId: string, agent: string, tickPath?: string): Tic
   }
 
   tickFile.meta.updated = now;
-  writeTickFile(tickFile, filePath);
+  writeTickFileAtomicSync(tickFile, filePath, state);
   return tickFile;
 }
 
@@ -79,7 +79,7 @@ export function releaseTask(taskId: string, agent: string, tickPath?: string): T
   const filePath = tickPath || findTickFile();
   if (!filePath) throw new Error("TICK.md not found.");
 
-  const tickFile = readTickFileSync(filePath);
+  const { tickFile, state } = readTickFileStateSync(filePath);
   const task = tickFile.tasks.find((t) => t.id === taskId);
   if (!task) throw new Error(`Task ${taskId} not found`);
   if (task.claimed_by !== agent) throw new Error(`Task ${taskId} is not claimed by ${agent}`);
@@ -108,6 +108,6 @@ export function releaseTask(taskId: string, agent: string, tickPath?: string): T
   }
 
   tickFile.meta.updated = now;
-  writeTickFile(tickFile, filePath);
+  writeTickFileAtomicSync(tickFile, filePath, state);
   return tickFile;
 }
