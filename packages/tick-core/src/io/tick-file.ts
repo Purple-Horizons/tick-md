@@ -38,11 +38,22 @@ export async function writeTickFileAtomic(tickFile: TickFile, tickPath?: string)
 
   const content = serializeTickFile(tickFile);
   const dir = path.dirname(filePath);
-  const tempPath = path.join(
-    dir,
-    `${path.basename(filePath)}.${process.pid}.${Date.now()}.tmp`
-  );
+  const tempPath = path.join(dir, `${path.basename(filePath)}.${process.pid}.${Date.now()}.tmp`);
 
   await fsp.writeFile(tempPath, content, "utf-8");
   await fsp.rename(tempPath, filePath);
+}
+
+export function writeTickFileAtomicSync(tickFile: TickFile, tickPath?: string): void {
+  const filePath = tickPath || findTickFile();
+  if (!filePath) {
+    throw new Error("TICK.md not found. Run 'tick init' to create a project.");
+  }
+
+  const content = serializeTickFile(tickFile);
+  const dir = path.dirname(filePath);
+  const tempPath = path.join(dir, `${path.basename(filePath)}.${process.pid}.${Date.now()}.tmp`);
+
+  fs.writeFileSync(tempPath, content, "utf-8");
+  fs.renameSync(tempPath, filePath);
 }

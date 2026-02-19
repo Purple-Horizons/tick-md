@@ -8,4 +8,5 @@ export {
   readTickFile,
   readTickFileSync,
   writeTickFileAtomic,
+  writeTickFileAtomicSync,
 } from "./io/tick-file.js";
