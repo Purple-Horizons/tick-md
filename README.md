@@ -88,7 +88,26 @@ OpenClaw bots can now coordinate tasks through natural conversation!
 - **[CLI Commands](cli/README.md)** - Complete command reference
 - **[MCP Server](mcp/README.md)** - API for AI agents
 - **[ClawHub Skill](clawhub-skill/SKILL.md)** - Bot coordination guide
+- **[Changelog](https://tick.md/docs/changelog)** - Release highlights
 - **[Build Sessions](BUILD_SESSION_8.md)** - Development notes
+
+## 🆕 Latest Release Highlights
+
+### tick-md `1.2.1`
+- Shared `@tick/core` package introduced as the single source of truth for parser, serializer, types, validation, and atomic file I/O.
+- CLI reliability improvements (archive, backup, broadcast, notify queue, conflict helpers, parse cache, completion, repair).
+- Safer destructive operations: `tick delete` now creates a backup before mutation.
+- Concurrency hardening with stale-write detection in core file writes.
+
+### tick-mcp-server `1.1.1`
+- MCP server now uses `@tick/core` directly (no dist-bridge imports).
+- Cleaner type safety and reduced build coupling.
+- Improved compatibility for bundling and plugin distribution.
+
+### ClawHub Plugin
+- Added native Nix plugin package in `clawhub-plugin/` with prebuilt MCP bundle.
+- Added orchestrator/worker role instructions for agent coordination.
+- Added plugin test and bundle update scripts for release workflow.
 
 ## 🎯 Core Workflow
 
@@ -118,10 +137,12 @@ tick sync --push                   # Commit and push
 
 ```
 tick-md/
+├── packages/tick-core/   # Shared core logic (types/parser/serializer/validator/I-O)
 ├── cli/                  # Command-line interface (npm: tick-md)
 ├── mcp/                  # MCP server (npm: tick-mcp-server)
 ├── clawhub-skill/        # ClawHub skill package
-├── docs/                 # Landing page and documentation
+├── clawhub-plugin/       # Native Nix plugin for OpenClaw
+├── src/                  # Website, docs, dashboard (Next.js)
 ├── TICK.md              # This project's own task tracking
 └── LICENSE              # MIT License
 ```
@@ -245,8 +266,8 @@ tick init
 
 ## 📦 Packages
 
-- **[tick-md](https://www.npmjs.com/package/tick-md)** - CLI tool (v1.2.0)
-- **[tick-mcp-server](https://www.npmjs.com/package/tick-mcp-server)** - MCP server for AI agents (v1.1.0)
+- **[tick-md](https://www.npmjs.com/package/tick-md)** - CLI tool (v1.2.1)
+- **[tick-mcp-server](https://www.npmjs.com/package/tick-mcp-server)** - MCP server for AI agents (v1.1.1)
 - **[tick-md](https://clawhub.ai/gianni-dalerta/tick-md)** - ClawHub skill for OpenClaw bots
 
 ## 🤝 Contributing

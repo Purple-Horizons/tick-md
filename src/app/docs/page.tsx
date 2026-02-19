@@ -33,6 +33,13 @@ const CARDS = [
     desc: "Every command in the tick CLI. Task management, querying, agent registration, and git integration.",
     icon: "$",
   },
+  {
+    href: "/docs/changelog",
+    label: "Updates",
+    title: "Changelog",
+    desc: "Track release highlights for the CLI, MCP server, core package, and plugin distribution.",
+    icon: "↻",
+  },
 ];
 
 export default function DocsOverview() {

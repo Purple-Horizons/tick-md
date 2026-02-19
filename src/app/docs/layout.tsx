@@ -22,6 +22,7 @@ const NAV = [
   { href: "/docs/protocol", label: "Protocol Spec" },
   { href: "/docs/getting-started", label: "Getting Started" },
   { href: "/docs/cli", label: "CLI Reference" },
+  { href: "/docs/changelog", label: "Changelog" },
 ];
 
 function Sidebar({ pathname, onNav }: { pathname: string; onNav?: () => void }) {
