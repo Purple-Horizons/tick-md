@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run build:core && next build",
     "build:all": "npm run build:core && npm run build:cli && npm run build:mcp",
     "build:cli": "cd cli && npm install && npm run build",
     "build:mcp": "cd mcp && npm install && npm run build",
