@@ -3,12 +3,12 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Changelog",
   description:
-    "Release highlights for tick-md, tick-mcp-server, and the shared @tick/core architecture.",
+    "Release highlights for tick-md, tick-mcp-server, dashboard UX/PWA updates, and shared @tick/core architecture.",
   alternates: { canonical: "/docs/changelog" },
   openGraph: {
     title: "TICK.md Changelog",
     description:
-      "Recent releases and engineering updates across the CLI, MCP server, and plugin distribution.",
+      "Recent releases and engineering updates across the CLI, dashboard, MCP server, and plugin distribution.",
   },
 };
 
@@ -19,10 +19,33 @@ export default function ChangelogPage() {
       <h1>Changelog</h1>
       <p className="lead">
         This page tracks high-impact release changes for the Tick ecosystem: CLI,
-        MCP server, shared core package, and plugin distribution.
+        dashboard, MCP server, shared core package, and plugin distribution.
       </p>
 
       <h2>Latest Releases</h2>
+
+      <h3>Dashboard Experience Refresh (Web)</h3>
+      <p><strong>Released:</strong> February 20, 2026</p>
+      <ul>
+        <li>Shipped a new dashboard intelligence layer for filtering, risk detection, recommendations, critical-path analysis, and since-last-visit digests.</li>
+        <li>Added decision-first UX modules: cockpit summaries, smarter empty states, saved filter views, and richer clickable filtering via tags and agent names.</li>
+        <li>Introduced keyboard/power workflows including command palette (<code>Cmd/Ctrl+K</code>), bulk selection/status updates, and board navigation hotkeys.</li>
+        <li>Added PWA support with manifest, install prompt support, service worker caching, and offline snapshot/freshness indicators.</li>
+      </ul>
+
+      <h3>tick-md 1.2.5</h3>
+      <p><strong>Released:</strong> February 2026</p>
+      <ul>
+        <li>Fixed CLI version reporting so <code>tick --version</code> reads package metadata correctly.</li>
+        <li>Bumped npm release version to <code>1.2.5</code> and aligned release metadata.</li>
+        <li>Adjusted release aliasing for <code>@tick/core</code> to ensure publishable dependency resolution.</li>
+      </ul>
+
+      <h3>tick-mcp-server 1.1.3</h3>
+      <p><strong>Released:</strong> February 2026</p>
+      <ul>
+        <li>Incremental release updates and dependency alignment on top of the <code>@tick/core</code>-based MCP architecture.</li>
+      </ul>
 
       <h3>tick-md 1.2.1</h3>
       <p><strong>Released:</strong> February 2026</p>
@@ -57,6 +80,9 @@ export default function ChangelogPage() {
         The main architectural shift in this cycle is consolidation around
         <code>@tick/core</code>. This lowers maintenance cost, improves correctness,
         and keeps CLI, MCP, and dashboard behavior aligned as new features ship.
+        The latest web cycle builds on this by moving the dashboard toward a
+        coordination cockpit model (decision-first summaries, filter-driven workflows,
+        and resilient PWA behaviors).
       </p>
 
       <h2>Where to Track Detailed Diffs</h2>
