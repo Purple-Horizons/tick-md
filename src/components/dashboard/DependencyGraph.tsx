@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useDashboardStore } from "./DashboardProvider";
 import type { Task } from "@/lib/types";
+import { useState } from "react";
 
 const STATUS_COLORS: Record<string, string> = {
   backlog: "#55556a",
@@ -24,6 +25,8 @@ interface GraphNode {
 export default function DependencyGraph() {
   const store = useDashboardStore();
   const { tasks } = store;
+  const [criticalOnly, setCriticalOnly] = useState(false);
+  const criticalPath = store.getCriticalPath();
 
   // Only show tasks that have deps or block others
   const connectedTasks = useMemo(() => {
@@ -132,11 +135,29 @@ export default function DependencyGraph() {
   const svgWidth = Math.max(...nodes.map((n) => n.x)) + 220;
   const svgHeight = Math.max(...nodes.map((n) => n.y)) + 100;
 
+  const renderedNodes = criticalOnly ? nodes.filter((node) => criticalPath.includes(node.task.id)) : nodes;
+  const renderedEdges = criticalOnly
+    ? edges.filter((edge) => criticalPath.includes(edge.from) && criticalPath.includes(edge.to))
+    : edges;
+
   return (
     <div className="p-4 md:p-6 overflow-auto h-full">
+      <div className="mb-3 flex items-center gap-2">
+        <button
+          onClick={() => setCriticalOnly(!criticalOnly)}
+          className={`px-2 py-1 rounded text-xs font-mono border ${
+            criticalOnly ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-text-dim)]"
+          }`}
+        >
+          Critical Path
+        </button>
+        {criticalPath.length > 0 && (
+          <span className="font-mono text-xs text-[var(--color-text-dim)]">{criticalPath.join(" → ")}</span>
+        )}
+      </div>
       <svg width={svgWidth} height={svgHeight} className="select-none">
         {/* Edges */}
-        {edges.map((edge, i) => {
+        {renderedEdges.map((edge, i) => {
           const from = nodeMap.get(edge.from);
           const to = nodeMap.get(edge.to);
           if (!from || !to) return null;
@@ -152,8 +173,8 @@ export default function DependencyGraph() {
               key={i}
               d={`M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`}
               fill="none"
-              stroke="var(--color-border)"
-              strokeWidth="1.5"
+              stroke={criticalPath.includes(edge.from) && criticalPath.includes(edge.to) ? "var(--color-accent)" : "var(--color-border)"}
+              strokeWidth={criticalPath.includes(edge.from) && criticalPath.includes(edge.to) ? "2" : "1.5"}
               markerEnd="url(#arrowhead)"
             />
           );
@@ -167,15 +188,19 @@ export default function DependencyGraph() {
         </defs>
 
         {/* Nodes */}
-        {nodes.map((node) => (
+        {renderedNodes.map((node) => (
           <g key={node.task.id} transform={`translate(${node.x}, ${node.y})`}>
             <rect
               width="160"
               height="60"
               rx="8"
               fill="var(--color-bg-surface)"
-              stroke={STATUS_COLORS[node.task.status] || "var(--color-border)"}
-              strokeWidth="1.5"
+              stroke={
+                criticalPath.includes(node.task.id)
+                  ? "var(--color-accent)"
+                  : STATUS_COLORS[node.task.status] || "var(--color-border)"
+              }
+              strokeWidth={criticalPath.includes(node.task.id) ? "2" : "1.5"}
             />
             <text x="12" y="22" fill={STATUS_COLORS[node.task.status]} className="font-mono" fontSize="11">
               {node.task.id}

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useDashboardStore } from "./DashboardProvider";
 import { useEffect, useState } from "react";
+import CommandPalette from "./CommandPalette";
 
 function getNavItems(isDemo: boolean) {
   const base = isDemo ? "/dashboard-demo" : "/dashboard";
@@ -27,20 +28,60 @@ function isItemActive(href: string, pathname: string | null, isDemo: boolean) {
 export default function Shell({ children, isDemo = false }: { children: React.ReactNode; isDemo?: boolean }) {
   const pathname = usePathname();
   const store = useDashboardStore();
-  const { meta, summary, connected, loading, fetchStatus, startWatching } = store;
+  const {
+    meta,
+    summary,
+    connected,
+    loading,
+    fetchStatus,
+    startWatching,
+    pwaOfflineMode,
+    pwaOfflineSnapshot,
+    setCurrentAgent,
+    currentAgent,
+    hydrateFromStorage,
+  } = store;
   const [showDemoBanner, setShowDemoBanner] = useState(isDemo);
   const [mounted, setMounted] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
   const NAV_ITEMS = getNavItems(isDemo);
 
   useEffect(() => {
     setMounted(true);
+    hydrateFromStorage();
+    if (typeof window !== "undefined") {
+      const onInstallPrompt = (event: Event) => {
+        event.preventDefault();
+        setInstallPrompt(event as any);
+      };
+      window.addEventListener("beforeinstallprompt", onInstallPrompt);
+      return () => window.removeEventListener("beforeinstallprompt", onInstallPrompt);
+    }
+  }, [hydrateFromStorage]);
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => {
+        // no-op
+      });
+    }
+  }, []);
+
+  useEffect(() => {
     fetchStatus();
     const stop = startWatching();
     if (isDemo && "startSimulation" in store) {
       (store as any).startSimulation();
     }
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") {
+        store.updateLastSeen();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisibility);
     return () => {
       stop();
+      document.removeEventListener("visibilitychange", onVisibility);
       if (isDemo && "stopSimulation" in store) {
         (store as any).stopSimulation();
       }
@@ -50,6 +91,7 @@ export default function Shell({ children, isDemo = false }: { children: React.Re
 
   return (
     <div className="flex flex-col md:flex-row h-[100dvh] bg-[var(--color-bg)] text-[var(--color-text)]">
+      <CommandPalette isDemo={isDemo} />
 
       {/* ── Desktop sidebar (hidden below lg) ── */}
       <aside className="hidden lg:flex w-56 flex-shrink-0 border-r border-[var(--color-border)] flex-col">
@@ -190,6 +232,30 @@ export default function Shell({ children, isDemo = false }: { children: React.Re
           </div>
 
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
+            <select
+              value={currentAgent}
+              onChange={(event) => setCurrentAgent(event.target.value)}
+              className="hidden md:block bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded px-2 py-1 text-xs font-mono text-[var(--color-text-dim)]"
+            >
+              <option value="@dashboard">@dashboard</option>
+              {store.agents.map((agent: any) => (
+                <option key={agent.name} value={agent.name}>
+                  {agent.name}
+                </option>
+              ))}
+            </select>
+            {installPrompt && !isDemo && (
+              <button
+                onClick={async () => {
+                  installPrompt.prompt();
+                  await installPrompt.userChoice;
+                  setInstallPrompt(null);
+                }}
+                className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-md bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/30 text-[var(--color-accent)] text-xs font-sans"
+              >
+                Install App
+              </button>
+            )}
             {isDemo && (
               <Link
                 href="/#get-started"
@@ -223,6 +289,13 @@ export default function Shell({ children, isDemo = false }: { children: React.Re
             >
               ✕
             </button>
+          </div>
+        )}
+        {!isDemo && pwaOfflineMode && (
+          <div className="px-4 py-2 bg-[var(--color-warning)]/10 border-b border-[var(--color-warning)]/30">
+            <p className="font-sans text-xs text-[var(--color-warning)] m-0">
+              Offline snapshot mode. Last synced {pwaOfflineSnapshot ? new Date(pwaOfflineSnapshot).toLocaleString() : "unknown"}.
+            </p>
           </div>
         )}
 

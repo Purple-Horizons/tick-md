@@ -3,6 +3,7 @@
 import { useMemo } from "react";
 import { useDashboardStore } from "./DashboardProvider";
 import type { HistoryEntry } from "@/lib/types";
+import { useState } from "react";
 
 interface FeedItem {
   taskId: string;
@@ -22,7 +23,8 @@ const ACTION_STYLES: Record<string, { icon: string; color: string }> = {
 
 export default function ActivityFeed() {
   const store = useDashboardStore();
-  const { tasks } = store;
+  const { tasks, toggleAgentFilter } = store;
+  const [view, setView] = useState<"all" | "decisions">("all");
 
   const feed = useMemo(() => {
     const items: FeedItem[] = [];
@@ -36,10 +38,15 @@ export default function ActivityFeed() {
     return items;
   }, [tasks]);
 
+  const filteredFeed = useMemo(() => {
+    if (view === "all") return feed;
+    return feed.filter((item) => ["status_change", "completed", "reopened", "assigned", "priority_change"].includes(item.entry.action));
+  }, [feed, view]);
+
   // Group by date
   const grouped = useMemo(() => {
     const groups: Record<string, FeedItem[]> = {};
-    for (const item of feed) {
+    for (const item of filteredFeed) {
       const date = new Date(item.entry.ts).toLocaleDateString("en-US", {
         weekday: "long",
         month: "short",
@@ -49,10 +56,24 @@ export default function ActivityFeed() {
       groups[date].push(item);
     }
     return groups;
-  }, [feed]);
+  }, [filteredFeed]);
 
   return (
     <div className="p-4 md:p-6 max-w-3xl">
+      <div className="flex items-center gap-2 mb-4">
+        <button
+          onClick={() => setView("all")}
+          className={`px-2 py-1 text-xs font-mono rounded border ${view === "all" ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-text-dim)]"}`}
+        >
+          All Events
+        </button>
+        <button
+          onClick={() => setView("decisions")}
+          className={`px-2 py-1 text-xs font-mono rounded border ${view === "decisions" ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-text-dim)]"}`}
+        >
+          Decisions
+        </button>
+      </div>
       {Object.entries(grouped).map(([date, items]) => (
         <div key={date} className="mb-8">
           <div className="font-sans text-xs text-[var(--color-text-muted)] uppercase tracking-wider mb-4 sticky top-0 bg-[var(--color-bg)] py-2 z-10">
@@ -76,9 +97,13 @@ export default function ActivityFeed() {
                   {/* Content */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-baseline gap-2 flex-wrap">
-                      <span className="font-mono text-xs font-bold" style={{ color: style.color }}>
+                      <button
+                        onClick={() => toggleAgentFilter(item.entry.who)}
+                        className="font-mono text-xs font-bold hover:underline"
+                        style={{ color: style.color }}
+                      >
                         {item.entry.who}
-                      </span>
+                      </button>
                       <span className="font-sans text-sm text-[var(--color-text)]">
                         {item.entry.action.replace(/_/g, " ")}
                       </span>
@@ -114,7 +139,7 @@ export default function ActivityFeed() {
         </div>
       ))}
 
-      {feed.length === 0 && (
+      {filteredFeed.length === 0 && (
         <div className="text-center py-16">
           <p className="font-sans text-sm text-[var(--color-text-muted)]">No activity yet</p>
         </div>

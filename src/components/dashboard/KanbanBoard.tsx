@@ -17,6 +17,8 @@ import TaskCard from "./TaskCard";
 import TaskDetail from "./TaskDetail";
 import { useDashboardStore } from "./DashboardProvider";
 import type { Task, TaskStatus } from "@/lib/types";
+import FilterBar from "./FilterBar";
+import DecisionCockpit from "./DecisionCockpit";
 
 const STATUS_LABELS: Record<string, string> = {
   backlog: "Backlog",
@@ -38,7 +40,25 @@ const STATUS_COLORS: Record<string, string> = {
   reopened: "var(--color-info)",
 };
 
-function KanbanColumn({ status, tasks, collapsed, onToggle }: { status: string; tasks: Task[]; collapsed: boolean; onToggle: () => void }) {
+function KanbanColumn({
+  status,
+  tasks,
+  collapsed,
+  onToggle,
+  multiSelectMode,
+  selectedIds,
+  onToggleSelect,
+  focusedTaskId,
+}: {
+  status: string;
+  tasks: Task[];
+  collapsed: boolean;
+  onToggle: () => void;
+  multiSelectMode: boolean;
+  selectedIds: Set<string>;
+  onToggleSelect: (taskId: string) => void;
+  focusedTaskId: string | null;
+}) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
 
   if (collapsed) {
@@ -101,7 +121,14 @@ function KanbanColumn({ status, tasks, collapsed, onToggle }: { status: string; 
       <div className="flex-1 md:overflow-y-auto space-y-2 px-1 pb-4 min-h-[60px]">
         <SortableContext items={tasks.map((t) => t.id)} strategy={verticalListSortingStrategy}>
           {tasks.map((task) => (
-            <TaskCard key={task.id} task={task} />
+            <TaskCard
+              key={task.id}
+              task={task}
+              multiSelectMode={multiSelectMode}
+              selected={selectedIds.has(task.id)}
+              focused={focusedTaskId === task.id}
+              onToggleSelect={onToggleSelect}
+            />
           ))}
         </SortableContext>
 
@@ -123,11 +150,17 @@ function KanbanColumn({ status, tasks, collapsed, onToggle }: { status: string; 
 
 export default function KanbanBoard() {
   const store = useDashboardStore();
-  const { tasks, workflow, moveTask, selectedTaskId, setSelectedTask } = store;
+  const { workflow, moveTask, selectedTaskId, setSelectedTask } = store;
+  const tasks = store.getVisibleTasks();
+  const allTasks = store.tasks;
   const [activeId, setActiveId] = useState<string | null>(null);
   const [mobileStatus, setMobileStatus] = useState<string>("all");
   const [collapsedColumns, setCollapsedColumns] = useState<Set<string>>(new Set(["done"])); // Default collapse "done"
   const [mounted, setMounted] = useState(false);
+  const [multiSelectMode, setMultiSelectMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkStatus, setBulkStatus] = useState<TaskStatus>("todo");
+  const [focusedTaskId, setFocusedTaskId] = useState<string | null>(null);
 
   useEffect(() => { setMounted(true); }, []);
 
@@ -168,8 +201,8 @@ export default function KanbanBoard() {
     return grouped;
   }, [tasks, workflow]);
 
-  const activeTask = activeId ? tasks.find((t: Task) => t.id === activeId) : null;
-  const selectedTask = selectedTaskId ? tasks.find((t: Task) => t.id === selectedTaskId) : null;
+  const activeTask = activeId ? allTasks.find((t: Task) => t.id === activeId) : null;
+  const selectedTask = selectedTaskId ? allTasks.find((t: Task) => t.id === selectedTaskId) : null;
 
   const visibleStatuses = [...workflow];
   if ((tasksByStatus["blocked"]?.length ?? 0) > 0) visibleStatuses.push("blocked");
@@ -180,11 +213,21 @@ export default function KanbanBoard() {
     ? tasks
     : tasks.filter((t: Task) => t.status === mobileStatus);
 
+  const orderedVisibleTaskIds = useMemo(() => {
+    const list: string[] = [];
+    for (const status of visibleStatuses) {
+      (tasksByStatus[status] || []).forEach((task: Task) => list.push(task.id));
+    }
+    return list;
+  }, [tasksByStatus, visibleStatuses]);
+
   function handleDragStart(event: DragStartEvent) {
+    if (multiSelectMode) return;
     setActiveId(event.active.id as string);
   }
 
   function handleDragEnd(event: DragEndEvent) {
+    if (multiSelectMode) return;
     setActiveId(null);
     const { active, over } = event;
     if (!over) return;
@@ -193,15 +236,181 @@ export default function KanbanBoard() {
     const targetStatus = over.id as string;
 
     if (workflow.includes(targetStatus as TaskStatus) || targetStatus === "blocked" || targetStatus === "reopened") {
-      const task = tasks.find((t: Task) => t.id === taskId);
+      const task = allTasks.find((t: Task) => t.id === taskId);
       if (task && task.status !== targetStatus) {
         moveTask(taskId, targetStatus as TaskStatus);
       }
     }
   }
 
+  function toggleSelect(taskId: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(taskId)) next.delete(taskId);
+      else next.add(taskId);
+      return next;
+    });
+  }
+
+  async function applyBulkStatus() {
+    const ids = [...selectedIds];
+    for (const id of ids) {
+      const task = allTasks.find((entry: Task) => entry.id === id);
+      if (task && task.status !== bulkStatus) {
+        // Intentional sequential updates to preserve mutation order/history clarity
+        // eslint-disable-next-line no-await-in-loop
+        await moveTask(id, bulkStatus);
+      }
+    }
+    setSelectedIds(new Set());
+    setMultiSelectMode(false);
+  }
+
+  async function quickAdvanceFocusedTask() {
+    if (!focusedTaskId) return;
+    const task = allTasks.find((entry: Task) => entry.id === focusedTaskId);
+    if (!task) return;
+    const idx = workflow.indexOf(task.status);
+    const next = idx >= 0 && idx < workflow.length - 1 ? workflow[idx + 1] : "todo";
+    if (task.status !== next) {
+      await moveTask(task.id, next);
+    }
+  }
+
+  const hasFilteredResults = tasks.length > 0;
+  const hasAnyTasks = allTasks.length > 0;
+  const hasActiveFilters =
+    store.filters.text.length > 0 ||
+    store.filters.tags.length > 0 ||
+    store.filters.agents.length > 0 ||
+    store.filters.statuses.length > 0 ||
+    store.filters.priorities.length > 0 ||
+    store.filters.blockedOnly ||
+    store.filters.depsOnly ||
+    store.filters.mineOnly ||
+    store.filters.unownedOnly;
+
+  useEffect(() => {
+    if (!focusedTaskId && orderedVisibleTaskIds.length > 0) {
+      setFocusedTaskId(orderedVisibleTaskIds[0]);
+      return;
+    }
+    if (focusedTaskId && !orderedVisibleTaskIds.includes(focusedTaskId)) {
+      setFocusedTaskId(orderedVisibleTaskIds[0] || null);
+    }
+  }, [focusedTaskId, orderedVisibleTaskIds]);
+
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const tag = (event.target as HTMLElement | null)?.tagName?.toLowerCase();
+      if (tag === "input" || tag === "textarea" || tag === "select" || (event.target as HTMLElement | null)?.isContentEditable) {
+        return;
+      }
+      if (orderedVisibleTaskIds.length === 0) return;
+      const currentIndex = focusedTaskId ? orderedVisibleTaskIds.indexOf(focusedTaskId) : 0;
+
+      if (event.key === "j") {
+        event.preventDefault();
+        const next = Math.min(orderedVisibleTaskIds.length - 1, Math.max(0, currentIndex + 1));
+        setFocusedTaskId(orderedVisibleTaskIds[next]);
+      }
+      if (event.key === "k") {
+        event.preventDefault();
+        const prev = Math.max(0, currentIndex - 1);
+        setFocusedTaskId(orderedVisibleTaskIds[prev]);
+      }
+      if (event.key.toLowerCase() === "x" && multiSelectMode && focusedTaskId) {
+        event.preventDefault();
+        toggleSelect(focusedTaskId);
+      }
+      if (event.key === "." && focusedTaskId) {
+        event.preventDefault();
+        quickAdvanceFocusedTask();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [focusedTaskId, orderedVisibleTaskIds, multiSelectMode]);
+
   return (
-    <div className="flex h-full">
+    <div className="flex h-full flex-col">
+      <DecisionCockpit />
+      <FilterBar />
+      <div className="flex items-center justify-between gap-2 px-3 md:px-5 py-2 border-b border-[var(--color-border)]">
+        <div className="flex items-center gap-2">
+          <span className="hidden md:inline font-mono text-[10px] text-[var(--color-text-muted)]">
+            Keys: j/k focus, . advance, x select
+          </span>
+          <button
+            onClick={() => {
+              setMultiSelectMode(!multiSelectMode);
+              setSelectedIds(new Set());
+            }}
+            className={`px-2 py-1 rounded text-xs font-mono border ${
+              multiSelectMode ? "border-[var(--color-accent)] text-[var(--color-accent)]" : "border-[var(--color-border)] text-[var(--color-text-dim)]"
+            }`}
+          >
+            {multiSelectMode ? "Exit Select" : "Bulk Select"}
+          </button>
+          {multiSelectMode && (
+            <span className="font-mono text-xs text-[var(--color-text-dim)]">{selectedIds.size} selected</span>
+          )}
+        </div>
+        {multiSelectMode && (
+          <div className="flex items-center gap-2">
+            <select
+              value={bulkStatus}
+              onChange={(event) => setBulkStatus(event.target.value as TaskStatus)}
+              className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded px-2 py-1 text-xs font-mono text-[var(--color-text-dim)]"
+            >
+              {workflow.map((status: TaskStatus) => (
+                <option key={status} value={status}>
+                  {status}
+                </option>
+              ))}
+              <option value="blocked">blocked</option>
+              <option value="reopened">reopened</option>
+            </select>
+            <button
+              disabled={selectedIds.size === 0}
+              onClick={applyBulkStatus}
+              className="px-2 py-1 rounded text-xs font-mono border border-[var(--color-accent)]/30 text-[var(--color-accent)] disabled:opacity-50"
+              title={`Preview: move ${selectedIds.size} tasks to ${bulkStatus}`}
+            >
+              Apply {selectedIds.size}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {!hasFilteredResults && hasAnyTasks && hasActiveFilters && (
+        <div className="mx-3 md:mx-5 mt-3 bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-lg p-3">
+          <p className="font-sans text-sm text-[var(--color-text-dim)] mb-2">No tasks match current filters.</p>
+          <div className="flex items-center flex-wrap gap-2">
+            <button onClick={() => store.resetFilters()} className="px-2 py-1 rounded text-xs font-mono border border-[var(--color-border)] text-[var(--color-text-dim)]">
+              Clear all filters
+            </button>
+            {store.filters.tags.length > 0 && (
+              <button
+                onClick={() => store.setFilters({ tags: [] })}
+                className="px-2 py-1 rounded text-xs font-mono border border-[var(--color-border)] text-[var(--color-text-dim)]"
+              >
+                Remove tag filters
+              </button>
+            )}
+            {store.filters.agents.length > 0 && (
+              <button
+                onClick={() => store.setFilters({ agents: [] })}
+                className="px-2 py-1 rounded text-xs font-mono border border-[var(--color-border)] text-[var(--color-text-dim)]"
+              >
+                Remove agent filters
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      <div className="flex h-full">
       {/* ── Mobile: tab-based single column ── */}
       <div className="md:hidden flex-1 flex flex-col">
         {/* Status tabs */}
@@ -241,7 +450,14 @@ export default function KanbanBoard() {
         <div className="flex-1 overflow-y-auto px-3 py-3 space-y-2">
           {mobileFilteredTasks.length > 0 ? (
             mobileFilteredTasks.map((task: Task) => (
-              <TaskCard key={task.id} task={task} />
+              <TaskCard
+                key={task.id}
+                task={task}
+                multiSelectMode={multiSelectMode}
+                selected={selectedIds.has(task.id)}
+                focused={focusedTaskId === task.id}
+                onToggleSelect={toggleSelect}
+              />
             ))
           ) : (
             <div className="text-center py-12">
@@ -267,6 +483,10 @@ export default function KanbanBoard() {
                 tasks={tasksByStatus[status] || []} 
                 collapsed={collapsedColumns.has(status)}
                 onToggle={() => toggleColumn(status)}
+                multiSelectMode={multiSelectMode}
+                selectedIds={selectedIds}
+                onToggleSelect={toggleSelect}
+                focusedTaskId={focusedTaskId}
               />
             ))}
           </div>
@@ -289,6 +509,7 @@ export default function KanbanBoard() {
       {selectedTask && (
         <TaskDetail task={selectedTask} onClose={() => setSelectedTask(null)} />
       )}
+      </div>
     </div>
   );
 }

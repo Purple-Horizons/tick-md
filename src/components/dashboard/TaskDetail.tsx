@@ -1,6 +1,8 @@
 "use client";
 
 import type { Task, Priority } from "@/lib/types";
+import { useDashboardStore } from "./DashboardProvider";
+import { getHandoffScore, getRiskFlags } from "@/lib/dashboard-intelligence";
 
 const PRIORITY_COLORS: Record<Priority, string> = {
   urgent: "var(--color-danger)",
@@ -37,6 +39,11 @@ export default function TaskDetail({ task, onClose }: { task: Task; onClose: () 
 }
 
 function DetailContent({ task, onClose }: { task: Task; onClose: () => void }) {
+  const store = useDashboardStore();
+  const { toggleTagFilter, toggleAgentFilter } = store;
+  const handoff = getHandoffScore(task);
+  const risk = getRiskFlags(task);
+
   return (
     <>
       {/* Header */}
@@ -79,7 +86,9 @@ function DetailContent({ task, onClose }: { task: Task; onClose: () => void }) {
             <span className="font-mono text-xs text-[var(--color-text-muted)] uppercase tracking-wider w-20">Claimed</span>
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-[var(--color-accent)] animate-pulse" />
-              <span className="font-mono text-sm text-[var(--color-accent)]">{task.claimed_by}</span>
+              <button onClick={() => toggleAgentFilter(task.claimed_by!)} className="font-mono text-sm text-[var(--color-accent)] hover:underline">
+                {task.claimed_by}
+              </button>
             </div>
           </div>
         )}
@@ -88,7 +97,9 @@ function DetailContent({ task, onClose }: { task: Task; onClose: () => void }) {
         {task.assigned_to && (
           <div className="flex items-center gap-3">
             <span className="font-mono text-xs text-[var(--color-text-muted)] uppercase tracking-wider w-20">Assigned</span>
-            <span className="font-mono text-sm text-[var(--color-text)]">{task.assigned_to}</span>
+            <button onClick={() => toggleAgentFilter(task.assigned_to!)} className="font-mono text-sm text-[var(--color-text)] hover:underline">
+              {task.assigned_to}
+            </button>
           </div>
         )}
 
@@ -104,16 +115,35 @@ function DetailContent({ task, onClose }: { task: Task; onClose: () => void }) {
             <span className="font-mono text-xs text-[var(--color-text-muted)] uppercase tracking-wider block mb-2">Tags</span>
             <div className="flex flex-wrap gap-1.5">
               {task.tags.map((tag, i) => (
-                <span
+                <button
                   key={`${tag}-${i}`}
+                  onClick={() => toggleTagFilter(tag)}
                   className="font-mono text-xs text-[var(--color-text-dim)] bg-[var(--color-bg)] border border-[var(--color-border)] px-2 py-0.5 rounded"
                 >
                   #{tag}
-                </span>
+                </button>
               ))}
             </div>
           </div>
         )}
+
+        <div className="bg-[var(--color-bg)] border border-[var(--color-border)] rounded-lg p-3">
+          <div className="flex items-center justify-between mb-2">
+            <span className="font-mono text-[11px] text-[var(--color-text-muted)] uppercase tracking-wider">Handoff Readiness</span>
+            <span className="font-mono text-xs text-[var(--color-accent)]">{handoff.score}/100</span>
+          </div>
+          <div className="font-sans text-xs text-[var(--color-text-dim)]">
+            {handoff.missing.length === 0 ? "Context complete for handoff." : `Missing: ${handoff.missing.join(", ")}`}
+          </div>
+          <div className="font-sans text-xs text-[var(--color-text-dim)] mt-2">
+            Risk: {risk.blocked ? "blocked " : ""}
+            {risk.overdue ? "overdue " : ""}
+            {risk.reopened ? "reopened " : ""}
+            {risk.stale ? "stale " : ""}
+            {risk.unowned ? "unowned" : ""}
+            {!risk.blocked && !risk.overdue && !risk.reopened && !risk.stale && !risk.unowned ? "healthy" : ""}
+          </div>
+        </div>
 
         {/* Dependencies */}
         {task.depends_on.length > 0 && (
@@ -163,7 +193,9 @@ function DetailContent({ task, onClose }: { task: Task; onClose: () => void }) {
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-baseline gap-2 flex-wrap">
-                    <span className="font-mono text-xs text-[var(--color-accent)]">{entry.who}</span>
+                    <button onClick={() => toggleAgentFilter(entry.who)} className="font-mono text-xs text-[var(--color-accent)] hover:underline">
+                      {entry.who}
+                    </button>
                     <span className="font-sans text-xs text-[var(--color-text)]">{entry.action}</span>
                     {entry.from && entry.to && (
                       <span className="font-mono text-[10px] text-[var(--color-text-muted)]">

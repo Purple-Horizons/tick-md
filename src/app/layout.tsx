@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
@@ -64,6 +64,16 @@ export const metadata: Metadata = {
     canonical: SITE_URL,
   },
   category: "Developer Tools",
+  manifest: "/manifest.webmanifest",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "TICK",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0a0a12",
 };
 
 export default function RootLayout({

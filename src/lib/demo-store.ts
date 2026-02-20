@@ -1,6 +1,16 @@
 import { create } from "zustand";
 import type { Task, Agent, TaskStatus, ProjectMeta } from "./types";
 import { DEMO_PROJECT_META, DEMO_AGENTS, DEMO_TASKS, DEMO_TIMELINE, NEW_TASK_TEMPLATE, type DemoEvent } from "./demo-data";
+import {
+  buildCapacitySignals,
+  buildDigest,
+  defaultFilters,
+  filterTasks,
+  getCriticalPathTasks,
+  getRiskFlags,
+  suggestNextTasks,
+  type DashboardFilters,
+} from "./dashboard-intelligence";
 
 export interface DemoStore {
   // Data (same as useTickStore)
@@ -16,6 +26,12 @@ export interface DemoStore {
   connected: boolean;
   selectedTaskId: string | null;
   activeView: "board" | "agents" | "activity" | "graph" | "settings";
+  filters: DashboardFilters;
+  savedViews: { name: string; filters: DashboardFilters }[];
+  currentAgent: string;
+  lastSeenAt: string | null;
+  pwaOfflineSnapshot: string | null;
+  pwaOfflineMode: boolean;
 
   // Demo-specific
   isSimulating: boolean;
@@ -28,6 +44,24 @@ export interface DemoStore {
   releaseTask: (taskId: string, agent: string) => Promise<void>;
   setSelectedTask: (taskId: string | null) => void;
   setActiveView: (view: DemoStore["activeView"]) => void;
+  setCurrentAgent: (agent: string) => void;
+  setFilters: (partial: Partial<DashboardFilters>) => void;
+  resetFilters: () => void;
+  toggleTagFilter: (tag: string) => void;
+  toggleAgentFilter: (agent: string) => void;
+  saveCurrentView: (name: string) => void;
+  applySavedView: (name: string) => void;
+  removeSavedView: (name: string) => void;
+  setPwaOfflineMode: (offline: boolean) => void;
+  setPwaOfflineSnapshot: (snapshot: string | null) => void;
+  updateLastSeen: () => void;
+  getVisibleTasks: () => Task[];
+  getDigest: () => ReturnType<typeof buildDigest>;
+  getCapacitySignals: () => ReturnType<typeof buildCapacitySignals>;
+  getRecommendations: () => ReturnType<typeof suggestNextTasks>;
+  getCriticalPath: () => string[];
+  getRiskTasks: () => Task[];
+  hydrateFromStorage: () => void;
   startWatching: () => () => void;
 
   // Demo controls
@@ -63,6 +97,12 @@ export const useDemoStore = create<DemoStore>((set, get) => ({
   connected: true,
   selectedTaskId: null,
   activeView: "board",
+  filters: defaultFilters(),
+  savedViews: [],
+  currentAgent: "@demo-user",
+  lastSeenAt: null,
+  pwaOfflineSnapshot: null,
+  pwaOfflineMode: false,
   isSimulating: false,
   timelineIndex: 0,
 
@@ -106,6 +146,75 @@ export const useDemoStore = create<DemoStore>((set, get) => ({
 
   setSelectedTask: (taskId) => set({ selectedTaskId: taskId }),
   setActiveView: (view) => set({ activeView: view }),
+  setCurrentAgent: (agent) => set({ currentAgent: agent }),
+  setFilters: (partial) => set((state) => ({ filters: { ...state.filters, ...partial } })),
+  resetFilters: () => set({ filters: defaultFilters() }),
+  toggleTagFilter: (tag) =>
+    set((state) => ({
+      filters: {
+        ...state.filters,
+        tags: state.filters.tags.includes(tag)
+          ? state.filters.tags.filter((value) => value !== tag)
+          : [...state.filters.tags, tag],
+      },
+    })),
+  toggleAgentFilter: (agent) =>
+    set((state) => ({
+      filters: {
+        ...state.filters,
+        agents: state.filters.agents.includes(agent)
+          ? state.filters.agents.filter((value) => value !== agent)
+          : [...state.filters.agents, agent],
+      },
+    })),
+  saveCurrentView: (name) =>
+    set((state) => {
+      if (!name.trim()) return state;
+      const next = state.savedViews.filter((view) => view.name !== name);
+      next.push({ name, filters: state.filters });
+      return { savedViews: next };
+    }),
+  applySavedView: (name) =>
+    set((state) => {
+      const found = state.savedViews.find((view) => view.name === name);
+      if (!found) return state;
+      return { filters: found.filters };
+    }),
+  removeSavedView: (name) =>
+    set((state) => ({
+      savedViews: state.savedViews.filter((view) => view.name !== name),
+    })),
+  setPwaOfflineMode: (offline) => set({ pwaOfflineMode: offline }),
+  setPwaOfflineSnapshot: (snapshot) => set({ pwaOfflineSnapshot: snapshot }),
+  updateLastSeen: () => set({ lastSeenAt: new Date().toISOString() }),
+  getVisibleTasks: () => {
+    const state = get();
+    return filterTasks(state.tasks, state.filters, state.currentAgent);
+  },
+  getDigest: () => {
+    const state = get();
+    return buildDigest(state.tasks, state.lastSeenAt);
+  },
+  getCapacitySignals: () => {
+    const state = get();
+    return buildCapacitySignals(state.tasks, state.agents);
+  },
+  getRecommendations: () => {
+    const state = get();
+    return suggestNextTasks(state.tasks, state.currentAgent);
+  },
+  getCriticalPath: () => {
+    const state = get();
+    return getCriticalPathTasks(state.tasks);
+  },
+  getRiskTasks: () => {
+    const state = get();
+    return state.tasks.filter((task) => {
+      const flags = getRiskFlags(task);
+      return flags.blocked || flags.reopened || flags.stale || flags.unowned || flags.overdue;
+    });
+  },
+  hydrateFromStorage: () => {},
   startWatching: () => () => {}, // No-op for demo
 
   startSimulation: () => {

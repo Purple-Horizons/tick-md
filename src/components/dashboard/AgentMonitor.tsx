@@ -2,6 +2,8 @@
 
 import { useDashboardStore } from "./DashboardProvider";
 import type { AgentStatus, Agent } from "@/lib/types";
+import IdentityBadge from "./IdentityBadge";
+import type { CapacitySignal } from "@/lib/dashboard-intelligence";
 
 const STATUS_CONFIG: Record<AgentStatus, { color: string; label: string; pulse: boolean }> = {
   working: { color: "var(--color-accent)", label: "Working", pulse: true },
@@ -11,7 +13,8 @@ const STATUS_CONFIG: Record<AgentStatus, { color: string; label: string; pulse: 
 
 export default function AgentMonitor() {
   const store = useDashboardStore();
-  const { agents, tasks } = store;
+  const { agents, toggleAgentFilter } = store;
+  const capacity: CapacitySignal[] = store.getCapacitySignals();
 
   const working = agents.filter((a: Agent) => a.status === "working").length;
   const idle = agents.filter((a: Agent) => a.status === "idle").length;
@@ -51,7 +54,10 @@ export default function AgentMonitor() {
                     className={`w-2 h-2 rounded-full flex-shrink-0 ${config.pulse ? "animate-pulse" : ""}`}
                     style={{ backgroundColor: config.color }}
                   />
-                  <span className="font-mono text-sm text-[var(--color-text)]">{agent.name}</span>
+                  <button onClick={() => toggleAgentFilter(agent.name)} className="font-mono text-sm text-[var(--color-text)] hover:underline">
+                    {agent.name}
+                  </button>
+                  <IdentityBadge type={agent.type} name={agent.name} compact />
                 </div>
                 <span className="font-mono text-xs" style={{ color: config.color }}>
                   {config.label}
@@ -96,7 +102,10 @@ export default function AgentMonitor() {
                   className={`w-2 h-2 rounded-full flex-shrink-0 ${config.pulse ? "animate-pulse" : ""}`}
                   style={{ backgroundColor: config.color }}
                 />
-                <span className="font-mono text-sm text-[var(--color-text)] truncate">{agent.name}</span>
+                <button onClick={() => toggleAgentFilter(agent.name)} className="font-mono text-sm text-[var(--color-text)] truncate hover:underline">
+                  {agent.name}
+                </button>
+                <IdentityBadge type={agent.type} name={agent.name} compact />
               </div>
               <span className="font-mono text-xs text-[var(--color-text-dim)] self-center">{agent.type}</span>
               <span className="font-mono text-xs self-center" style={{ color: config.color }}>{config.label}</span>
@@ -112,6 +121,17 @@ export default function AgentMonitor() {
             </div>
           );
         })}
+
+        {capacity.some((entry: CapacitySignal) => entry.overloaded) && (
+          <div className="px-5 py-3 border-t border-[var(--color-border)] bg-[var(--color-danger)]/5">
+            <p className="font-mono text-xs text-[var(--color-danger)]">
+              WIP alert: {capacity
+                .filter((entry: CapacitySignal) => entry.overloaded)
+                .map((entry: CapacitySignal) => `${entry.agent}(${entry.activeCount})`)
+                .join(", ")}
+            </p>
+          </div>
+        )}
 
         {agents.length === 0 && (
           <div className="px-5 py-8 text-center">
