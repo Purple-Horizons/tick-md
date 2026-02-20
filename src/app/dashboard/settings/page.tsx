@@ -3,7 +3,7 @@
 import { useTickStore } from "@/lib/store";
 
 export default function SettingsPage() {
-  const { meta, agents, summary } = useTickStore();
+  const { meta, tickPath } = useTickStore();
 
   return (
     <div className="p-4 md:p-6 max-w-2xl">
@@ -13,18 +13,19 @@ export default function SettingsPage() {
       <div className="bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded-xl p-5 mb-6">
         <h3 className="font-sans text-sm font-semibold text-white mb-4">Project</h3>
         <div className="space-y-3">
-          {[
-            { label: "Name", value: meta?.project },
-            { label: "Title", value: meta?.title },
-            { label: "Schema Version", value: meta?.schema_version },
-            { label: "ID Prefix", value: meta?.id_prefix },
-            { label: "Next ID", value: meta?.next_id },
+            {[
+              { label: "Name", value: meta?.project },
+              { label: "Title", value: meta?.title },
+              { label: "TICK.md Path", value: tickPath },
+              { label: "Schema Version", value: meta?.schema_version },
+              { label: "ID Prefix", value: meta?.id_prefix },
+              { label: "Next ID", value: meta?.next_id },
             { label: "Created", value: meta?.created ? new Date(meta.created).toLocaleString() : "—" },
             { label: "Updated", value: meta?.updated ? new Date(meta.updated).toLocaleString() : "—" },
           ].map(({ label, value }) => (
             <div key={label} className="flex items-center justify-between">
               <span className="font-mono text-xs text-[var(--color-text-muted)] uppercase tracking-wider">{label}</span>
-              <span className="font-mono text-sm text-[var(--color-text)]">{value ?? "—"}</span>
+              <span className="font-mono text-sm text-[var(--color-text)] max-w-[60%] text-right break-all">{value ?? "—"}</span>
             </div>
           ))}
         </div>

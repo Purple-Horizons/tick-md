@@ -25,6 +25,7 @@ export async function GET() {
     const total = tickFile.tasks.length;
 
     return NextResponse.json({
+      tick_path: tickPath,
       meta: tickFile.meta,
       agents: tickFile.agents,
       tasks: tickFile.tasks,

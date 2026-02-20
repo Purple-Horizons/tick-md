@@ -2,9 +2,8 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import type { Task, Priority, Agent } from "@/lib/types";
+import type { Task, Priority } from "@/lib/types";
 import { useDashboardStore } from "./DashboardProvider";
-import IdentityBadge from "./IdentityBadge";
 
 const PRIORITY_COLORS: Record<Priority, string> = {
   urgent: "var(--color-danger)",
@@ -34,8 +33,7 @@ export default function TaskCard({
   onToggleSelect?: (taskId: string) => void;
 }) {
   const store = useDashboardStore();
-  const { setSelectedTask, toggleTagFilter, toggleAgentFilter, agents } = store;
-  const agent = (agents as Agent[]).find((a: Agent) => a.name === task.claimed_by);
+  const { setSelectedTask, toggleTagFilter, toggleAgentFilter } = store;
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: task.id,
@@ -122,7 +120,6 @@ export default function TaskCard({
             >
               {task.claimed_by}
             </button>
-            {agent && <IdentityBadge type={agent.type} name={agent.name} compact />}
           </div>
         ) : (
           <span />

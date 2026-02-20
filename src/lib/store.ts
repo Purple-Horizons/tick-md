@@ -19,6 +19,7 @@ interface SavedView {
 interface TickStore {
   // Data
   meta: ProjectMeta | null;
+  tickPath: string | null;
   tasks: Task[];
   agents: Agent[];
   workflow: TaskStatus[];
@@ -67,6 +68,7 @@ interface TickStore {
 
 export const useTickStore = create<TickStore>((set, get) => ({
   meta: null,
+  tickPath: null,
   tasks: [],
   agents: [],
   workflow: ["backlog", "todo", "in_progress", "review", "done"],
@@ -93,6 +95,7 @@ export const useTickStore = create<TickStore>((set, get) => ({
       }
       const data = await res.json();
       set({
+        tickPath: data.tick_path || null,
         meta: data.meta,
         tasks: data.tasks,
         agents: data.agents,
@@ -111,6 +114,7 @@ export const useTickStore = create<TickStore>((set, get) => ({
           try {
             const data = JSON.parse(cached);
             set({
+              tickPath: data.tick_path || null,
               meta: data.meta,
               tasks: data.tasks,
               agents: data.agents,

@@ -39,6 +39,7 @@ export default function Shell({ children, isDemo = false }: { children: React.Re
     pwaOfflineSnapshot,
     setCurrentAgent,
     currentAgent,
+    setFilters,
     hydrateFromStorage,
   } = store;
   const [showDemoBanner, setShowDemoBanner] = useState(isDemo);
@@ -234,13 +235,22 @@ export default function Shell({ children, isDemo = false }: { children: React.Re
           <div className="flex items-center gap-2 md:gap-3 flex-shrink-0">
             <select
               value={currentAgent}
-              onChange={(event) => setCurrentAgent(event.target.value)}
+              onChange={(event) => {
+                const value = event.target.value;
+                setCurrentAgent(value);
+                if (value === "@dashboard") {
+                  setFilters({ mineOnly: false, agents: [] });
+                } else {
+                  setFilters({ mineOnly: true, agents: [value] });
+                }
+              }}
               className="hidden md:block bg-[var(--color-bg-surface)] border border-[var(--color-border)] rounded px-2 py-1 text-xs font-mono text-[var(--color-text-dim)]"
+              title="Perspective filter"
             >
-              <option value="@dashboard">@dashboard</option>
+              <option value="@dashboard">Perspective: all</option>
               {store.agents.map((agent: any) => (
                 <option key={agent.name} value={agent.name}>
-                  {agent.name}
+                  Perspective: {agent.name}
                 </option>
               ))}
             </select>
