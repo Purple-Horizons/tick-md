@@ -32,4 +32,30 @@ describe("Core I/O concurrency guard", () => {
 
     await fs.rm(tmpDir, { recursive: true, force: true });
   });
+
+  it("rejects writes to symlinked TICK.md by default", async () => {
+    const tmpDir = await fs.mkdtemp(path.join(os.tmpdir(), "tick-symlink-"));
+    const realPath = path.join(tmpDir, "REAL_TICK.md");
+    const symlinkPath = path.join(tmpDir, "TICK.md");
+
+    await fs.writeFile(realPath, generateDefaultTickFile("symlink-test"), "utf-8");
+
+    try {
+      await fs.symlink(realPath, symlinkPath);
+    } catch (error) {
+      // Some environments may disallow symlink creation.
+      await fs.rm(tmpDir, { recursive: true, force: true });
+      return;
+    }
+
+    const { tickFile } = readTickFileStateSync(symlinkPath);
+    tickFile.meta.next_id += 1;
+
+    assert.throws(
+      () => writeTickFileAtomicSync(tickFile, symlinkPath),
+      /Refusing to write through symlinked TICK\.md/
+    );
+
+    await fs.rm(tmpDir, { recursive: true, force: true });
+  });
 });

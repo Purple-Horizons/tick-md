@@ -13,6 +13,15 @@ export interface TickFileReadState {
   size: number;
 }
 
+function assertNotSymlink(filePath: string): void {
+  const stat = fs.lstatSync(filePath);
+  if (stat.isSymbolicLink() && process.env.TICK_ALLOW_SYMLINK_WRITE !== "1") {
+    throw new Error(
+      "Refusing to write through symlinked TICK.md. Set TICK_ALLOW_SYMLINK_WRITE=1 to override."
+    );
+  }
+}
+
 export function findTickFile(baseDir: string = process.cwd()): string | null {
   const tickPath = path.join(baseDir, TICK_FILENAME);
   return fs.existsSync(tickPath) ? tickPath : null;
@@ -71,6 +80,7 @@ export async function writeTickFileAtomic(
     throw new Error("TICK.md not found. Run 'tick init' to create a project.");
   }
 
+  assertNotSymlink(filePath);
   assertFileUnchanged(filePath, expected);
   const content = serializeTickFile(tickFile);
   const dir = path.dirname(filePath);
@@ -90,6 +100,7 @@ export function writeTickFileAtomicSync(
     throw new Error("TICK.md not found. Run 'tick init' to create a project.");
   }
 
+  assertNotSymlink(filePath);
   assertFileUnchanged(filePath, expected);
   const content = serializeTickFile(tickFile);
   const dir = path.dirname(filePath);
