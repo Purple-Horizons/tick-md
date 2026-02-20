@@ -24,6 +24,10 @@
 
   --color-border: #2a2a40;
   --color-border-accent: rgba(167, 139, 250, 0.25);
+  --scrollbar-track: #0f1020;
+  --scrollbar-thumb: #2a2a40;
+  --scrollbar-thumb-hover: #3a3a58;
+  --scrollbar-thumb-active: #4a4670;
 
   --color-success: #34d399;
   --color-warning: #fbbf24;
@@ -52,9 +56,34 @@
 }
 
 /* ── Dashboard Scrollbars ── */
-.dashboard-root pre::-webkit-scrollbar { height: 6px; }
-.dashboard-root pre::-webkit-scrollbar-track { background: transparent; }
-.dashboard-root pre::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+.dashboard-root * {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+}
+
+.dashboard-root *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.dashboard-root *::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
+}
+
+.dashboard-root *::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 999px;
+  border: 2px solid var(--scrollbar-track);
+}
+
+.dashboard-root *::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+.dashboard-root *::-webkit-scrollbar-thumb:active {
+  background: var(--scrollbar-thumb-active);
+}
 
 /* ── Dashboard Animations ── */
 @keyframes dash-pulse-glow {
