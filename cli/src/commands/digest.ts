@@ -176,7 +176,16 @@ export function renderDigestMarkdown(d: Digest): string {
   const out: string[] = [];
   out.push(`# ${d.project} — board digest`);
   out.push("");
-  out.push(`_Generated ${d.generated_at}_`);
+  const generated = new Date(d.generated_at).toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+  });
+  out.push(`_Generated ${generated}_`);
   out.push("");
   out.push(
     `Todo ${d.counts.todo} · Working ${d.counts.working} · Blocked ${d.counts.blocked} · ` +
