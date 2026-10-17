@@ -93,6 +93,13 @@ OpenClaw bots can now coordinate tasks through natural conversation!
 
 ## 🆕 Latest Release Highlights
 
+### tick-md `1.3.0` / tick-core `1.1.0`
+- **Safe for many agents on one board:** a cross-process write lock means concurrent agents no longer overwrite each other's changes.
+- **`tick block --on <who>` / `tick unblock`:** blocked tasks record what they're waiting on (`waiting_on`).
+- **`tick digest`:** a board summary grouped by status, with stale-task detection (Markdown or `--json`).
+- `TICK_DIR` and `TICK_AGENT` for shared boards. `--no-commit` now works.
+- Published with npm provenance via trusted publishing.
+
 ### tick-md `1.2.1`
 - Shared `@tick/core` package introduced as the single source of truth for parser, serializer, types, validation, and atomic file I/O.
 - CLI reliability improvements (archive, backup, broadcast, notify queue, conflict helpers, parse cache, completion, repair).
@@ -132,6 +139,57 @@ tick watch                         # Watch for changes
 # Git integration
 tick sync --push                   # Commit and push
 ```
+
+## 🤝 Multi-Agent Boards (bot teams)
+
+One `TICK.md` can coordinate a whole team of agents on the same machine.
+
+**Point every agent at the board and identify it**
+```bash
+export TICK_DIR=/srv/team-board   # run tick from any directory against this board
+export TICK_AGENT=@devy           # who "I" am; overrides the shared .tick/session
+```
+Still pass your handle explicitly (`tick claim TASK-007 @devy`). The session file is shared by every agent on the board.
+
+**Write lock.** Every mutating command holds `.tick/write.lock` while it runs, so 17 agents adding or claiming at once never lose an update. Locks from crashed processes are reclaimed automatically. Tune with `TICK_LOCK_TIMEOUT_MS` (default 15000) and `TICK_LOCK_STALE_MS` (default 60000).
+
+**Blocked means "waiting on X"**
+```bash
+tick block TASK-004 @salesy --on "Baptist Health" -n "awaiting call confirmation"
+tick block TASK-006 @cigary --on @gianni -n "needs hero image pick"
+tick unblock TASK-004 @salesy -n "confirmed Tue 11:30"   # back to in_progress if claimed, else todo
+```
+`waiting_on` shows up in `tick list` and `tick digest`. `tick validate` warns about blocked tasks that don't say what they're waiting on. `tick done` clears it.
+
+**Digest for the morning brief**
+```bash
+tick digest                      # Markdown: Blocked (waiting on), Ready for review, Working, Todo, Done (24h), Stale
+tick digest --owner @devy        # one agent's tasks (claimed or assigned)
+tick digest --json               # for bots and dashboards
+tick digest --stale-hours 24 --done-since-hours 48
+```
+Open tasks with no update in `--stale-hours` (default 48) are listed under **Stale**.
+
+### Example: running a bot team on tick
+```bash
+# once
+mkdir -p /srv/team-board && cd /srv/team-board && git init && tick init --name team
+for b in @geny @devy @salesy; do tick agent register $b --type bot; done
+
+# a chief-of-staff bot files work
+tick add "Ship intake endpoint" --assigned-to @devy --priority high -d "PR: <link>"
+
+# the owner works it (rule: a task isn't done until the board says it is)
+tick claim TASK-001 @devy
+tick comment TASK-001 @devy -n "Opened PR #60"
+tick edit TASK-001 @devy --status review -n "Ready: PR #60, tests green"
+tick comment TASK-001 @devy -n "Verified: merged + prod returns 200"
+tick done TASK-001 @devy
+
+# every morning
+tick digest > DIGEST.md
+```
+With `git init` and `auto_commit: true` (the default in `.tick/config.yml`), every change becomes a commit, so the board's history is `git log`.
 
 ## 🏗️ Project Structure
 
@@ -269,8 +327,9 @@ tick init
 
 ## 📦 Packages
 
-- **[tick-md](https://www.npmjs.com/package/tick-md)** - CLI tool (v1.2.1)
-- **[tick-mcp-server](https://www.npmjs.com/package/tick-mcp-server)** - MCP server for AI agents (v1.1.1)
+- **[tick-md](https://www.npmjs.com/package/tick-md)** - CLI tool (v1.3.0)
+- **[@gianni-dalerta/tick-core](https://www.npmjs.com/package/@gianni-dalerta/tick-core)** - Shared parser/serializer/types (v1.1.0)
+- **[tick-mcp-server](https://www.npmjs.com/package/tick-mcp-server)** - MCP server for AI agents (v1.1.3)
 - **[tick-md](https://clawhub.ai/gianni-dalerta/tick-md)** - ClawHub skill for OpenClaw bots
 
 ## 🤝 Contributing
