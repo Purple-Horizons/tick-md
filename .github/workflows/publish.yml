@@ -1,9 +1,18 @@
 name: Publish to npm
 
+# Publishes via npm trusted publishing (OIDC). No npm token is used.
+# Each package has a GitHub Actions trusted publisher on npmjs.com:
+#   org Purple-Horizons, repo tick-md, workflow publish.yml, no environment.
+
 on:
   push:
     tags:
       - 'v*'  # Release tag = CLI version, e.g. v1.3.0
+  workflow_dispatch: # Manual (re)run from a branch, e.g. main
+
+permissions:
+  id-token: write  # required for npm trusted publishing + provenance
+  contents: read
 
 # Publish order: core -> CLI -> MCP. Each step skips if that exact
 # name@version is already on npm, so only bumped packages are published.
@@ -16,10 +25,14 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Upgrade npm (trusted publishing needs npm >= 11.5.1)
+        run: npm install -g npm@latest && npm --version
+
       - name: Check tag matches CLI version
+        if: github.ref_type == 'tag'
         run: |
           CLI_VERSION=$(node -p "require('./cli/package.json').version")
           if [ "${GITHUB_REF_NAME}" != "v${CLI_VERSION}" ]; then
@@ -43,10 +56,8 @@ jobs:
           if npm view "${NAME}@${VERSION}" version >/dev/null 2>&1; then
             echo "${NAME}@${VERSION} already published; skipping"
           else
-            npm publish --access public
+            npm publish --provenance --access public
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-cli:
     runs-on: ubuntu-latest
@@ -56,8 +67,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm (trusted publishing needs npm >= 11.5.1)
+        run: npm install -g npm@latest && npm --version
 
       - name: Install dependencies
         run: npm ci
@@ -79,10 +93,8 @@ jobs:
           if npm view "${NAME}@${VERSION}" version >/dev/null 2>&1; then
             echo "${NAME}@${VERSION} already published; skipping"
           else
-            npm publish --access public
+            npm publish --provenance --access public
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   publish-mcp:
     runs-on: ubuntu-latest
@@ -92,8 +104,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm (trusted publishing needs npm >= 11.5.1)
+        run: npm install -g npm@latest && npm --version
 
       - name: Install MCP dependencies
         run: npm ci
@@ -111,7 +126,5 @@ jobs:
           if npm view "${NAME}@${VERSION}" version >/dev/null 2>&1; then
             echo "${NAME}@${VERSION} already published; skipping"
           else
-            npm publish --access public
+            npm publish --provenance --access public
           fi
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

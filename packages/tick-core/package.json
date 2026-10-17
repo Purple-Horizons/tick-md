@@ -24,5 +24,10 @@
   },
   "files": [
     "dist/**/*"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Purple-Horizons/tick-md.git",
+    "directory": "packages/tick-core"
+  }
 }

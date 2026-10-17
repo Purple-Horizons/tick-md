@@ -8,7 +8,11 @@ Three npm packages live in this repo:
 | `tick-md` (CLI) | `cli` | Depends on core via `"@tick/core": "npm:@gianni-dalerta/tick-core@^X.Y.Z"` |
 | `tick-mcp-server` | `mcp` | Depends on core the same way |
 
-Releases are published by GitHub Actions (`.github/workflows/publish.yml`) when a `v*` tag is pushed. The tag must equal the CLI version (`v` + `cli/package.json` version). The workflow publishes core → CLI → MCP and **skips any package whose exact version is already on npm**, so only the packages you bumped go out. It authenticates with the repo secret `NPM_TOKEN`.
+Releases are published by GitHub Actions (`.github/workflows/publish.yml`) using **npm trusted publishing (OIDC)**. There is no npm token: each package has a GitHub Actions trusted publisher on npmjs.com (org `Purple-Horizons`, repo `tick-md`, workflow `publish.yml`, no environment). Publishes carry provenance.
+
+The workflow runs when a `v*` tag is pushed, and the tag must equal the CLI version (`v` + `cli/package.json` version). It can also be started manually with `workflow_dispatch`. It publishes core → CLI → MCP and **skips any package whose exact version is already on npm**, so only the packages you bumped go out.
+
+> Don't rename `publish.yml` or add a GitHub environment without updating all three trusted publishers on npmjs.com to match. OIDC publishing fails if they differ.
 
 ## Steps
 
@@ -31,7 +35,7 @@ Releases are published by GitHub Actions (`.github/workflows/publish.yml`) when 
    git tag -a v1.3.0 -m "tick-md 1.3.0 / tick-core 1.1.0"
    git push origin v1.3.0
    ```
-5. **Watch the run:** `gh run watch --repo Purple-Horizons/tick-md` (or the Actions tab).
+5. **Watch the run:** `gh run watch --repo Purple-Horizons/tick-md` (or the Actions tab). To publish without a new tag (e.g. a retry after fixing setup), run `gh workflow run publish.yml --ref main --repo Purple-Horizons/tick-md`.
 6. **Verify**
    ```bash
    npm view @gianni-dalerta/tick-core version
@@ -39,21 +43,23 @@ Releases are published by GitHub Actions (`.github/workflows/publish.yml`) when 
    npx -y tick-md@latest --version
    ```
 
-## If the publish job fails with 401/403/EOTP, or `E404 Not Found - PUT`
+## If the publish job fails
 
-npm answers an unauthorized publish with **`E404 ... is not in this registry`**, not 401. All of these mean `NPM_TOKEN` is expired, revoked, missing write access to these packages, or not allowed to bypass 2FA. Create a new npm **granular access token** (Read and write; packages `tick-md`, `tick-mcp-server`, `@gianni-dalerta/tick-core`; "bypass 2FA" enabled for automation), then:
+- **`E404 Not Found - PUT`, `ENEEDAUTH`, or an OIDC/"trusted publisher" error:** the npm trusted publisher doesn't match this run. On npmjs.com → package → Settings → Trusted publishing, check org `Purple-Horizons`, repo `tick-md`, workflow `publish.yml`, and an empty environment, for **each** of the three packages. Also make sure the job has `permissions: id-token: write` and the npm version is ≥ 11.5.1 (the workflow upgrades npm).
+- **Provenance `repository.url` error:** the package's `package.json` `repository.url` must be `https://github.com/Purple-Horizons/tick-md.git`.
 
+After fixing, re-run. Already-published versions are skipped:
 ```bash
-gh secret set NPM_TOKEN --repo Purple-Horizons/tick-md   # paste the token when prompted
-gh run rerun <run-id> --failed
+gh run rerun <run-id> --failed --repo Purple-Horizons/tick-md
+# or start a fresh run from main (uses the workflow as it is on main):
+gh workflow run publish.yml --ref main --repo Purple-Horizons/tick-md
 ```
-
-Re-running is safe because already-published versions are skipped.
+Note: `gh run rerun` replays the workflow file **as it was at the tagged commit**. If the fix was to the workflow itself, use `gh workflow run ... --ref main`, or cut a new patch tag.
 
 ## Manual fallback (no Actions)
 
 ```bash
-npm login                        # as gianni-dalerta; complete 2FA in the browser
+npm login                        # as gianni-dalerta; complete 2FA in the browser (each publish may ask for an OTP)
 cd packages/tick-core && npm publish --access public
 cd ../../cli && npm run build && npm publish --access public
 cd ../mcp && npm run build && npm publish --access public   # only if bumped
