@@ -39,9 +39,9 @@ Releases are published by GitHub Actions (`.github/workflows/publish.yml`) when 
    npx -y tick-md@latest --version
    ```
 
-## If the publish job fails with 401/403/EOTP
+## If the publish job fails with 401/403/EOTP, or `E404 Not Found - PUT`
 
-`NPM_TOKEN` is expired, revoked, or not allowed to bypass 2FA. Create a new npm **granular access token** (Read and write; packages `tick-md`, `tick-mcp-server`, `@gianni-dalerta/tick-core`; "bypass 2FA" enabled for automation), then:
+npm answers an unauthorized publish with **`E404 ... is not in this registry`**, not 401. All of these mean `NPM_TOKEN` is expired, revoked, missing write access to these packages, or not allowed to bypass 2FA. Create a new npm **granular access token** (Read and write; packages `tick-md`, `tick-mcp-server`, `@gianni-dalerta/tick-core`; "bypass 2FA" enabled for automation), then:
 
 ```bash
 gh secret set NPM_TOKEN --repo Purple-Horizons/tick-md   # paste the token when prompted
