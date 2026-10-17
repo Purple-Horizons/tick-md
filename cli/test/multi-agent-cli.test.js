@@ -95,3 +95,20 @@ describe("TICK_DIR", () => {
     fs.rmSync(elsewhere, { recursive: true, force: true });
   });
 });
+
+describe("TICK_AGENT precedence", () => {
+  it("uses TICK_AGENT over the shared session's last agent", () => {
+    const dir = mkProject();
+    tick(["add", "one"], { cwd: dir });
+    tick(["add", "two"], { cwd: dir });
+    // @alpha becomes the shared session's last agent
+    assert.equal(tick(["claim", "TASK-001", "@alpha"], { cwd: dir }).status, 0);
+    // @beta omits the agent arg but has TICK_AGENT set
+    const r = tick(["claim", "TASK-002"], { cwd: dir, env: { TICK_AGENT: "beta" } });
+    assert.equal(r.status, 0, r.stderr);
+    const content = fs.readFileSync(path.join(dir, "TICK.md"), "utf-8");
+    const block = content.split("### TASK-002")[1];
+    assert.match(block, /claimed_by: "?@beta"?/);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});

@@ -51,17 +51,17 @@ export async function saveSession(
  * Get the last used agent, or try to determine from environment
  */
 export async function getLastAgent(cwd: string = process.cwd()): Promise<string | null> {
-  const session = await loadSession(cwd);
-
-  if (session.lastAgent) {
-    return session.lastAgent;
-  }
-
-  // Try environment variable
+  // TICK_AGENT wins: the session file is shared by every agent using this
+  // board, so "last agent" may be a different bot than the caller.
   if (process.env.TICK_AGENT) {
     return process.env.TICK_AGENT.startsWith("@")
       ? process.env.TICK_AGENT
       : `@${process.env.TICK_AGENT}`;
+  }
+
+  const session = await loadSession(cwd);
+  if (session.lastAgent) {
+    return session.lastAgent;
   }
 
   return null;
