@@ -160,6 +160,9 @@ tick-md/
 | `tick reopen` | Reopen completed task |
 | `tick delete` | Delete a task |
 | `tick edit` | Direct field edits |
+| `tick block` | Mark blocked with `--on <who>` (waiting_on) |
+| `tick unblock` | Clear a block |
+| `tick digest` | Board digest: blocked/waiting, review, working, todo, stale |
 | `tick undo` | Undo last operation |
 | `tick import` | Bulk import from YAML |
 | `tick batch` | Batch mode (start/commit/abort) |
