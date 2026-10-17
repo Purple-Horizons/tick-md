@@ -22,6 +22,8 @@ import { initCommand } from "./commands/init.js";
 import { addCommand } from "./commands/add.js";
 import { claimCommand, releaseCommand } from "./commands/claim.js";
 import { doneCommand, commentCommand } from "./commands/done.js";
+import { blockCommand, unblockCommand } from "./commands/block.js";
+import { digestCommand } from "./commands/digest.js";
 import { statusCommand } from "./commands/status.js";
 import { syncCommand } from "./commands/sync.js";
 import { validateCommand } from "./commands/validate.js";
@@ -66,6 +68,18 @@ import {
   backupCleanCommand,
 } from "./commands/backup.js";
 import type { Priority, AgentStatus, AgentType, TaskStatus } from "./types.js";
+import { acquireWriteLock, MUTATING_COMMANDS } from "./utils/write-lock.js";
+import { existsSync } from "node:fs";
+
+// TICK_DIR lets agents that share one board run tick from any directory.
+if (process.env.TICK_DIR) {
+  try {
+    process.chdir(resolve(process.env.TICK_DIR));
+  } catch (error: any) {
+    console.error(chalk.red("Error:"), `TICK_DIR=${process.env.TICK_DIR} is not accessible: ${error.message}`);
+    process.exit(1);
+  }
+}
 
 const program = new Command();
 const CLI_VERSION = (() => {
@@ -83,6 +97,24 @@ program
   .name("tick")
   .description("Multi-agent task coordination via Markdown")
   .version(CLI_VERSION);
+
+// Serialize all mutating commands across processes so concurrent agents
+// never overwrite each other's TICK.md changes.
+program.hook("preAction", (_thisCommand, actionCommand) => {
+  const names: string[] = [];
+  for (let c: Command | null = actionCommand; c && c !== program; c = c.parent) {
+    names.unshift(c.name());
+  }
+  const commandPath = names.join(" ");
+  if (!MUTATING_COMMANDS.has(commandPath)) return;
+  if (!existsSync(resolve(process.cwd(), "TICK.md"))) return;
+  try {
+    acquireWriteLock(process.cwd(), { command: commandPath });
+  } catch (error: any) {
+    console.error(chalk.red("Error:"), error.message);
+    process.exit(1);
+  }
+});
 
 // Init command
 program
@@ -352,6 +384,7 @@ program
   .option("--estimated-hours <hours>", "Set estimated hours", parseFloat)
   .option("--actual-hours <hours>", "Set actual hours", parseFloat)
   .option("--due-date <date>", "Set due date (ISO format or empty to clear)")
+  .option("-w, --waiting-on <who>", "Set who/what a blocked task waits on (empty to clear)")
   .option("-n, --note <text>", "Note for history entry")
   .option("--commit", "Auto-commit after change")
   .option("--no-commit", "Skip auto-commit even if config enables it")
@@ -369,6 +402,7 @@ program
         estimatedHours: options.estimatedHours,
         actualHours: options.actualHours,
         dueDate: options.dueDate,
+        waitingOn: options.waitingOn,
         note: options.note,
         commit: options.commit,
         noCommit: options.noCommit,
@@ -376,6 +410,48 @@ program
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
+    }
+  });
+
+// Block command
+program
+  .command("block <task-id> <agent>")
+  .description("Mark a task blocked and record who/what it is waiting on")
+  .requiredOption("-o, --on <who>", "Who/what the task is waiting on (e.g. @gianni, \"Baptist Health\", TASK-004)")
+  .option("-n, --note <text>", "Context for the block")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (taskId, agent, options) => {
+    try {
+      await blockCommand(taskId, agent, {
+        on: options.on,
+        note: options.note,
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
+    } catch (error: any) {
+      handleError(error);
+    }
+  });
+
+// Unblock command
+program
+  .command("unblock <task-id> <agent>")
+  .description("Clear a block (back to in_progress if claimed, else todo)")
+  .option("-s, --status <status>", "Target status (todo|in_progress|review|backlog)")
+  .option("-n, --note <text>", "What unblocked it")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (taskId, agent, options) => {
+    try {
+      await unblockCommand(taskId, agent, {
+        status: options.status as TaskStatus | undefined,
+        note: options.note,
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
+    } catch (error: any) {
+      handleError(error);
     }
   });
 
@@ -395,6 +471,27 @@ program
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
+    }
+  });
+
+// Digest command
+program
+  .command("digest")
+  .description("Markdown/JSON board digest grouped by status, with waiting-on and stale tasks")
+  .option("--stale-hours <n>", "Flag open tasks not updated in N hours (default: 48)", parseFloat)
+  .option("--done-since-hours <n>", "Include tasks completed in the last N hours (default: 24)", parseFloat)
+  .option("-o, --owner <agent>", "Only tasks claimed by or assigned to this agent")
+  .option("--json", "Output JSON instead of Markdown")
+  .action(async (options) => {
+    try {
+      await digestCommand({
+        staleHours: options.staleHours,
+        doneSinceHours: options.doneSinceHours,
+        owner: options.owner,
+        json: options.json,
+      });
+    } catch (error: any) {
+      handleError(error);
     }
   });
 

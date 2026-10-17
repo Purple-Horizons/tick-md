@@ -323,3 +323,24 @@ describe("Validator: logical checks", () => {
     assert.ok(result.errors.some((e) => e.message.includes("missing title")));
   });
 });
+
+describe("Validator: waiting_on", () => {
+  it("warns when a blocked task has no waiting_on and no depends_on", () => {
+    const result = validateTickFile(makeTickFile({ tasks: [makeTask({ status: "blocked" })] }));
+    assert.ok(result.warnings.some((w) => /does not say what it is waiting on/.test(w.message)));
+  });
+
+  it("does not warn when waiting_on is set", () => {
+    const result = validateTickFile(
+      makeTickFile({ tasks: [makeTask({ status: "blocked", waiting_on: "@gianni" })] })
+    );
+    assert.ok(!result.warnings.some((w) => /waiting on/.test(w.message)));
+  });
+
+  it("warns when waiting_on is set on a non-blocked task", () => {
+    const result = validateTickFile(
+      makeTickFile({ tasks: [makeTask({ status: "todo", waiting_on: "@gianni" })] })
+    );
+    assert.ok(result.warnings.some((w) => /has waiting_on/.test(w.message)));
+  });
+});

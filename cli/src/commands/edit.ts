@@ -17,6 +17,7 @@ export interface EditOptions {
   estimatedHours?: number;
   actualHours?: number;
   dueDate?: string;
+  waitingOn?: string;
   note?: string;
   commit?: boolean;
   noCommit?: boolean;
@@ -67,6 +68,7 @@ export async function editCommand(
     "estimatedHours",
     "actualHours",
     "dueDate",
+    "waitingOn",
   ];
   const hasEdits = editableFields.some(
     (field) => options[field as keyof EditOptions] !== undefined
@@ -74,7 +76,7 @@ export async function editCommand(
 
   if (!hasEdits) {
     throw new Error(
-      "No fields to edit. Use --status, --priority, --title, --description, --assigned-to, --tags, --depends-on, --blocks, --estimated-hours, --actual-hours, or --due-date."
+      "No fields to edit. Use --status, --priority, --title, --description, --assigned-to, --tags, --depends-on, --blocks, --estimated-hours, --actual-hours, --due-date, or --waiting-on."
     );
   }
 
@@ -193,6 +195,16 @@ export async function editCommand(
     const oldDate = task.due_date;
     task.due_date = options.dueDate || undefined;
     changes.push(`due_date: ${oldDate || "none"} → ${options.dueDate || "none"}`);
+  }
+
+  if (options.waitingOn !== undefined) {
+    const oldWaiting = task.waiting_on;
+    task.waiting_on = options.waitingOn.trim() || undefined;
+    changes.push(`waiting_on: ${oldWaiting || "none"} → ${task.waiting_on || "none"}`);
+  } else if (task.waiting_on && task.status !== "blocked") {
+    // Leaving blocked via a status edit clears the stale waiting_on.
+    changes.push(`waiting_on: ${task.waiting_on} → none`);
+    task.waiting_on = undefined;
   }
 
   // Update timestamp

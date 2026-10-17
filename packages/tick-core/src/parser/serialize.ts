@@ -72,6 +72,7 @@ export function serializeTickFile(tickFile: TickFile): string {
       if (task.tags.length > 0) metadata.tags = task.tags;
       if (task.depends_on.length > 0) metadata.depends_on = task.depends_on;
       if (task.blocks.length > 0) metadata.blocks = task.blocks;
+      if (task.waiting_on) metadata.waiting_on = task.waiting_on;
       if (task.estimated_hours) metadata.estimated_hours = task.estimated_hours;
       if (task.actual_hours) metadata.actual_hours = task.actual_hours;
       if (task.detail_file) metadata.detail_file = task.detail_file;

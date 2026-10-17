@@ -176,6 +176,24 @@ function validateTask(
     }
   }
 
+  if (task.status === "blocked" && !task.waiting_on && task.depends_on.length === 0) {
+    warnings.push({
+      type: "warning",
+      message: `Task ${task.id} is blocked but does not say what it is waiting on`,
+      location: task.id,
+      fix: `tick block ${task.id} <agent> --on <who>`,
+    });
+  }
+
+  if (task.waiting_on && task.status !== "blocked") {
+    warnings.push({
+      type: "warning",
+      message: `Task ${task.id} has waiting_on (${task.waiting_on}) but status is ${task.status}`,
+      location: task.id,
+      fix: `tick unblock ${task.id} <agent>`,
+    });
+  }
+
   // Validate history
   if (!task.history || task.history.length === 0) {
     warnings.push({

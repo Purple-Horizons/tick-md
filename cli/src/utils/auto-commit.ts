@@ -57,8 +57,9 @@ export async function shouldAutoCommit(
   options: { commit?: boolean; noCommit?: boolean },
   cwd: string = process.cwd()
 ): Promise<boolean> {
-  // --no-commit forces skip
-  if (options.noCommit) {
+  // --no-commit forces skip. Commander maps "--no-commit" to commit === false
+  // (noCommit is never set by the CLI), so honor both forms.
+  if (options.noCommit || options.commit === false) {
     return false;
   }
 

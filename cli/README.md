@@ -146,6 +146,13 @@ tick release <task-id> <agent>
 tick done <task-id> <agent>
 tick comment <task-id> <agent> --note <text>
 
+# Blocked work: always say who/what you are waiting on
+tick block <task-id> <agent> --on <who> [--note <text>]
+tick unblock <task-id> <agent> [--status <status>] [--note <text>]
+
+# Board digest (morning brief / stale-task detection)
+tick digest [--stale-hours 48] [--done-since-hours 24] [--owner <agent>] [--json]
+
 # Validation
 tick validate [--verbose]
 
@@ -167,10 +174,28 @@ tick sync [--push] [--pull] [--message <text>] [--init]
 | `tick release` | ✅ | Release claimed task (back to todo) |
 | `tick done` | ✅ | Mark task complete, unblock dependents |
 | `tick comment` | ✅ | Add notes to task history |
+| `tick block` | ✅ | Mark blocked and record `waiting_on` |
+| `tick unblock` | ✅ | Clear a block (back to in_progress/todo) |
+| `tick digest` | ✅ | Status-grouped Markdown/JSON digest with stale tasks |
 | `tick sync` | ✅ | Commit TICK.md to git with smart messages |
 | `tick validate` | ✅ | Validate TICK.md structure and references |
 | `tick agent register` | ✅ | Register new agent (human or bot) |
 | `tick agent list` | ✅ | List agents with filtering |
+
+## Multi-agent environments
+
+Several agents can share one board on the same machine:
+
+- **Write lock**: every mutating command holds `.tick/write.lock` for the
+  duration of the invocation, so concurrent agents never overwrite each
+  other's changes. Locks from crashed processes are reclaimed automatically.
+  Tune with `TICK_LOCK_TIMEOUT_MS` (default 15000) and `TICK_LOCK_STALE_MS`
+  (default 60000).
+- **`TICK_DIR`**: point tick at the shared board from any working directory
+  (`TICK_DIR=/srv/board tick list`).
+- **`TICK_AGENT`**: identifies the calling agent when the agent argument is
+  omitted. It takes precedence over `.tick/session`, which is shared by every
+  agent on the board.
 
 ## Technical Decisions
 
