@@ -313,6 +313,10 @@ function printGrouped(tasks: Task[], c: typeof chalk): void {
         console.log(chalk.gray(`       Assigned to: ${task.assigned_to}`));
       }
 
+      if (task.waiting_on) {
+        console.log(chalk.yellow(`       Waiting on: ${task.waiting_on}`));
+      }
+
       if (task.tags.length > 0) {
         console.log(chalk.gray(`       Tags: ${task.tags.map((t) => `#${t}`).join(" ")}`));
       }

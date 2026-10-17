@@ -159,3 +159,20 @@ describe("block / unblock with waiting_on", () => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
 });
+
+describe("--no-commit", () => {
+  it("skips auto-commit even when config enables it", () => {
+    const dir = mkProject();
+    spawnSync("git", ["init", "-q"], { cwd: dir });
+    spawnSync("git", ["-c", "user.name=t", "-c", "user.email=t@t", "commit", "-q", "--allow-empty", "-m", "base"], { cwd: dir });
+    const before = spawnSync("git", ["rev-list", "--count", "HEAD"], { cwd: dir, encoding: "utf-8" }).stdout.trim();
+    const r = tick(["add", "no commit please", "--no-commit"], {
+      cwd: dir,
+      env: { GIT_AUTHOR_NAME: "t", GIT_AUTHOR_EMAIL: "t@t", GIT_COMMITTER_NAME: "t", GIT_COMMITTER_EMAIL: "t@t" },
+    });
+    assert.equal(r.status, 0, r.stderr);
+    const after = spawnSync("git", ["rev-list", "--count", "HEAD"], { cwd: dir, encoding: "utf-8" }).stdout.trim();
+    assert.equal(after, before);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});
