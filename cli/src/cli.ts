@@ -23,6 +23,7 @@ import { addCommand } from "./commands/add.js";
 import { claimCommand, releaseCommand } from "./commands/claim.js";
 import { doneCommand, commentCommand } from "./commands/done.js";
 import { blockCommand, unblockCommand } from "./commands/block.js";
+import { digestCommand } from "./commands/digest.js";
 import { statusCommand } from "./commands/status.js";
 import { syncCommand } from "./commands/sync.js";
 import { validateCommand } from "./commands/validate.js";
@@ -470,6 +471,27 @@ program
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
+    }
+  });
+
+// Digest command
+program
+  .command("digest")
+  .description("Markdown/JSON board digest grouped by status, with waiting-on and stale tasks")
+  .option("--stale-hours <n>", "Flag open tasks not updated in N hours (default: 48)", parseFloat)
+  .option("--done-since-hours <n>", "Include tasks completed in the last N hours (default: 24)", parseFloat)
+  .option("-o, --owner <agent>", "Only tasks claimed by or assigned to this agent")
+  .option("--json", "Output JSON instead of Markdown")
+  .action(async (options) => {
+    try {
+      await digestCommand({
+        staleHours: options.staleHours,
+        doneSinceHours: options.doneSinceHours,
+        owner: options.owner,
+        json: options.json,
+      });
+    } catch (error: any) {
+      handleError(error);
     }
   });
 
