@@ -47,6 +47,8 @@ export interface Task {
   tags: string[];
   depends_on: string[];
   blocks: string[];
+  /** Who/what a blocked task is waiting on (agent, person, or external party). */
+  waiting_on?: string;
   estimated_hours?: number;
   actual_hours?: number;
   detail_file?: string;

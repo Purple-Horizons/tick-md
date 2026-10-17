@@ -97,7 +97,8 @@ export async function listCommand(options: ListOptions = {}): Promise<void> {
           const statusIcon = getStatusIcon(task.status);
           const priorityIcon = getPriorityIcon(task.priority, options.noColor);
           const claimed = task.claimed_by ? c.gray(` (${task.claimed_by})`) : "";
-          console.log(`${statusIcon} ${priorityIcon} ${task.id} ${task.title}${claimed}`);
+          const waiting = task.waiting_on ? c.yellow(` [waiting on ${task.waiting_on}]`) : "";
+          console.log(`${statusIcon} ${priorityIcon} ${task.id} ${task.title}${claimed}${waiting}`);
         }
         break;
 
@@ -221,6 +222,10 @@ function printWide(tasks: Task[], c: typeof chalk): void {
       console.log(`  Claimed by: ${task.claimed_by}`);
     } else if (task.assigned_to) {
       console.log(`  Assigned to: ${task.assigned_to}`);
+    }
+
+    if (task.waiting_on) {
+      console.log(`  Waiting on: ${task.waiting_on}`);
     }
 
     if (task.tags.length > 0) {

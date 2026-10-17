@@ -112,3 +112,50 @@ describe("TICK_AGENT precedence", () => {
     fs.rmSync(dir, { recursive: true, force: true });
   });
 });
+
+describe("block / unblock with waiting_on", () => {
+  it("records waiting_on, survives round-trip, and clears on unblock", () => {
+    const dir = mkProject();
+    tick(["add", "Call Baptist"], { cwd: dir });
+    assert.equal(tick(["claim", "TASK-001", "@salesy"], { cwd: dir }).status, 0);
+
+    let r = tick(["block", "TASK-001", "@salesy", "--on", "Baptist Health", "-n", "awaiting confirmation"], { cwd: dir });
+    assert.equal(r.status, 0, r.stderr);
+    let content = fs.readFileSync(path.join(dir, "TICK.md"), "utf-8");
+    assert.match(content, /status: blocked/);
+    assert.match(content, /waiting_on: Baptist Health/);
+    assert.match(content, /claimed_by: "?@salesy"?/);
+    assert.match(content, /note: "?waiting on Baptist Health: awaiting confirmation"?/);
+
+    // round-trip through another mutating command keeps waiting_on
+    tick(["comment", "TASK-001", "@salesy", "-n", "pinged again"], { cwd: dir });
+    content = fs.readFileSync(path.join(dir, "TICK.md"), "utf-8");
+    assert.match(content, /waiting_on: Baptist Health/);
+
+    r = tick(["unblock", "TASK-001", "@salesy", "-n", "confirmed"], { cwd: dir });
+    assert.equal(r.status, 0, r.stderr);
+    content = fs.readFileSync(path.join(dir, "TICK.md"), "utf-8");
+    assert.match(content, /status: in_progress/);
+    assert.doesNotMatch(content, /waiting_on:/);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("requires --on", () => {
+    const dir = mkProject();
+    tick(["add", "x"], { cwd: dir });
+    const r = tick(["block", "TASK-001", "@geny"], { cwd: dir });
+    assert.notEqual(r.status, 0);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it("done clears waiting_on", () => {
+    const dir = mkProject();
+    tick(["add", "x"], { cwd: dir });
+    tick(["block", "TASK-001", "@geny", "--on", "@gianni"], { cwd: dir });
+    assert.equal(tick(["done", "TASK-001", "@geny", "--skip-workflow"], { cwd: dir }).status, 0);
+    const content = fs.readFileSync(path.join(dir, "TICK.md"), "utf-8");
+    assert.match(content, /status: done/);
+    assert.doesNotMatch(content, /waiting_on:/);
+    fs.rmSync(dir, { recursive: true, force: true });
+  });
+});

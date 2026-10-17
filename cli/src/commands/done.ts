@@ -84,6 +84,7 @@ export async function doneCommand(
   const previousStatus = task.status;
   task.status = "done" as TaskStatus;
   task.claimed_by = null; // Clear claim when done
+  task.waiting_on = undefined;
   task.updated_at = now;
 
   // Add history entry

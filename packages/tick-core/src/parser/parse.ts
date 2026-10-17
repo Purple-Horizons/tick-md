@@ -361,6 +361,10 @@ function parseStructuredTaskBlocksWithErrors(content: string): {
       tags: safeArray(metadata.tags, []),
       depends_on: safeArray(metadata.depends_on, []),
       blocks: safeArray(metadata.blocks, []),
+      waiting_on:
+        metadata.waiting_on !== undefined && metadata.waiting_on !== null && metadata.waiting_on !== ""
+          ? String(metadata.waiting_on)
+          : undefined,
       estimated_hours: metadata.estimated_hours,
       actual_hours: metadata.actual_hours,
       detail_file: metadata.detail_file,

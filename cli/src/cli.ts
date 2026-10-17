@@ -22,6 +22,7 @@ import { initCommand } from "./commands/init.js";
 import { addCommand } from "./commands/add.js";
 import { claimCommand, releaseCommand } from "./commands/claim.js";
 import { doneCommand, commentCommand } from "./commands/done.js";
+import { blockCommand, unblockCommand } from "./commands/block.js";
 import { statusCommand } from "./commands/status.js";
 import { syncCommand } from "./commands/sync.js";
 import { validateCommand } from "./commands/validate.js";
@@ -382,6 +383,7 @@ program
   .option("--estimated-hours <hours>", "Set estimated hours", parseFloat)
   .option("--actual-hours <hours>", "Set actual hours", parseFloat)
   .option("--due-date <date>", "Set due date (ISO format or empty to clear)")
+  .option("-w, --waiting-on <who>", "Set who/what a blocked task waits on (empty to clear)")
   .option("-n, --note <text>", "Note for history entry")
   .option("--commit", "Auto-commit after change")
   .option("--no-commit", "Skip auto-commit even if config enables it")
@@ -399,6 +401,7 @@ program
         estimatedHours: options.estimatedHours,
         actualHours: options.actualHours,
         dueDate: options.dueDate,
+        waitingOn: options.waitingOn,
         note: options.note,
         commit: options.commit,
         noCommit: options.noCommit,
@@ -406,6 +409,48 @@ program
     } catch (error: any) {
       console.error(chalk.red("Error:"), error.message);
       process.exit(1);
+    }
+  });
+
+// Block command
+program
+  .command("block <task-id> <agent>")
+  .description("Mark a task blocked and record who/what it is waiting on")
+  .requiredOption("-o, --on <who>", "Who/what the task is waiting on (e.g. @gianni, \"Baptist Health\", TASK-004)")
+  .option("-n, --note <text>", "Context for the block")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (taskId, agent, options) => {
+    try {
+      await blockCommand(taskId, agent, {
+        on: options.on,
+        note: options.note,
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
+    } catch (error: any) {
+      handleError(error);
+    }
+  });
+
+// Unblock command
+program
+  .command("unblock <task-id> <agent>")
+  .description("Clear a block (back to in_progress if claimed, else todo)")
+  .option("-s, --status <status>", "Target status (todo|in_progress|review|backlog)")
+  .option("-n, --note <text>", "What unblocked it")
+  .option("--commit", "Auto-commit after change")
+  .option("--no-commit", "Skip auto-commit even if config enables it")
+  .action(async (taskId, agent, options) => {
+    try {
+      await unblockCommand(taskId, agent, {
+        status: options.status as TaskStatus | undefined,
+        note: options.note,
+        commit: options.commit,
+        noCommit: options.noCommit,
+      });
+    } catch (error: any) {
+      handleError(error);
     }
   });
 
