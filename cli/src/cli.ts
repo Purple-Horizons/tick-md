@@ -66,6 +66,18 @@ import {
   backupCleanCommand,
 } from "./commands/backup.js";
 import type { Priority, AgentStatus, AgentType, TaskStatus } from "./types.js";
+import { acquireWriteLock, MUTATING_COMMANDS } from "./utils/write-lock.js";
+import { existsSync } from "node:fs";
+
+// TICK_DIR lets agents that share one board run tick from any directory.
+if (process.env.TICK_DIR) {
+  try {
+    process.chdir(resolve(process.env.TICK_DIR));
+  } catch (error: any) {
+    console.error(chalk.red("Error:"), `TICK_DIR=${process.env.TICK_DIR} is not accessible: ${error.message}`);
+    process.exit(1);
+  }
+}
 
 const program = new Command();
 const CLI_VERSION = (() => {
@@ -83,6 +95,24 @@ program
   .name("tick")
   .description("Multi-agent task coordination via Markdown")
   .version(CLI_VERSION);
+
+// Serialize all mutating commands across processes so concurrent agents
+// never overwrite each other's TICK.md changes.
+program.hook("preAction", (_thisCommand, actionCommand) => {
+  const names: string[] = [];
+  for (let c: Command | null = actionCommand; c && c !== program; c = c.parent) {
+    names.unshift(c.name());
+  }
+  const commandPath = names.join(" ");
+  if (!MUTATING_COMMANDS.has(commandPath)) return;
+  if (!existsSync(resolve(process.cwd(), "TICK.md"))) return;
+  try {
+    acquireWriteLock(process.cwd(), { command: commandPath });
+  } catch (error: any) {
+    console.error(chalk.red("Error:"), error.message);
+    process.exit(1);
+  }
+});
 
 // Init command
 program
